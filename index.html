@@ -1,0 +1,1374 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Timesheet">
+    <meta name="theme-color" content="#4f46e5">
+    <title>Full Timer Timesheet</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Custom scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #334155;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-200">
+
+    <!-- APP HEADER & NAVIGATION -->
+    <header class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-30 shadow-sm transition-colors duration-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center gap-2">
+                <!-- Logo & Title -->
+                <div class="flex items-center space-x-3">
+                    <div class="bg-indigo-600 dark:bg-indigo-500 text-white p-2 rounded-xl shadow-md flex items-center justify-center">
+                        <i data-lucide="clock" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-slate-900 dark:text-white leading-tight">Full Timer Timesheet</h1>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 hidden sm:block">Personal Time & Task Tracking</p>
+                    </div>
+                </div>
+
+                <!-- Navigation Tabs -->
+                <nav class="flex space-x-1 sm:space-x-2 bg-slate-100 dark:bg-slate-900 p-1 rounded-xl">
+                    <button id="navLog" onclick="switchTab('log')" class="px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-all flex items-center gap-1.5 bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-sm">
+                        <i data-lucide="calendar" class="w-4 h-4"></i>
+                        <span class="hidden sm:inline">Daily Log</span>
+                    </button>
+                    <button id="navWeekly" onclick="switchTab('weekly')" class="px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-all flex items-center gap-1.5 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
+                        <i data-lucide="bar-chart-2" class="w-4 h-4"></i>
+                        <span class="hidden sm:inline">Weekly Summary</span>
+                    </button>
+                    <button id="navMonthly" onclick="switchTab('monthly')" class="px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-all flex items-center gap-1.5 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
+                        <i data-lucide="pie-chart" class="w-4 h-4"></i>
+                        <span class="hidden sm:inline">Monthly Summary</span>
+                    </button>
+                </nav>
+
+                <!-- Actions / Controls -->
+                <div class="flex items-center space-x-1 sm:space-x-2">
+                    <button onclick="syncNow(true)" class="relative p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-colors" title="Sync now">
+                        <span id="syncIconWrap" class="block"><i data-lucide="refresh-cw" class="w-5 h-5"></i></span>
+                        <span id="syncDot" class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-slate-400"></span>
+                    </button>
+                    <button onclick="toggleDarkMode()" class="p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-colors" title="Toggle Dark/Light Mode">
+                        <i data-lucide="sun" id="sunIcon" class="w-5 h-5 hidden"></i>
+                        <i data-lucide="moon" id="moonIcon" class="w-5 h-5"></i>
+                    </button>
+                    <button onclick="toggleDataModal()" class="p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-colors" title="Data Backup & Export">
+                        <i data-lucide="database" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- ================= TAB 1: DAILY LOG VIEW ================= -->
+        <section id="tabLog" class="space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                
+                <!-- Left Column: Quick Entry Form -->
+                <div class="lg:col-span-5 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-5 sm:p-6 transition-colors">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                            <i data-lucide="plus-circle" class="w-5 h-5 text-indigo-600 dark:text-indigo-400"></i>
+                            <span id="formTitle">Log Activity</span>
+                        </h2>
+                        <!-- Duration Mode Toggle -->
+                        <div class="flex bg-slate-100 dark:bg-slate-900 p-0.5 rounded-lg text-xs">
+                            <button type="button" id="modeTimes" onclick="setEntryMode('times')" class="px-2.5 py-1 rounded-md font-semibold bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-xs">Start / End</button>
+                            <button type="button" id="modeDuration" onclick="setEntryMode('duration')" class="px-2.5 py-1 rounded-md font-semibold text-slate-500 dark:text-slate-400">Duration</button>
+                        </div>
+                    </div>
+
+                    <form id="timeForm" onsubmit="handleFormSubmit(event)" class="space-y-4">
+                        <input type="hidden" id="entryId" value="">
+                        
+                        <!-- Date -->
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Date</label>
+                            <input type="date" id="entryDate" required class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm">
+                        </div>
+
+                        <!-- Subject -->
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Subject / Event Title</label>
+                            <input type="text" id="entrySubject" placeholder="e.g., Morning PTL, Truth Pursuit Reading" required class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm">
+                        </div>
+
+                        <!-- Start / End Input Container (Default Visible) -->
+                        <div id="timesInputContainer" class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Start Time</label>
+                                <input type="time" id="startTime" onchange="calculateTimeDifference()" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">End Time</label>
+                                <input type="time" id="endTime" onchange="calculateTimeDifference()" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm">
+                            </div>
+                        </div>
+
+                        <!-- Duration Input Container (Hidden by Default) -->
+                        <div id="durationInputContainer" class="grid grid-cols-2 gap-3 hidden">
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Hours</label>
+                                <input type="number" id="entryHours" min="0" max="24" placeholder="0" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm text-center">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Minutes</label>
+                                <input type="number" id="entryMins" min="0" max="59" step="5" placeholder="0" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm text-center">
+                            </div>
+                        </div>
+
+                        <!-- Category Tag -->
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Category Tag</label>
+                            <select id="entryTag" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm">
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+
+                        <!-- Custom Tag Input Field -->
+                        <div id="customTagContainer" class="hidden">
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">New Tag Name</label>
+                            <input type="text" id="customTagInput" placeholder="Enter new category name" class="w-full px-3 py-2 border border-indigo-300 dark:border-indigo-600 bg-indigo-50/50 dark:bg-indigo-950/30 text-slate-900 dark:text-white rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm">
+                        </div>
+
+                        <!-- Description -->
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Description / Notes</label>
+                            <textarea id="entryDescription" rows="3" placeholder="Summary of work, tasks, or miles..." class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm"></textarea>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="flex items-center space-x-2 pt-2">
+                            <button type="submit" id="saveBtn" class="flex-1 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white font-semibold py-2.5 px-4 rounded-xl shadow-sm transition-all flex items-center justify-center gap-2 text-sm">
+                                <i data-lucide="save" class="w-4 h-4"></i>
+                                Save Entry
+                            </button>
+                            <button type="button" id="cancelBtn" onclick="resetForm()" class="hidden px-4 py-2.5 border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-all text-sm font-semibold">
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Right Column: Timeline Log Entries -->
+                <div class="lg:col-span-7 space-y-4">
+                    
+                    <!-- Week Navigation & Filter Bar -->
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-4 space-y-3 sm:space-y-0 sm:flex sm:items-center sm:justify-between gap-3">
+                        <!-- Date Navigation -->
+                        <div class="flex items-center space-x-1.5">
+                            <button onclick="navigateWeek(-1)" class="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition" title="Previous Week">
+                                <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                            </button>
+                            <button onclick="jumpToToday()" class="px-2.5 py-1.5 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-semibold hover:bg-slate-100 dark:hover:bg-slate-700 transition">
+                                Today
+                            </button>
+                            <button onclick="navigateWeek(1)" class="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition" title="Next Week">
+                                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                            </button>
+                            <span id="currentWeekDisplay" class="text-xs font-bold text-slate-700 dark:text-slate-300 ml-1"></span>
+                        </div>
+
+                        <!-- Search & Tag Filter -->
+                        <div class="flex items-center gap-2">
+                            <div class="relative flex-1 sm:w-40">
+                                <i data-lucide="search" class="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-400"></i>
+                                <input type="text" id="searchInput" oninput="renderLogs()" placeholder="Search..." class="w-full pl-8 pr-2.5 py-1.5 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 outline-none">
+                            </div>
+                            <select id="filterTag" onchange="renderLogs()" class="border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-xl px-2 py-1.5 text-xs focus:ring-2 focus:ring-indigo-500 outline-none">
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Entries List Container -->
+                    <div id="logsContainer" class="space-y-4">
+                        <!-- Daily cards dynamically injected here -->
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ================= TAB 2: WEEKLY SUMMARY VIEW ================= -->
+        <section id="tabWeekly" class="hidden space-y-6">
+            <!-- Header Navigator -->
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                <div>
+                    <h2 class="text-base font-bold text-slate-900 dark:text-white">Weekly Timesheet Performance</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400" id="weeklyRangeText">Overview for current week</p>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button onclick="navigateSummaryWeek(-1)" class="p-2 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+                    <button onclick="jumpSummaryToCurrentWeek()" class="px-3 py-1.5 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold hover:bg-slate-100 dark:hover:bg-slate-700">Current Week</button>
+                    <button onclick="navigateSummaryWeek(1)" class="p-2 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+                </div>
+            </div>
+
+            <!-- Weekly Overview Stat Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-4">
+                    <div class="p-3 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 rounded-2xl">
+                        <i data-lucide="clock" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Hours</div>
+                        <div class="text-2xl font-extrabold text-slate-900 dark:text-white" id="weeklyTotalHours">0.0 hrs</div>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-4">
+                    <div class="p-3 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 rounded-2xl">
+                        <i data-lucide="trending-up" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Daily Average</div>
+                        <div class="text-2xl font-extrabold text-slate-900 dark:text-white" id="weeklyDailyAvg">0.0 hrs</div>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-4">
+                    <div class="p-3 bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 rounded-2xl">
+                        <i data-lucide="check-square" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Entries</div>
+                        <div class="text-2xl font-extrabold text-slate-900 dark:text-white" id="weeklyTotalCount">0</div>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-4">
+                    <div class="p-3 bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400 rounded-2xl">
+                        <i data-lucide="target" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Goal (40h Target)</div>
+                        <div class="text-2xl font-extrabold text-slate-900 dark:text-white" id="weeklyGoalPct">0%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Weekly Charts & Category Breakdown -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Bar Chart: Hours per day -->
+                <div class="bg-white dark:bg-slate-800 p-5 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                    <h3 class="text-sm font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+                        <i data-lucide="bar-chart-3" class="w-4 h-4 text-indigo-600 dark:text-indigo-400"></i> Hours per Day
+                    </h3>
+                    <div class="h-64 relative">
+                        <canvas id="weeklyBarChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Category Breakdown Progress Bars -->
+                <div class="bg-white dark:bg-slate-800 p-5 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-4">
+                    <h3 class="text-sm font-bold text-slate-800 dark:text-white mb-2 flex items-center gap-2">
+                        <i data-lucide="pie-chart" class="w-4 h-4 text-indigo-600 dark:text-indigo-400"></i> Category Breakdown
+                    </h3>
+                    <div id="weeklyCategoryProgress" class="space-y-3 overflow-y-auto max-h-64 pr-1">
+                        <!-- Dynamic Progress Bars -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 3: MONTHLY SUMMARY VIEW ================= -->
+        <section id="tabMonthly" class="hidden space-y-6">
+            <!-- Header Navigator -->
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                <div>
+                    <h2 class="text-base font-bold text-slate-900 dark:text-white">Monthly Hours & Distribution</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Monthly analytics across weeks</p>
+                </div>
+                <div>
+                    <input type="month" id="monthlyPicker" onchange="renderMonthlySummary()" class="px-3 py-1.5 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                </div>
+            </div>
+
+            <!-- Monthly Stat Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                    <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Monthly Hours</div>
+                    <div class="text-2xl font-extrabold text-indigo-600 dark:text-indigo-400 mt-1" id="monthlyTotalHours">0.0 hrs</div>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                    <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Logged Tasks</div>
+                    <div class="text-2xl font-extrabold text-slate-800 dark:text-white mt-1" id="monthlyTotalEntries">0</div>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                    <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Active Worked Days</div>
+                    <div class="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-1" id="monthlyActiveDays">0 days</div>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                    <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Daily Average</div>
+                    <div class="text-2xl font-extrabold text-amber-600 dark:text-amber-400 mt-1" id="monthlyDailyAvg">0.0 hrs/day</div>
+                </div>
+            </div>
+
+            <!-- Monthly Distribution Charts & Tables -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Doughnut Chart -->
+                <div class="bg-white dark:bg-slate-800 p-5 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm lg:col-span-1">
+                    <h3 class="text-sm font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+                        <i data-lucide="pie-chart" class="w-4 h-4 text-indigo-600 dark:text-indigo-400"></i> Category Distribution
+                    </h3>
+                    <div class="h-60 relative flex items-center justify-center">
+                        <canvas id="monthlyPieChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Category Breakdown Table -->
+                <div class="bg-white dark:bg-slate-800 p-5 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm lg:col-span-2 overflow-x-auto">
+                    <h3 class="text-sm font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+                        <i data-lucide="layers" class="w-4 h-4 text-indigo-600 dark:text-indigo-400"></i> Category Breakdown Table
+                    </h3>
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead>
+                            <tr class="border-b border-slate-200 dark:border-slate-700 text-slate-400 uppercase">
+                                <th class="py-2.5 font-semibold">Category</th>
+                                <th class="py-2.5 font-semibold">Entries</th>
+                                <th class="py-2.5 font-semibold">Total Time</th>
+                                <th class="py-2.5 font-semibold">% Share</th>
+                            </tr>
+                        </thead>
+                        <tbody id="monthlyTableBody" class="divide-y divide-slate-100 dark:divide-slate-700 text-slate-700 dark:text-slate-300">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODAL: DATA MANAGEMENT / BACKUP / IMPORT & EXPORT -->
+    <div id="dataModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 space-y-5 transition-colors">
+            <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-700 pb-3">
+                <h3 class="font-bold text-slate-900 dark:text-white text-base flex items-center gap-2">
+                    <i data-lucide="database" class="w-5 h-5 text-indigo-600 dark:text-indigo-400"></i> Data Management
+                </h3>
+                <button onclick="toggleDataModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <div class="space-y-3">
+                <!-- CSV Export -->
+                <div class="p-3.5 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-700 flex justify-between items-center">
+                    <div>
+                        <div class="text-xs font-bold text-slate-800 dark:text-slate-200">Export to CSV</div>
+                        <div class="text-[11px] text-slate-500 dark:text-slate-400">Download entries for Excel/Sheets</div>
+                    </div>
+                    <button onclick="exportCSV()" class="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 shadow-xs transition">
+                        <i data-lucide="file-text" class="w-3.5 h-3.5"></i> Export CSV
+                    </button>
+                </div>
+
+                <!-- JSON Export & Import -->
+                <div class="p-3.5 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-700 space-y-2.5">
+                    <div class="text-xs font-bold text-slate-800 dark:text-slate-200">JSON Backup & Restore</div>
+                    <div class="flex gap-2">
+                        <button onclick="exportJSON()" class="flex-1 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-center gap-1 transition">
+                            <i data-lucide="download" class="w-3.5 h-3.5"></i> Export JSON
+                        </button>
+                        <label class="flex-1 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-center gap-1 cursor-pointer transition">
+                            <i data-lucide="upload" class="w-3.5 h-3.5"></i> Import JSON
+                            <input type="file" id="importFile" accept=".json" onchange="importJSON(event)" class="hidden">
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Sync Status / Token -->
+                <div class="p-3.5 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-700 space-y-2.5">
+                    <div class="flex justify-between items-center gap-2">
+                        <div>
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-200">Google Sheet Sync</div>
+                            <div id="syncStatusText" class="text-[11px] text-slate-500 dark:text-slate-400">Not synced yet</div>
+                        </div>
+                        <button onclick="syncNow(true)" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 shadow-xs transition">
+                            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Sync Now
+                        </button>
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="password" id="tokenInput" placeholder="Sync token" autocomplete="off" class="flex-1 min-w-0 px-2.5 py-1.5 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-lg text-xs outline-none focus:ring-2 focus:ring-indigo-500">
+                        <button onclick="saveToken()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition">Save</button>
+                    </div>
+                </div>
+
+
+                <!-- Clear Data Button -->
+                <div class="pt-2">
+                    <button onclick="clearAllData()" class="w-full text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 border border-rose-200 dark:border-rose-900 py-2 rounded-xl text-xs font-semibold transition flex items-center justify-center gap-1">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i> Clear All Timesheet Entries
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Overlay -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2.5 text-xs font-semibold transition-all transform translate-y-20 opacity-0 z-50">
+        <i data-lucide="check-circle" id="toastIcon" class="w-4 h-4 text-emerald-400 dark:text-emerald-600"></i>
+        <span id="toastMsg">Action completed successfully</span>
+    </div>
+
+    <script>
+        /* APP CONSTANTS & STATE */
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyWQWevAupdbHWd0RBecY0xgHTfAPuBxfgbU4CBCC4poJoDFv3xaK-ztBNI8lfLkFDafw/exec';
+        const THEME_KEY = 'timetrack_pro_theme_v2';
+
+        let entries = [];
+        let categories = [
+            "Campus Work (CW)",
+            "Gospelizing (GP)",
+            "Lord's Day (LD)",
+            "Prayer Mtg (PM)",
+            "Coordination Mtg (CM)",
+            "Fellowship / Mutual Shepherding (MS)",
+            "Small Group Mtg (VG)",
+            "Truth Pursuit (TP)",
+            "Personal Time with the Lord (PTL)"
+        ];
+        let currentTab = 'log';
+        let activeWeekOffset = 0; 
+        let summaryWeekOffset = 0; 
+        let entryMode = 'times'; // Default to start/end times mode
+
+        let weeklyBarChartInstance = null;
+        let monthlyPieChartInstance = null;
+
+        // Visual design color mapping for category tags
+        const tagColors = {
+            "Campus Work (CW)": { bg: 'bg-violet-100 dark:bg-violet-950/50', text: 'text-violet-800 dark:text-violet-300', border: 'border-violet-200 dark:border-violet-800', hex: '#8b5cf6' },
+            "Gospelizing (GP)": { bg: 'bg-emerald-100 dark:bg-emerald-950/50', text: 'text-emerald-800 dark:text-emerald-300', border: 'border-emerald-200 dark:border-emerald-800', hex: '#10b981' },
+            "Lord's Day (LD)": { bg: 'bg-amber-100 dark:bg-amber-950/50', text: 'text-amber-800 dark:text-amber-300', border: 'border-amber-200 dark:border-amber-800', hex: '#f59e0b' },
+            "Prayer Mtg (PM)": { bg: 'bg-blue-100 dark:bg-blue-950/50', text: 'text-blue-800 dark:text-blue-300', border: 'border-blue-200 dark:border-blue-800', hex: '#3b82f6' },
+            "Coordination Mtg (CM)": { bg: 'bg-indigo-100 dark:bg-indigo-950/50', text: 'text-indigo-800 dark:text-indigo-300', border: 'border-indigo-200 dark:border-indigo-800', hex: '#6366f1' },
+            "Fellowship / Mutual Shepherding (MS)": { bg: 'bg-purple-100 dark:bg-purple-950/50', text: 'text-purple-800 dark:text-purple-300', border: 'border-purple-200 dark:border-purple-800', hex: '#a855f7' },
+            "Small Group Mtg (VG)": { bg: 'bg-rose-100 dark:bg-rose-950/50', text: 'text-rose-800 dark:text-rose-300', border: 'border-rose-200 dark:border-rose-800', hex: '#f43f5e' },
+            "Truth Pursuit (TP)": { bg: 'bg-teal-100 dark:bg-teal-950/50', text: 'text-teal-800 dark:text-teal-300', border: 'border-teal-200 dark:border-teal-800', hex: '#14b8a6' },
+            "Personal Time with the Lord (PTL)": { bg: 'bg-sky-100 dark:bg-sky-950/50', text: 'text-sky-800 dark:text-sky-300', border: 'border-sky-200 dark:border-sky-800', hex: '#0ea5e9' }
+        };
+
+        const defaultColor = { bg: 'bg-slate-100 dark:bg-slate-800', text: 'text-slate-800 dark:text-slate-200', border: 'border-slate-200 dark:border-slate-700', hex: '#64748b' };
+
+        /* INITIALIZATION */
+        window.addEventListener('DOMContentLoaded', async () => {
+            initTheme();
+            setupDefaults();
+            loadLocalState();
+            renderCategoryDropdowns();
+            renderLogs();
+            lucide.createIcons();
+            startAutoSync();
+
+            // Handle custom tag selection trigger
+            document.getElementById('entryTag').addEventListener('change', (e) => {
+                const container = document.getElementById('customTagContainer');
+                if (e.target.value === 'NEW_TAG') {
+                    container.classList.remove('hidden');
+                    document.getElementById('customTagInput').setAttribute('required', 'true');
+                } else {
+                    container.classList.add('hidden');
+                    document.getElementById('customTagInput').removeAttribute('required');
+                }
+            });
+        });
+
+        /* THEME MANAGEMENT */
+        function initTheme() {
+            const savedTheme = localStorage.getItem(THEME_KEY) || 'light';
+            if (savedTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+                document.getElementById('sunIcon').classList.remove('hidden');
+                document.getElementById('moonIcon').classList.add('hidden');
+            }
+        }
+
+        function toggleDarkMode() {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem(THEME_KEY, isDark ? 'dark' : 'light');
+            document.getElementById('sunIcon').classList.toggle('hidden', !isDark);
+            document.getElementById('moonIcon').classList.toggle('hidden', isDark);
+
+            if (currentTab === 'weekly') renderWeeklySummary();
+            if (currentTab === 'monthly') renderMonthlySummary();
+        }
+
+        /* LOCAL CACHE + GOOGLE SHEETS SYNC */
+        const LS = { store: 'ts_store_v1', cats: 'ts_cats_v1', queue: 'ts_queue_v1', token: 'ts_token_v1', last: 'ts_last_sync_v1' };
+        let store = {};          // id -> entry (includes deleted "tombstones")
+        let opQueue = [];        // changes not yet confirmed by the sheet
+        let syncing = false, syncError = '', lastSyncAt = null, lastCloudCategories = [];
+
+        function lsGet(key, fallback) { try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch (e) { return fallback; } }
+        function lsSet(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) { console.warn('Local save failed', e); } }
+        function getToken() { try { return localStorage.getItem(LS.token) || ''; } catch (e) { return ''; } }
+
+        function loadLocalState() {
+            store = lsGet(LS.store, {});
+            opQueue = lsGet(LS.queue, []);
+            categories = Array.from(new Set([...categories, ...lsGet(LS.cats, [])]));
+            lastSyncAt = lsGet(LS.last, null);
+            rebuildEntries();
+        }
+        function persistLocal() { lsSet(LS.store, store); lsSet(LS.queue, opQueue); lsSet(LS.cats, categories); }
+        function rebuildEntries() { entries = Object.values(store).filter(e => !e.deleted); }
+        function queueOp(op) { opQueue.push(op); persistLocal(); refreshSyncUI(); }
+
+        function localUpsert(entry) {
+            const e = { ...entry, updatedAt: new Date().toISOString() };
+            delete e.deleted;
+            store[e.id] = e;
+            queueOp({ type: 'upsert', entry: { ...e } });
+            rebuildEntries();
+        }
+        function localDelete(id) {
+            if (!store[id]) return;
+            const t = new Date().toISOString();
+            store[id] = { ...store[id], deleted: true, updatedAt: t };
+            queueOp({ type: 'delete', id, updatedAt: t });
+            rebuildEntries();
+        }
+
+        // Newest updatedAt wins; nothing is ever overwritten wholesale.
+        function mergeFromCloud(data) {
+            let changed = false;
+            (data.entries || []).forEach(c => {
+                if (!c || !c.id) return;
+                const local = store[c.id];
+                if (!local || String(c.updatedAt || '') > String(local.updatedAt || '')) {
+                    store[c.id] = { ...c, totalMinutes: Number(c.totalMinutes) || 0, deleted: !!c.deleted };
+                    changed = true;
+                }
+            });
+            if (Array.isArray(data.categories)) {
+                lastCloudCategories = data.categories;
+                const merged = Array.from(new Set([...categories, ...data.categories]));
+                if (merged.length !== categories.length) { categories = merged; changed = true; }
+            }
+            return changed;
+        }
+
+        async function syncNow(manual = false) {
+            if (syncing) return;
+            if (!getToken()) {
+                syncError = '';
+                refreshSyncUI();
+                if (manual) showToast('Enter your sync token in the Data menu first.', true);
+                return;
+            }
+            if (!navigator.onLine) {
+                syncError = 'offline';
+                refreshSyncUI();
+                if (manual) showToast('You are offline. Changes are saved on this device.', true);
+                return;
+            }
+            syncing = true;
+            refreshSyncUI();
+            const sending = opQueue.slice();
+            try {
+                const res = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ token: getToken(), ops: sending })
+                });
+                const data = await res.json();
+                if (data.status !== 'success') throw new Error(data.message || 'Server error');
+
+                opQueue = opQueue.slice(sending.length);   // keep anything queued while we were syncing
+                const changed = mergeFromCloud(data);
+                lastSyncAt = new Date().toISOString();
+                lsSet(LS.last, lastSyncAt);
+                syncError = '';
+                rebuildEntries();
+                persistLocal();
+                if (changed) {
+                    renderCategoryDropdowns();
+                    renderLogs();
+                    if (currentTab === 'weekly') renderWeeklySummary();
+                    if (currentTab === 'monthly') renderMonthlySummary();
+                }
+                if (manual) showToast('Synced!');
+            } catch (e) {
+                syncError = (e instanceof TypeError) ? 'network error' : (e.message || 'failed');
+                if (manual) showToast('Sync failed: ' + syncError, true);
+            } finally {
+                syncing = false;
+                refreshSyncUI();
+                if (!syncError && opQueue.length) setTimeout(() => syncNow(), 300);
+            }
+        }
+
+        function startAutoSync() {
+            refreshSyncUI();
+            if (!getToken()) document.getElementById('dataModal').classList.remove('hidden');
+            syncNow();
+            setInterval(() => { if (!document.hidden) syncNow(); }, 15000);
+            document.addEventListener('visibilitychange', () => { if (!document.hidden) syncNow(); });
+            window.addEventListener('online', () => syncNow());
+        }
+
+        function saveToken() {
+            const input = document.getElementById('tokenInput');
+            const v = input.value.trim();
+            if (!v) { showToast('Enter a token first.', true); return; }
+            try { localStorage.setItem(LS.token, v); } catch (e) {}
+            input.value = '';
+            syncError = '';
+            showToast('Token saved.');
+            syncNow(true);
+        }
+
+        async function loadCloudData() { return syncNow(true); }
+
+        function refreshSyncUI() {
+            const dot = document.getElementById('syncDot');
+            if (!dot) return;
+            const pending = opQueue.length;
+            let color = 'bg-emerald-500', msg;
+            if (syncing) { color = 'bg-amber-500'; msg = 'Syncing...'; }
+            else if (!getToken()) { color = 'bg-rose-500'; msg = 'Enter your sync token to turn on syncing'; }
+            else if (syncError) { color = 'bg-rose-500'; msg = (syncError === 'offline' ? 'Offline: changes saved on this device' : 'Sync problem: ' + syncError) + (pending ? ` (${pending} waiting)` : ''); }
+            else if (pending) { color = 'bg-amber-500'; msg = pending + ' change(s) waiting to sync'; }
+            else { msg = lastSyncAt ? 'Last synced ' + new Date(lastSyncAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : 'Not synced yet'; }
+            dot.className = 'absolute top-1.5 right-1.5 w-2 h-2 rounded-full ' + color;
+            document.getElementById('syncIconWrap').classList.toggle('animate-spin', syncing);
+            const txt = document.getElementById('syncStatusText');
+            if (txt) txt.textContent = msg;
+            const tok = document.getElementById('tokenInput');
+            if (tok) tok.placeholder = getToken() ? 'Token saved on this device' : 'Sync token';
+        }
+
+        function setupDefaults() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('entryDate').value = today;
+
+            const currentMonth = new Date().toISOString().slice(0, 7);
+            document.getElementById('monthlyPicker').value = currentMonth;
+        }
+
+        /* FORM MODE SWITCHER (Duration vs Start/End) */
+        function setEntryMode(mode) {
+            entryMode = mode;
+            const durBtn = document.getElementById('modeDuration');
+            const timeBtn = document.getElementById('modeTimes');
+            const durCont = document.getElementById('durationInputContainer');
+            const timeCont = document.getElementById('timesInputContainer');
+
+            if (mode === 'duration') {
+                durBtn.className = "px-2.5 py-1 rounded-md font-semibold bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-xs";
+                timeBtn.className = "px-2.5 py-1 rounded-md font-semibold text-slate-500 dark:text-slate-400";
+                durCont.classList.remove('hidden');
+                timeCont.classList.add('hidden');
+            } else {
+                timeBtn.className = "px-2.5 py-1 rounded-md font-semibold bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-xs";
+                durBtn.className = "px-2.5 py-1 rounded-md font-semibold text-slate-500 dark:text-slate-400";
+                timeCont.classList.remove('hidden');
+                durCont.classList.add('hidden');
+            }
+        }
+
+        function calculateTimeDifference() {
+            const start = document.getElementById('startTime').value;
+            const end = document.getElementById('endTime').value;
+            if (start && end) {
+                const [sH, sM] = start.split(':').map(Number);
+                const [eH, eM] = end.split(':').map(Number);
+                
+                let startMins = (sH * 60) + sM;
+                let endMins = (eH * 60) + eM;
+
+                if (endMins < startMins) endMins += 24 * 60; // Overnight shift calculation support
+
+                const diff = endMins - startMins;
+                document.getElementById('entryHours').value = Math.floor(diff / 60);
+                document.getElementById('entryMins').value = diff % 60;
+            }
+        }
+
+        /* TAB NAVIGATION */
+        function switchTab(tab) {
+            currentTab = tab;
+
+            document.getElementById('tabLog').classList.toggle('hidden', tab !== 'log');
+            document.getElementById('tabWeekly').classList.toggle('hidden', tab !== 'weekly');
+            document.getElementById('tabMonthly').classList.toggle('hidden', tab !== 'monthly');
+
+            const tabs = ['log', 'weekly', 'monthly'];
+            tabs.forEach(t => {
+                const btn = document.getElementById('nav' + t.charAt(0).toUpperCase() + t.slice(1));
+                if (t === tab) {
+                    btn.className = "px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-all flex items-center gap-1.5 bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-sm";
+                } else {
+                    btn.className = "px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-all flex items-center gap-1.5 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white";
+                }
+            });
+
+            if (tab === 'weekly') renderWeeklySummary();
+            if (tab === 'monthly') renderMonthlySummary();
+        }
+
+        /* CATEGORY DROPDOWN RENDER */
+        function renderCategoryDropdowns() {
+            const select = document.getElementById('entryTag');
+            const filterSelect = document.getElementById('filterTag');
+
+            const currVal = select.value;
+            const currFilter = filterSelect.value;
+
+            select.innerHTML = '';
+            categories.forEach(cat => {
+                const opt = document.createElement('option');
+                opt.value = cat;
+                opt.textContent = cat;
+                select.appendChild(opt);
+            });
+
+            const newOpt = document.createElement('option');
+            newOpt.value = 'NEW_TAG';
+            newOpt.textContent = '+ Add Custom Tag...';
+            select.appendChild(newOpt);
+
+            filterSelect.innerHTML = '<option value="ALL">All Categories</option>';
+            categories.forEach(cat => {
+                const opt = document.createElement('option');
+                opt.value = cat;
+                opt.textContent = cat;
+                filterSelect.appendChild(opt);
+            });
+
+            if (categories.includes(currVal) || currVal === 'NEW_TAG') select.value = currVal;
+            filterSelect.value = currFilter || 'ALL';
+        }
+
+        /* FORM SAVE & EDIT HANDLERS */
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+
+            const id = document.getElementById('entryId').value;
+            const date = document.getElementById('entryDate').value;
+            const subject = document.getElementById('entrySubject').value.trim();
+            let hours = 0;
+            let mins = 0;
+            let tag = document.getElementById('entryTag').value;
+            const description = document.getElementById('entryDescription').value.trim();
+
+            if (entryMode === 'times') {
+                calculateTimeDifference();
+            }
+            
+            hours = parseInt(document.getElementById('entryHours').value) || 0;
+            mins = parseInt(document.getElementById('entryMins').value) || 0;
+
+            if (hours === 0 && mins === 0) {
+                showToast("Please enter valid start/end times or a duration.", true);
+                return;
+            }
+
+            if (tag === 'NEW_TAG') {
+                const customVal = document.getElementById('customTagInput').value.trim();
+                if (customVal) {
+                    tag = customVal;
+                    if (!categories.includes(tag)) {
+                        categories.push(tag);
+                        renderCategoryDropdowns();
+                    }
+                } else {
+                    showToast("Please enter a custom tag name.", true);
+                    return;
+                }
+            }
+
+            const totalMinutes = (hours * 60) + mins;
+
+            if (id && store[id]) {
+                localUpsert({ ...store[id], date, subject, totalMinutes, tag, description });
+                showToast("Entry updated successfully!");
+            } else {
+                localUpsert({
+                    id: 'entry_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+                    date, subject, totalMinutes, tag, description,
+                    createdAt: new Date().toISOString()
+                });
+                showToast("Activity logged successfully!");
+            }
+
+            if (!lastCloudCategories.includes(tag)) queueOp({ type: 'categories', categories });
+            persistLocal();
+            syncNow();
+            resetForm();
+            renderLogs();
+        }
+
+        function resetForm() {
+            document.getElementById('entryId').value = '';
+            document.getElementById('timeForm').reset();
+            document.getElementById('formTitle').textContent = 'Log Activity';
+            document.getElementById('saveBtn').innerHTML = `<i data-lucide="save" class="w-4 h-4"></i> Save Entry`;
+            document.getElementById('cancelBtn').classList.add('hidden');
+            document.getElementById('customTagContainer').classList.add('hidden');
+            setEntryMode('times');
+            setupDefaults();
+            lucide.createIcons();
+        }
+
+        function editEntry(id) {
+            const entry = entries.find(item => item.id === id);
+            if (!entry) return;
+
+            document.getElementById('entryId').value = entry.id;
+            document.getElementById('entryDate').value = entry.date;
+            document.getElementById('entrySubject').value = entry.subject;
+            document.getElementById('entryHours').value = Math.floor(entry.totalMinutes / 60);
+            document.getElementById('entryMins').value = entry.totalMinutes % 60;
+
+            if (!categories.includes(entry.tag)) {
+                categories.push(entry.tag);
+                renderCategoryDropdowns();
+            }
+            document.getElementById('entryTag').value = entry.tag;
+            document.getElementById('entryDescription').value = entry.description || '';
+
+            document.getElementById('formTitle').textContent = 'Edit Log Entry';
+            document.getElementById('saveBtn').innerHTML = `<i data-lucide="check" class="w-4 h-4"></i> Update Entry`;
+            document.getElementById('cancelBtn').classList.remove('hidden');
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            lucide.createIcons();
+        }
+
+        function deleteEntry(id) {
+            if (confirm("Are you sure you want to delete this log entry?")) {
+                localDelete(id);
+                persistLocal();
+                renderLogs();
+                showToast("Entry deleted.");
+                syncNow();
+            }
+        }
+
+        /* DAILY LOG LIST RENDER */
+        function renderLogs() {
+            const container = document.getElementById('logsContainer');
+            const searchKeyword = document.getElementById('searchInput').value.toLowerCase();
+            const tagFilter = document.getElementById('filterTag').value;
+
+            const weekBounds = getWeekBounds(new Date(), activeWeekOffset);
+            document.getElementById('currentWeekDisplay').textContent = `${formatShortDate(weekBounds.start)} - ${formatShortDate(weekBounds.end)}`;
+
+            const filtered = entries.filter(item => {
+                const itemDate = new Date(item.date + 'T00:00:00');
+                const inWeek = itemDate >= weekBounds.start && itemDate <= weekBounds.end;
+
+                const matchesSearch = item.subject.toLowerCase().includes(searchKeyword) ||
+                                      (item.description && item.description.toLowerCase().includes(searchKeyword));
+
+                const matchesTag = tagFilter === 'ALL' || item.tag === tagFilter;
+
+                return inWeek && matchesSearch && matchesTag;
+            });
+
+            // Group by date descending
+            const grouped = {};
+            filtered.forEach(entry => {
+                if (!grouped[entry.date]) grouped[entry.date] = [];
+                grouped[entry.date].push(entry);
+            });
+
+            const sortedDates = Object.keys(grouped).sort((a, b) => new Date(b) - new Date(a));
+
+            if (sortedDates.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl p-8 text-center border border-slate-200 dark:border-slate-700">
+                        <div class="w-12 h-12 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-500 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i data-lucide="calendar-x" class="w-6 h-6"></i>
+                        </div>
+                        <h3 class="font-bold text-slate-800 dark:text-white text-sm">No Entries Found</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">No activities recorded for this week matching criteria.</p>
+                    </div>
+                `;
+                lucide.createIcons();
+                return;
+            }
+
+            let html = '';
+            sortedDates.forEach(dateStr => {
+                const dayEntries = grouped[dateStr];
+                const dayTotalMins = dayEntries.reduce((sum, item) => sum + item.totalMinutes, 0);
+
+                html += `
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden transition-colors">
+                        <div class="bg-slate-50/80 dark:bg-slate-900/60 px-4 py-2.5 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
+                            <span class="font-bold text-xs text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                                <i data-lucide="calendar" class="w-4 h-4 text-indigo-600 dark:text-indigo-400"></i>
+                                ${formatLongDate(dateStr)}
+                            </span>
+                            <span class="text-xs font-extrabold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 px-2.5 py-0.5 rounded-md border border-indigo-100 dark:border-indigo-900">
+                                ${formatHoursMins(dayTotalMins)}
+                            </span>
+                        </div>
+                        <div class="divide-y divide-slate-100 dark:divide-slate-700">
+                `;
+
+                dayEntries.forEach(entry => {
+                    const tagStyle = tagColors[entry.tag] || defaultColor;
+                    html += `
+                        <div class="p-4 hover:bg-slate-50/50 dark:hover:bg-slate-700/30 transition flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                            <div class="space-y-1 flex-1">
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <span class="font-bold text-sm text-slate-900 dark:text-white">${escapeHtml(entry.subject)}</span>
+                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full border ${tagStyle.bg} ${tagStyle.text} ${tagStyle.border}">
+                                        ${escapeHtml(entry.tag)}
+                                    </span>
+                                </div>
+                                ${entry.description ? `<p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2">${escapeHtml(entry.description)}</p>` : ''}
+                            </div>
+
+                            <div class="flex items-center justify-between sm:justify-end gap-3 border-t sm:border-t-0 pt-2 sm:pt-0 border-slate-100 dark:border-slate-700">
+                                <span class="text-xs font-extrabold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-900 px-2.5 py-1 rounded-lg">
+                                    ${formatHoursMins(entry.totalMinutes)}
+                                </span>
+                                <div class="flex items-center space-x-1">
+                                    <button onclick="editEntry('${entry.id}')" class="p-1.5 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-lg transition" title="Edit">
+                                        <i data-lucide="edit-2" class="w-4 h-4"></i>
+                                    </button>
+                                    <button onclick="deleteEntry('${entry.id}')" class="p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 rounded-lg transition" title="Delete">
+                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                html += `</div></div>`;
+            });
+
+            container.innerHTML = html;
+            lucide.createIcons();
+        }
+
+        /* NAVIGATION CONTROL HELPERS */
+        function navigateWeek(dir) {
+            activeWeekOffset += dir;
+            renderLogs();
+        }
+
+        function jumpToToday() {
+            activeWeekOffset = 0;
+            renderLogs();
+        }
+
+        function navigateSummaryWeek(dir) {
+            summaryWeekOffset += dir;
+            renderWeeklySummary();
+        }
+
+        function jumpSummaryToCurrentWeek() {
+            summaryWeekOffset = 0;
+            renderWeeklySummary();
+        }
+
+        /* WEEKLY SUMMARY DASHBOARD */
+        function renderWeeklySummary() {
+            const bounds = getWeekBounds(new Date(), summaryWeekOffset);
+            document.getElementById('weeklyRangeText').textContent = `${formatLongDateObj(bounds.start)} - ${formatLongDateObj(bounds.end)}`;
+
+            const weeklyEntries = entries.filter(e => {
+                const d = new Date(e.date + 'T00:00:00');
+                return d >= bounds.start && d <= bounds.end;
+            });
+
+            const totalMins = weeklyEntries.reduce((sum, e) => sum + e.totalMinutes, 0);
+            const totalHoursNum = totalMins / 60;
+            
+            document.getElementById('weeklyTotalHours').textContent = totalHoursNum.toFixed(1) + ' hrs';
+            document.getElementById('weeklyTotalCount').textContent = weeklyEntries.length;
+
+            // Daily average (5 workdays base)
+            const activeDaysCount = new Set(weeklyEntries.map(e => e.date)).size;
+            const avgHours = activeDaysCount > 0 ? (totalHoursNum / activeDaysCount).toFixed(1) : '0.0';
+            document.getElementById('weeklyDailyAvg').textContent = `${avgHours} hrs`;
+
+            // Weekly Target Goal (40 Hours)
+            const goalPct = Math.min(Math.round((totalHoursNum / 40) * 100), 100);
+            document.getElementById('weeklyGoalPct').textContent = `${goalPct}%`;
+
+            // Category breakdown
+            const categoryTotals = {};
+            weeklyEntries.forEach(e => {
+                categoryTotals[e.tag] = (categoryTotals[e.tag] || 0) + e.totalMinutes;
+            });
+
+            const categoryProgressContainer = document.getElementById('weeklyCategoryProgress');
+            categoryProgressContainer.innerHTML = '';
+
+            if (Object.keys(categoryTotals).length === 0) {
+                categoryProgressContainer.innerHTML = `<p class="text-xs text-slate-400 italic">No entries for this week.</p>`;
+            } else {
+                Object.entries(categoryTotals)
+                    .sort((a, b) => b[1] - a[1])
+                    .forEach(([cat, mins]) => {
+                        const pct = totalMins > 0 ? Math.round((mins / totalMins) * 100) : 0;
+                        const style = tagColors[cat] || defaultColor;
+
+                        const div = document.createElement('div');
+                        div.className = "space-y-1";
+                        div.innerHTML = `
+                            <div class="flex justify-between text-xs">
+                                <span class="font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                                    <span class="w-2.5 h-2.5 rounded-full inline-block" style="background-color: ${style.hex}"></span>
+                                    ${escapeHtml(cat)}
+                                </span>
+                                <span class="text-slate-500 dark:text-slate-400 font-bold">${formatHoursMins(mins)} (${pct}%)</span>
+                            </div>
+                            <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-2 overflow-hidden">
+                                <div class="h-2 rounded-full transition-all duration-500" style="width: ${pct}%; background-color: ${style.hex}"></div>
+                            </div>
+                        `;
+                        categoryProgressContainer.appendChild(div);
+                    });
+            }
+
+            // Daily Chart Render
+            const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            const dailyMins = [0, 0, 0, 0, 0, 0, 0];
+
+            weeklyEntries.forEach(e => {
+                const d = new Date(e.date + 'T00:00:00');
+                let dayIdx = d.getDay() - 1;
+                if (dayIdx === -1) dayIdx = 6;
+                if (dayIdx >= 0 && dayIdx < 7) {
+                    dailyMins[dayIdx] += e.totalMinutes;
+                }
+            });
+
+            const dailyHours = dailyMins.map(m => +(m / 60).toFixed(1));
+            const isDark = document.documentElement.classList.contains('dark');
+
+            const ctx = document.getElementById('weeklyBarChart').getContext('2d');
+            if (weeklyBarChartInstance) weeklyBarChartInstance.destroy();
+
+            weeklyBarChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: daysOfWeek,
+                    datasets: [{
+                        label: 'Hours Logged',
+                        data: dailyHours,
+                        backgroundColor: isDark ? '#818cf8' : '#6366f1',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: isDark ? '#334155' : '#f1f5f9' },
+                            ticks: { color: isDark ? '#94a3b8' : '#64748b' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: isDark ? '#94a3b8' : '#64748b' }
+                        }
+                    }
+                }
+            });
+        }
+
+        /* MONTHLY SUMMARY DASHBOARD */
+        function renderMonthlySummary() {
+            const monthVal = document.getElementById('monthlyPicker').value;
+            if (!monthVal) return;
+
+            const [year, month] = monthVal.split('-').map(Number);
+
+            const monthlyEntries = entries.filter(e => {
+                const [ey, em] = e.date.split('-').map(Number);
+                return ey === year && em === month;
+            });
+
+            const totalMins = monthlyEntries.reduce((sum, e) => sum + e.totalMinutes, 0);
+            const totalHours = (totalMins / 60).toFixed(1);
+
+            const activeDays = new Set(monthlyEntries.map(e => e.date)).size;
+            const dailyAvgHours = activeDays > 0 ? (totalMins / 60 / activeDays).toFixed(1) : '0.0';
+
+            document.getElementById('monthlyTotalHours').textContent = `${totalHours} hrs`;
+            document.getElementById('monthlyTotalEntries').textContent = monthlyEntries.length;
+            document.getElementById('monthlyActiveDays').textContent = `${activeDays} days`;
+            document.getElementById('monthlyDailyAvg').textContent = `${dailyAvgHours} hrs/day`;
+
+            // Category Table & Chart Data
+            const catMap = {};
+            monthlyEntries.forEach(e => {
+                if (!catMap[e.tag]) catMap[e.tag] = { mins: 0, count: 0 };
+                catMap[e.tag].mins += e.totalMinutes;
+                catMap[e.tag].count += 1;
+            });
+
+            const tableBody = document.getElementById('monthlyTableBody');
+            tableBody.innerHTML = '';
+
+            const sortedCats = Object.entries(catMap).sort((a, b) => b[1].mins - a[1].mins);
+
+            if (sortedCats.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="4" class="py-4 text-center text-slate-400 italic">No entries for this month.</td></tr>`;
+            } else {
+                sortedCats.forEach(([cat, data]) => {
+                    const pct = totalMins > 0 ? Math.round((data.mins / totalMins) * 100) : 0;
+                    const style = tagColors[cat] || defaultColor;
+
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-slate-50 dark:hover:bg-slate-700/50 transition";
+                    tr.innerHTML = `
+                        <td class="py-3 font-semibold flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full inline-block" style="background-color: ${style.hex}"></span>
+                            ${escapeHtml(cat)}
+                        </td>
+                        <td class="py-3 text-slate-600 dark:text-slate-400">${data.count}</td>
+                        <td class="py-3 font-bold text-slate-800 dark:text-slate-200">${formatHoursMins(data.mins)}</td>
+                        <td class="py-3 font-semibold text-indigo-600 dark:text-indigo-400">${pct}%</td>
+                    `;
+                    tableBody.appendChild(tr);
+                });
+            }
+
+            // Pie Chart Render
+            const ctxPie = document.getElementById('monthlyPieChart').getContext('2d');
+            if (monthlyPieChartInstance) monthlyPieChartInstance.destroy();
+
+            if (sortedCats.length === 0) return;
+
+            const labels = sortedCats.map(([cat]) => cat);
+            const dataValues = sortedCats.map(([, data]) => +(data.mins / 60).toFixed(1));
+            const bgColors = sortedCats.map(([cat]) => (tagColors[cat] || defaultColor).hex);
+            const isDark = document.documentElement.classList.contains('dark');
+
+            monthlyPieChartInstance = new Chart(ctxPie, {
+                type: 'doughnut',
+                data: {
+                    labels,
+                    datasets: [{
+                        data: dataValues,
+                        backgroundColor: bgColors,
+                        borderWidth: 2,
+                        borderColor: isDark ? '#1e293b' : '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { color: isDark ? '#cbd5e1' : '#475569', boxWidth: 10, font: { size: 11 } } }
+                    }
+                }
+            });
+        }
+
+        /* DATA IMPORT / EXPORT / SAMPLE DATA */
+        function toggleDataModal() {
+            document.getElementById('dataModal').classList.toggle('hidden');
+        }
+
+        function exportCSV() {
+            if (entries.length === 0) {
+                showToast("No records available to export.", true);
+                return;
+            }
+
+            let csv = 'ID,Date,Subject,Hours,Minutes,TotalHours,Category,Description\n';
+            entries.forEach(e => {
+                const h = Math.floor(e.totalMinutes / 60);
+                const m = e.totalMinutes % 60;
+                const totalH = (e.totalMinutes / 60).toFixed(2);
+                const desc = `"${(e.description || '').replace(/"/g, '""')}"`;
+                const subj = `"${(e.subject || '').replace(/"/g, '""')}"`;
+                csv += `${e.id},${e.date},${subj},${h},${m},${totalH},"${e.tag}",${desc}\n`;
+            });
+
+            downloadBlob(csv, `Timesheet_Export_${new Date().toISOString().split('T')[0]}.csv`, 'text/csv');
+            showToast("CSV file exported!");
+        }
+
+        function exportJSON() {
+            const data = { entries, categories, exportedAt: new Date().toISOString() };
+            downloadBlob(JSON.stringify(data, null, 2), `Timesheet_Backup_${new Date().toISOString().split('T')[0]}.json`, 'application/json');
+            showToast("JSON backup saved!");
+        }
+
+        function importJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    if (parsed && Array.isArray(parsed.entries)) {
+                        let count = 0;
+                        parsed.entries.forEach(item => {
+                            if (!item || !item.date || !item.subject) return;
+                            localUpsert({
+                                id: item.id || ('entry_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6)),
+                                date: item.date, subject: item.subject,
+                                totalMinutes: Number(item.totalMinutes) || 0,
+                                tag: item.tag || categories[0], description: item.description || '',
+                                createdAt: item.createdAt || new Date().toISOString()
+                            });
+                            count++;
+                        });
+                        if (Array.isArray(parsed.categories)) {
+                            categories = Array.from(new Set([...categories, ...parsed.categories]));
+                            queueOp({ type: 'categories', categories });
+                        }
+                        persistLocal();
+                        renderCategoryDropdowns();
+                        renderLogs();
+                        toggleDataModal();
+                        showToast(`Imported ${count} entries (merged).`);
+                        syncNow();
+                    } else {
+                        showToast("Invalid JSON data structure.", true);
+                    }
+                } catch (err) {
+                    showToast("Failed to parse JSON file.", true);
+                }
+                event.target.value = '';
+            };
+            reader.readAsText(file);
+        }
+
+        function clearAllData() {
+            if (confirm("Delete ALL timesheet entries on every synced device?")) {
+                entries.slice().forEach(e => localDelete(e.id));
+                persistLocal();
+                renderLogs();
+                toggleDataModal();
+                showToast("All entries cleared.");
+                syncNow();
+            }
+        }
+
+        function downloadBlob(content, filename, contentType) {
+            const blob = new Blob([content], { type: contentType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        /* FORMATTING UTILITIES */
+        function getWeekBounds(referenceDate, offsetWeeks = 0) {
+            const target = new Date(referenceDate);
+            target.setDate(target.getDate() + (offsetWeeks * 7));
+
+            const day = target.getDay();
+            const diffToMon = target.getDate() - day + (day === 0 ? -6 : 1);
+
+            const staticStart = new Date(target.setDate(diffToMon));
+            staticStart.setHours(0, 0, 0, 0);
+
+            const start = new Date(staticStart);
+            const end = new Date(start);
+            end.setDate(end.getDate() + 6);
+            end.setHours(23, 59, 59, 999);
+
+            return { start, end };
+        }
+
+        function formatHoursMins(totalMins) {
+            const h = Math.floor(totalMins / 60);
+            const m = totalMins % 60;
+            if (h === 0) return `${m}m`;
+            if (m === 0) return `${h}h`;
+            return `${h}h ${m}m`;
+        }
+
+        function formatShortDate(d) {
+            return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }
+
+        function formatLongDateObj(d) {
+            return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        function formatLongDate(dateStr) {
+            const d = new Date(dateStr + 'T00:00:00');
+            return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+
+            toastMsg.textContent = message;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
