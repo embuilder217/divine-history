@@ -316,10 +316,23 @@
                     <h3 class="text-sm font-bold text-slate-800 dark:text-white mb-2 flex items-center gap-2">
                         <i data-lucide="pie-chart" class="w-4 h-4 text-emerald-600 dark:text-emerald-400"></i> Category Breakdown
                     </h3>
+                    <div id="weeklyPieWrap" class="h-48 relative hidden"><canvas id="weeklyPieChart"></canvas></div>
                     <div id="weeklyCategoryProgress" class="space-y-3 overflow-y-auto max-h-64 pr-1">
                         <!-- Dynamic Progress Bars -->
                     </div>
                 </div>
+            </div>
+
+            <!-- Weekly Planner -->
+            <div class="bg-white dark:bg-slate-800 p-5 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                        <i data-lucide="calendar-clock" class="w-4 h-4 text-emerald-600 dark:text-emerald-400"></i> Weekly Planner
+                    </h3>
+                    <span class="text-[11px] text-slate-400">6 AM &ndash; 12 AM &middot; tap a block to edit</span>
+                </div>
+                <div class="overflow-x-auto"><div id="weeklyPlanner" class="min-w-[620px]"></div></div>
+                <p id="plannerNote" class="text-[11px] text-slate-500 dark:text-slate-400 mt-2"></p>
             </div>
         </section>
 
@@ -505,6 +518,15 @@
                     </div>
                 </div>
 
+
+                <!-- Week start -->
+                <div class="p-3.5 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-between gap-2">
+                    <div class="text-xs font-bold text-slate-800 dark:text-slate-200">Week starts on</div>
+                    <select id="weekStartSelect" onchange="setWeekStart(this.value)" class="px-2.5 py-1.5 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-lg text-xs outline-none focus:ring-2 focus:ring-emerald-500">
+                        <option value="0">Sunday</option>
+                        <option value="1">Monday</option>
+                    </select>
+                </div>
 
                 <!-- Manage tags -->
                 <details class="p-3.5 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-700">
@@ -697,6 +719,7 @@ function out_(obj) {
         let weeklyBarChartInstance = null;
         let monthlyPieChartInstance = null;
         let annualChartInstance = null;
+        let weeklyPieChartInstance = null;
         let annualYear = new Date().getFullYear();
         const ANNUAL_GOAL_HOURS = 2080;   // 40 h x 52 weeks; change to suit
 
@@ -1409,14 +1432,39 @@ function out_(obj) {
                     });
             }
 
+            // Pie chart
+            const pieData = Object.entries(categoryTotals).sort((a, b) => b[1] - a[1]);
+            if (weeklyPieChartInstance) { weeklyPieChartInstance.destroy(); weeklyPieChartInstance = null; }
+            document.getElementById('weeklyPieWrap').classList.toggle('hidden', pieData.length === 0);
+            if (pieData.length) {
+                const pieDark = document.documentElement.classList.contains('dark');
+                weeklyPieChartInstance = new Chart(document.getElementById('weeklyPieChart').getContext('2d'), {
+                    type: 'pie',
+                    data: {
+                        labels: pieData.map(([c]) => c),
+                        datasets: [{
+                            data: pieData.map(([, m]) => +(m / 60).toFixed(1)),
+                            backgroundColor: pieData.map(([c]) => (tagColors[c] || defaultColor).hex),
+                            borderWidth: 2,
+                            borderColor: pieDark ? '#1e293b' : '#ffffff'
+                        }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ` ${c.label}: ${c.parsed} hrs` } } }
+                    }
+                });
+            }
+
+            renderWeeklyPlanner(weeklyEntries, bounds);
+
             // Daily Chart Render
-            const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            const daysOfWeek = orderedDayNames();
             const dailyMins = [0, 0, 0, 0, 0, 0, 0];
 
             weeklyEntries.forEach(e => {
                 const d = new Date(e.date + 'T00:00:00');
-                let dayIdx = d.getDay() - 1;
-                if (dayIdx === -1) dayIdx = 6;
+                let dayIdx = (d.getDay() - getWeekStartDay() + 7) % 7;
                 if (dayIdx >= 0 && dayIdx < 7) {
                     dailyMins[dayIdx] += e.totalMinutes;
                 }
@@ -1548,6 +1596,97 @@ function out_(obj) {
             });
         }
 
+        /* WEEKLY PLANNER */
+        function openEntryFromPlanner(id) { switchTab('log'); editEntry(id); }
+
+        function layoutDay(items) {
+            items.sort((a, b) => a.s - b.s || a.e - b.e);
+            let cluster = [], clusterEnd = -1, laneEnds = [];
+            const flush = () => { cluster.forEach(c => { c.lanes = laneEnds.length; }); cluster = []; laneEnds = []; clusterEnd = -1; };
+            items.forEach(it => {
+                if (cluster.length && it.s >= clusterEnd) flush();
+                let lane = laneEnds.findIndex(end => end <= it.s);
+                if (lane < 0) { lane = laneEnds.length; laneEnds.push(it.e); } else laneEnds[lane] = it.e;
+                it.lane = lane;
+                cluster.push(it);
+                clusterEnd = Math.max(clusterEnd, it.e);
+            });
+            flush();
+            return items;
+        }
+
+        function renderWeeklyPlanner(weeklyEntries, bounds) {
+            const root = document.getElementById('weeklyPlanner');
+            if (!root) return;
+            const HOUR = 36, START = 360, END = 1440, H = (END - START) / 60 * HOUR;
+            const toMin = s => { const [h, m] = s.split(':').map(Number); return h * 60 + m; };
+            const iso = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+            const names = orderedDayNames();
+            const now = new Date(), todayIso = iso(now);
+            let untimed = 0, untimedMins = 0, outside = 0;
+
+            let headers = '', columns = '';
+            for (let i = 0; i < 7; i++) {
+                const d = new Date(bounds.start);
+                d.setDate(d.getDate() + i);
+                const dayIso = iso(d);
+                const dayEntries = weeklyEntries.filter(e => e.date === dayIso);
+                const dayMins = dayEntries.reduce((s, e) => s + e.totalMinutes, 0);
+                const items = [];
+                dayEntries.forEach(e => {
+                    if (!e.startTime || !e.endTime) { untimed++; untimedMins += e.totalMinutes; return; }
+                    let s = toMin(e.startTime), en = toMin(e.endTime);
+                    if (en <= s) en = 1440;
+                    const cs = Math.max(s, START), ce = Math.min(en, END);
+                    if (ce <= cs) { outside++; return; }
+                    items.push({ s: cs, e: ce, entry: e });
+                });
+                layoutDay(items);
+
+                const isToday = dayIso === todayIso;
+                headers += `<div class="text-center py-1.5 border-l border-slate-200 dark:border-slate-700 ${isToday ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-600 dark:text-slate-300'}">
+                    <div class="text-[11px] font-semibold uppercase">${names[i]} ${d.getDate()}</div>
+                    <div class="text-[10px] text-slate-400">${dayMins ? (dayMins / 60).toFixed(1) + 'h' : '&nbsp;'}</div></div>`;
+
+                const blocks = items.map(it => {
+                    const en = it.entry, style = tagColors[en.tag] || defaultColor;
+                    const top = (it.s - START) / 60 * HOUR, h = Math.max((it.e - it.s) / 60 * HOUR, 16);
+                    const w = 100 / it.lanes, left = it.lane * w;
+                    const label = h >= 34 ? `<div class="opacity-90">${fmtTime(en.startTime)} &ndash; ${fmtTime(en.endTime)}</div>` : '';
+                    return `<div data-id="${escapeHtml(String(en.id))}" title="${escapeHtml(en.subject)} (${escapeHtml(en.tag)}) ${fmtTime(en.startTime)} - ${fmtTime(en.endTime)}"
+                        class="absolute rounded-md px-1 py-0.5 text-[10px] leading-tight text-white overflow-hidden cursor-pointer shadow-sm hover:brightness-110"
+                        style="top:${top}px;height:${h - 1}px;left:calc(${left}% + 1px);width:calc(${w}% - 2px);background:${style.hex}">
+                        <div class="font-semibold truncate">${escapeHtml(en.subject)}</div>${label}</div>`;
+                }).join('');
+
+                let nowLine = '';
+                const nowMin = now.getHours() * 60 + now.getMinutes();
+                if (isToday && nowMin >= START && nowMin < END) {
+                    nowLine = `<div class="absolute left-0 right-0 pointer-events-none" style="top:${(nowMin - START) / 60 * HOUR}px;height:2px;background:#ef4444"></div>`;
+                }
+                columns += `<div class="relative border-b border-l border-slate-200 dark:border-slate-700" style="height:${H}px;background-image:repeating-linear-gradient(to bottom,rgba(148,163,184,.35) 0,rgba(148,163,184,.35) 1px,transparent 1px,transparent ${HOUR}px)">${blocks}${nowLine}</div>`;
+            }
+
+            let gutter = '';
+            for (let i = 0; i <= 18; i++) {
+                const hr = 6 + i;
+                const lbl = hr === 24 ? '12 AM' : hr === 12 ? '12 PM' : hr > 12 ? (hr - 12) + ' PM' : hr + ' AM';
+                gutter += `<div class="absolute right-1 text-[10px] text-slate-400" style="top:${i * HOUR - 7}px">${lbl}</div>`;
+            }
+
+            root.innerHTML = `<div style="display:grid;grid-template-columns:44px repeat(7,minmax(0,1fr))">
+                <div></div>${headers}
+                <div class="relative" style="height:${H}px;margin:8px 0">${gutter}</div>
+                ${columns}
+            </div>`;
+            root.onclick = ev => { const b = ev.target.closest('[data-id]'); if (b) openEntryFromPlanner(b.dataset.id); };
+
+            const notes = [];
+            if (untimed) notes.push(`${untimed} entr${untimed === 1 ? 'y' : 'ies'} (${formatHoursMins(untimedMins)}) logged by duration only, so no time slot to show`);
+            if (outside) notes.push(`${outside} outside 6 AM \u2013 12 AM`);
+            document.getElementById('plannerNote').textContent = notes.length ? notes.join('; ') + '.' : '';
+        }
+
         /* ANNUAL SUMMARY */
         function changeAnnualYear(d) { annualYear += d; renderAnnualSummary(); }
 
@@ -1651,6 +1790,7 @@ function out_(obj) {
         /* DATA IMPORT / EXPORT / SAMPLE DATA */
         function toggleDataModal() {
             renderTagManager();
+            document.getElementById('weekStartSelect').value = String(getWeekStartDay());
             document.getElementById('dataModal').classList.toggle('hidden');
         }
 
@@ -1745,17 +1885,24 @@ function out_(obj) {
         }
 
         /* FORMATTING UTILITIES */
+        const WEEK_START_KEY = 'ts_week_start_v1';
+        const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        function getWeekStartDay() { try { return localStorage.getItem(WEEK_START_KEY) === '1' ? 1 : 0; } catch (e) { return 0; } }
+        function orderedDayNames() { const ws = getWeekStartDay(); return Array.from({ length: 7 }, (_, i) => DAY_NAMES[(ws + i) % 7]); }
+        function setWeekStart(v) {
+            try { localStorage.setItem(WEEK_START_KEY, v === '1' ? '1' : '0'); } catch (e) {}
+            renderLogs();
+            if (currentTab === 'weekly') renderWeeklySummary();
+            showToast(v === '1' ? 'Weeks now start on Monday.' : 'Weeks now start on Sunday.');
+        }
+
         function getWeekBounds(referenceDate, offsetWeeks = 0) {
             const target = new Date(referenceDate);
             target.setDate(target.getDate() + (offsetWeeks * 7));
+            target.setDate(target.getDate() - ((target.getDay() - getWeekStartDay() + 7) % 7));
+            target.setHours(0, 0, 0, 0);
 
-            const day = target.getDay();
-            const diffToMon = target.getDate() - day + (day === 0 ? -6 : 1);
-
-            const staticStart = new Date(target.setDate(diffToMon));
-            staticStart.setHours(0, 0, 0, 0);
-
-            const start = new Date(staticStart);
+            const start = new Date(target);
             const end = new Date(start);
             end.setDate(end.getDate() + 6);
             end.setHours(23, 59, 59, 999);
