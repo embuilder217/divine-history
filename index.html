@@ -384,6 +384,12 @@ main { max-width: 1200px; margin: 0 auto; padding: 28px 20px 48px; }
 .switch input:focus-visible + i { outline: 2px solid var(--accent); outline-offset: 2px; }
 .switch input:disabled + i { opacity: .5; cursor: not-allowed; }
 
+.sample-bar { position: sticky; top: calc(61px + env(safe-area-inset-top)); z-index: 15; display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap;
+  padding: 8px 16px; background: color-mix(in srgb, #d97706 14%, var(--bg)); border-bottom: 1px solid color-mix(in srgb, #d97706 35%, var(--border)); font-size: 13px; font-weight: 500; text-align: center; }
+.sample-bar .btn { height: 30px; }
+.entry.sample { border-style: dashed; }
+.sample-tag { font-size: 11px; font-weight: 600; color: #b45309; background: color-mix(in srgb, #d97706 14%, transparent); padding: 1px 7px; border-radius: 99px; }
+
 /* ---------- Dialogs ---------- */
 dialog { border: 0; padding: 0; background: transparent; color: var(--text); max-width: none; max-height: none; }
 dialog::backdrop { background: rgba(20, 19, 16, .45); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); }
@@ -548,6 +554,11 @@ code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-r
     </div>
   </div>
 </header>
+
+<div class="sample-bar hidden" id="sample-bar" role="status">
+  <span>Showing sample data so you can explore. Nothing is saved, synced or added to your calendar.</span>
+  <button class="btn btn-sm" id="sample-hide">Hide sample data</button>
+</div>
 
 <main>
   <!-- ============ DAILY LOG ============ -->
@@ -755,6 +766,14 @@ code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-r
       <h3>Tags</h3>
       <div class="tag-list" id="tag-list"></div>
       <form class="tag-add" id="tag-add"><input type="text" id="tag-add-input" placeholder="Add a new tag" autocomplete="off"><button class="btn" type="submit"><svg class="ic sm"><use href="#i-plus"/></svg>Add</button></form>
+    </section>
+
+    <section class="set-sec">
+      <h3>Sample data</h3>
+      <div class="switch-row">
+        <div class="sw-text"><b>Show sample data</b><span>Fills the log, planner and summaries with about 16 weeks of example activities so you can see how everything looks. It’s a preview only: it is never saved to your Google Sheet or added to your calendars, and your real entries stay untouched.</span></div>
+        <label class="switch"><input type="checkbox" id="set-sample" aria-label="Show sample data"><i></i></label>
+      </div>
     </section>
 
     <section class="set-sec">
@@ -1588,6 +1607,49 @@ let calStatus = lsGet(CAL_KEY, null);
 let firstSync = true;
 let catchUpTimer = null;
 let serverSettings = lsGet(SERVER_SETTINGS_KEY, {});
+let sampleOn = false, sampleEntries = [];
+const isSample = id => String(id).startsWith('sample_');
+const realEntries = () => entries.filter(e => !isSample(e.id));
+
+// Sample data: a believable full-timer's rhythm over the last 16 weeks (preview only, never stored).
+function buildSampleEntries() {
+  const pick = (code, i) => categories.find(c => new RegExp('\\(' + code + '\\)\\s*$').test(c)) || categories[i % Math.max(1, categories.length)] || 'Sample';
+  let seed = 7;
+  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const out = [];
+  const add = (d, start, mins, code, subject, desc = '') => {
+    const s = toMin(start), e = (s + mins) % 1440;
+    out.push({ id: `sample_${isoDate(d)}_${start.replace(':', '')}_${out.length}`, date: isoDate(d), subject, description: desc, totalMinutes: mins,
+               tag: pick(code, out.length), startTime: start, endTime: `${pad(Math.floor(e / 60))}:${pad(e % 60)}`, createdAt: '2026-01-01T00:00:00.000Z' });
+  };
+  const people = ['Isaac', 'Julio', 'Don', 'Nathan', 'Gio', 'Alex', 'Cielo', 'Jose'];
+  const who = () => people[Math.floor(rnd() * people.length)];
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  for (let back = 112; back >= 0; back--) {
+    const d = new Date(today); d.setDate(today.getDate() - back);
+    const w = d.getDay();
+    if (back === 0 && new Date().getHours() < 12) continue;
+    if (w >= 1 && w <= 6 && rnd() < .9) add(d, '07:00', 30, 'MR', `MR with ${who()}`, 'Morning revival');
+    if (w === 0) { add(d, '10:00', 120, 'LD', "Lord's Day meeting", 'Table meeting and prophesying'); if (rnd() < .6) add(d, '12:30', 90, 'VG', 'Small group lunch'); }
+    if (w === 2) add(d, '19:30', 90, 'PM', 'Prayer meeting');
+    if (w === 5) add(d, '18:30', 180, 'VG', 'Friday small group');
+    if (w === 1 || w === 3) { add(d, '09:00', 60, 'CM', `CM with ${who()}`); add(d, '12:00', 120, 'CW', 'Campus table & Bible reading'); }
+    if (w === 2 || w === 4) { add(d, '09:30', 60 + 15 * Math.floor(rnd() * 3), 'TP', `TP with ${who()}`, 'Life-study reading'); add(d, '14:00', 75, 'MS', `Fellowship with ${who()}`); }
+    if (w === 6 && rnd() < .7) add(d, '10:00', 120, 'GP', 'Gospel outreach');
+    if (w >= 1 && w <= 5 && rnd() < .5) add(d, '16:00', 45, 'BR', `Bible reading with ${who()}`);
+    if (w >= 1 && w <= 6 && rnd() < .35) add(d, '06:30', 20, 'PTL', 'Personal time with the Lord');
+    if (rnd() < .25) add(d, '20:30', 60, 'PA', 'Basketball');
+  }
+  return out;
+}
+function setSample(on) {
+  sampleOn = !!on;
+  sampleEntries = sampleOn ? buildSampleEntries() : [];
+  rebuildEntries();
+  $('#sample-bar').classList.toggle('hidden', !sampleOn);
+  $('#set-sample').checked = sampleOn;
+  renderAll();
+}
 const now0 = new Date();
 const ui = {
   view: 'log', mode: 'times', editingId: null,
@@ -1658,7 +1720,7 @@ function loadLocalState() {
   rebuildEntries();
 }
 function persistLocal() { lsSet(LS.store, store); lsSet(LS.queue, opQueue); lsSet(LS.cats, categories); lsSet(LS.plans, plans); }
-function rebuildEntries() { entries = Object.values(store).filter(e => e && !e.deleted); }
+function rebuildEntries() { entries = Object.values(store).filter(e => e && !e.deleted).concat(sampleOn ? sampleEntries : []); }
 function queueOp(op) { opQueue.push(op); persistLocal(); refreshSyncUI(); }
 
 function localUpsert(entry) {
@@ -1928,11 +1990,11 @@ function entryRow(e) {
   const time = e.startTime && e.endTime
     ? `<b>${fmtTime(e.startTime)}</b><span>${fmtTime(e.endTime)}</span>`
     : '<span class="none">No set time</span>';
-  return `<article class="entry" style="--c:${hex}">
+  return `<article class="entry${isSample(e.id) ? ' sample' : ''}" style="--c:${hex}">
     <div class="entry-time">${time}</div>
     <div class="entry-main">
       <div class="entry-title">${esc(e.subject)}</div>
-      <div class="entry-meta">${chip(e.tag)}</div>
+      <div class="entry-meta">${chip(e.tag)}${isSample(e.id) ? '<span class="sample-tag">Sample</span>' : ''}</div>
       ${e.description ? `<p class="entry-desc">${esc(e.description)}</p>` : ''}
     </div>
     <div class="entry-side">
@@ -2031,6 +2093,7 @@ function weekOffsetFor(iso) {
   return Math.floor(diffDays / 7);
 }
 function editEntry(id) {
+  if (isSample(id)) return toast('That’s a sample entry. Hide sample data in Settings to get back to your own.', true);
   const en = store[id];
   if (!en || en.deleted) return;
   if (ui.view !== 'log') setView('log');
@@ -2054,6 +2117,7 @@ function editEntry(id) {
   form.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 async function deleteEntry(id) {
+  if (isSample(id)) return toast('Sample entries aren’t saved, so there’s nothing to delete.', true);
   const en = store[id];
   if (!en) return;
   const ok = await ask({ title: 'Delete this entry?', message: `“${en.subject}” on ${parseDate(en.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} will be removed from every synced device.`, confirmText: 'Delete', danger: true });
@@ -2599,7 +2663,7 @@ function openSettings(highlightSync = false) {
 }
 function renderTagManager() {
   $('#tag-list').innerHTML = categories.map(cat => {
-    const n = entries.filter(e => e.tag === cat).length;
+    const n = realEntries().filter(e => e.tag === cat).length;
     return `<div class="tag-row"><i style="background:${tagHex(cat)}"></i><span class="name">${esc(cat)}</span><span class="count">${plural(n, 'entry', 'entries')}</span>
       <button class="btn-icon danger" data-deltag="${esc(cat)}" title="Delete tag" aria-label="Delete tag ${esc(cat)}">${icon('trash', 'sm')}</button></div>`;
   }).join('') || '<div class="tag-row"><span class="name" style="color:var(--faint)">No tags yet</span></div>';
@@ -2618,7 +2682,7 @@ function addTag(name) {
 async function deleteTag(tag) {
   const others = categories.filter(c => c !== tag);
   if (!others.length) return toast('You need at least one tag.', true);
-  const used = entries.filter(e => e.tag === tag);
+  const used = realEntries().filter(e => e.tag === tag);
   let target = null;
   if (used.length) {
     target = await ask({ title: `Delete “${tag}”?`, message: `${plural(used.length, 'entry uses', 'entries use')} this tag. Choose a tag to move ${used.length === 1 ? 'it' : 'them'} to:`, options: others, confirmText: 'Move & delete', danger: true });
@@ -2697,9 +2761,10 @@ function downloadBlob(content, filename, type) {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 function exportCSV() {
-  if (!entries.length) return toast('No entries to export yet.', true);
+  const real = realEntries();
+  if (!real.length) return toast('No entries to export yet.', true);
   const q = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
-  const rows = entries.slice().sort((a, b) => String(a.date).localeCompare(String(b.date)) || String(a.startTime || '').localeCompare(String(b.startTime || '')));
+  const rows = real.slice().sort((a, b) => String(a.date).localeCompare(String(b.date)) || String(a.startTime || '').localeCompare(String(b.startTime || '')));
   let csv = 'ID,Date,Subject,Hours,Minutes,TotalHours,Category,Description,StartTime,EndTime\n';
   rows.forEach(e => {
     csv += [q(e.id), e.date, q(e.subject), Math.floor(e.totalMinutes / 60), e.totalMinutes % 60, (e.totalMinutes / 60).toFixed(2), q(e.tag), q(e.description), e.startTime || '', e.endTime || ''].join(',') + '\n';
@@ -2708,7 +2773,7 @@ function exportCSV() {
   toast('CSV exported.');
 }
 function exportJSON() {
-  downloadBlob(JSON.stringify({ entries, categories, plans: planList(), exportedAt: new Date().toISOString() }, null, 2), `Timesheet_Backup_${todayISO()}.json`, 'application/json');
+  downloadBlob(JSON.stringify({ entries: realEntries(), categories, plans: planList(), exportedAt: new Date().toISOString() }, null, 2), `Timesheet_Backup_${todayISO()}.json`, 'application/json');
   toast('JSON backup saved.');
 }
 function importJSON(ev) {
@@ -2755,10 +2820,10 @@ function importJSON(ev) {
   reader.readAsText(file);
 }
 async function clearAll() {
-  if (!entries.length) return toast('There are no entries to clear.', true);
-  const ok = await ask({ title: 'Clear all entries?', message: `All ${plural(entries.length, 'entry', 'entries')} will be deleted on every synced device. Tags are kept. Consider exporting a backup first.`, confirmText: 'Delete everything', danger: true });
+  if (!realEntries().length) return toast('There are no entries to clear.', true);
+  const ok = await ask({ title: 'Clear all entries?', message: `All ${plural(realEntries().length, 'entry', 'entries')} will be deleted on every synced device. Tags are kept. Consider exporting a backup first.`, confirmText: 'Delete everything', danger: true });
   if (!ok) return;
-  entries.slice().forEach(e => localDelete(e.id));
+  realEntries().forEach(e => localDelete(e.id));
   resetForm();
   persistLocal();
   renderAll(); renderTagManager();
@@ -2895,6 +2960,8 @@ function bindEvents() {
   $('#set-save-conn').addEventListener('click', saveConnection);
   $('#set-copy-script').addEventListener('click', copyBackendScript);
   $('#set-weekstart').addEventListener('change', e => setWeekStart(e.target.value));
+  $('#set-sample').addEventListener('change', e => { setSample(e.target.checked); toast(e.target.checked ? 'Sample data is showing. Nothing is saved.' : 'Sample data hidden.'); });
+  $('#sample-hide').addEventListener('click', () => { setSample(false); toast('Sample data hidden.'); });
   $('#set-autolog').addEventListener('change', e => {
     const on = e.target.checked;
     opQueue = opQueue.filter(o => o.type !== 'setting');
