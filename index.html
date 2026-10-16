@@ -738,7 +738,8 @@ code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-r
           <li>Make sure <b>Calendars</b> is switched on for that account.</li>
           <li>In the Calendar app tap <b>Calendars</b> and tick <b>Timesheet Plans</b> and <b>Timesheet Log</b>.</li>
         </ol>
-        <p class="hint" style="margin-top:8px"><b>Timesheet Plans</b> holds what’s still ahead. Add an event there from your iPhone or Google Calendar and it shows up here as a plan to confirm. <b>Timesheet Log</b> mirrors everything you log that has a start and end time; when you confirm a plan it moves from Plans to Log at the actual time. Hide either calendar any time with its checkbox. Edit entries and repeating plans in this app.</p>
+        <p class="hint" style="margin-top:8px"><b>Timesheet Plans</b> holds what’s still ahead. Add an event there from your iPhone or Google Calendar and it shows up here as a plan to confirm. <b>Timesheet Log</b> mirrors everything you log that has a start and end time; when you confirm a plan it moves from Plans to Log at the actual time. Hide either calendar any time with its checkbox.</p>
+        <p class="hint" style="margin-top:8px"><b>Deleting works both ways for plans:</b> delete a plan in the app or in Timesheet Plans and it disappears from the other. Deleting one week of a repeating plan in the calendar counts as “Didn’t happen” for that week. To change the time of a repeating plan, edit it in the app. Logged entries are deleted in the app only, so a stray tap in your calendar can never erase your hours.</p>
         <p class="hint" style="margin-top:8px">With <b>Auto-log</b> on you can work from your calendar alone: add an event to Timesheet Plans (put the tag code in the title, like “CM with Isaac”), delete or drag it if plans change, and once it ends it’s logged automatically and moves to Timesheet Log with a ✓.</p>
       </details>
     </section>
@@ -842,7 +843,7 @@ code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-r
 //    The Web app URL stays the same.
 
 var SECRET = 'CHANGE_ME_TO_A_LONG_RANDOM_STRING';
-var VERSION = 4;
+var VERSION = 5;
 var HEADERS = ['ID', 'Date', 'Subject', 'TotalMinutes', 'Tag', 'Description', 'CreatedAt', 'UpdatedAt', 'Deleted', 'StartTime', 'EndTime'];
 var PLAN_HEADERS = ['ID', 'Title', 'Tag', 'Notes', 'Date', 'StartTime', 'EndTime', 'Days', 'Until', 'Skips',
                     'CreatedAt', 'UpdatedAt', 'Deleted', 'Source', 'CalEventId', 'CalSig'];
@@ -1271,7 +1272,7 @@ function pullCalendar_(cal, plans, cats, tz, done) {
   var now = new Date(), stamp = now.toISOString(), changed = false;
   var from = new Date(now.getTime() - 21 * 86400000), to = new Date(now.getTime() + 120 * 86400000);
   var fromIso = Utilities.formatDate(from, tz, 'yyyy-MM-dd'), toIso = Utilities.formatDate(to, tz, 'yyyy-MM-dd');
-  var idx = {}, seenCal = {}, seenApp = {};
+  var idx = {}, seenCal = {}, seenApp = {}, seenAppDates = {};
   plans.forEach(function (p, i) { idx[p.id] = i; });
   var fmt = function (d, f) { return Utilities.formatDate(d, tz, f); };
 
@@ -1282,6 +1283,7 @@ function pullCalendar_(cal, plans, cats, tz, done) {
     var appId = ev.getTag('tsPlanId');
     if (appId) {
       seenApp[appId] = true;
+      if (ev.isRecurringEvent()) (seenAppDates[appId] = seenAppDates[appId] || {})[d] = true;
       var k = idx[appId];
       if (k !== undefined && !ev.isRecurringEvent()) {
         var p = plans[k];
@@ -1320,8 +1322,38 @@ function pullCalendar_(cal, plans, cats, tz, done) {
     if (p.source === 'calendar' && !seenCal[p.id]) {
       p.deleted = 'yes'; p.updatedAt = stamp; changed = true;          // removed from the calendar
     } else if (p.source !== 'calendar' && !p.days && p.calEventId && p.calSig === sig_(p, done[p.id]) && !resolvedOnce_(p, done[p.id]) && !seenApp[p.id]) {
-      p.deleted = 'yes'; p.updatedAt = stamp; p.calEventId = ''; p.calSig = sig_(p); changed = true;   // deleted in the calendar
+      p.deleted = 'yes'; p.updatedAt = stamp; p.calEventId = ''; p.calSig = sig_(p, done[p.id]); changed = true;   // deleted in the calendar
     }
+  });
+
+  // Repeating plans made in the app: a week deleted in the calendar becomes "didn't happen" for that week,
+  // and deleting the whole series deletes the plan. Only checked while the calendar matches the app's version,
+  // and boundary days of the scan window are skipped so nothing is misread.
+  plans.forEach(function (p) {
+    if (p.deleted === 'yes' || p.source === 'calendar' || !p.days || !p.calEventId) return;
+    if (p.calSig !== sig_(p, done[p.id])) return;
+    var days = String(p.days).split(',').filter(String).map(Number);
+    var skips = String(p.skips || '').split(',').filter(String);
+    var confirmed = done[p.id] || [];
+    var expected = [];
+    var startD = addDaysIso_(fromIso, 1) > p.date ? addDaysIso_(fromIso, 1) : p.date;
+    var endD = addDaysIso_(toIso, -1);
+    if (p.until && p.until < endD) endD = p.until;
+    for (var d = startD; d <= endD; d = addDaysIso_(d, 1)) {
+      if (days.indexOf(new Date(d + 'T12:00:00Z').getUTCDay()) >= 0 && skips.indexOf(d) < 0 && confirmed.indexOf(d) < 0) expected.push(d);
+    }
+    if (!expected.length) return;
+    var seen = seenAppDates[p.id] || {};
+    var missing = expected.filter(function (x) { return !seen[x]; });
+    if (!missing.length) return;
+    if (missing.length === expected.length) {
+      p.deleted = 'yes'; p.calEventId = '';                          // whole series deleted in the calendar
+    } else {
+      p.skips = skips.concat(missing).sort().join(',');               // single weeks deleted in the calendar
+    }
+    p.updatedAt = stamp;
+    p.calSig = sig_(p, done[p.id]);
+    changed = true;
   });
   return changed;
 }
@@ -1798,13 +1830,13 @@ function refreshSyncUI() {
   else if (backendVersion >= 2 && calStatus && calStatus.ok && calStatus.logPending > 0) {
     cState = 'busy'; cMsg = `Adding your logged entries to “${calStatus.logName || 'Timesheet Log'}”: ${calStatus.logPending.toLocaleString()} to go. This continues in the background, even with the app closed.`;
   }
-  else if ((backendVersion === 2 || backendVersion === 3) && calStatus && calStatus.ok) { cState = 'busy'; cMsg = 'Calendars are syncing. Update the backend script once more to get the newest features, like auto-log (steps below).'; }
-  else if (backendVersion >= 4 && calStatus && calStatus.ok) { cState = 'ok'; cMsg = `Plans sync with “${calStatus.name || 'Timesheet Plans'}” and everything you log appears in “${calStatus.logName || 'Timesheet Log'}”`; }
+  else if (backendVersion >= 2 && backendVersion < 5 && calStatus && calStatus.ok) { cState = 'busy'; cMsg = 'Calendars are syncing. Update the backend script once more to get the newest features, like auto-log (steps below).'; }
+  else if (backendVersion >= 5 && calStatus && calStatus.ok) { cState = 'ok'; cMsg = `Plans sync with “${calStatus.name || 'Timesheet Plans'}” and everything you log appears in “${calStatus.logName || 'Timesheet Log'}”`; }
   else if (backendVersion >= 2 && calStatus && calStatus.limited) { cState = 'busy'; cMsg = calStatus.message; }
   else if (backendVersion >= 2 && calStatus) { cState = 'err'; cMsg = calStatus.message || 'Calendar isn’t connected yet'; }
   $('#cal-box').dataset.state = cState;
   $('#cal-status').textContent = cMsg;
-  $('#cal-update').open = isConfigured() && backendVersion > 0 && backendVersion < 4;
+  $('#cal-update').open = isConfigured() && backendVersion > 0 && backendVersion < 5;
   const sw = $('#set-autolog');
   sw.disabled = backendVersion < 4;
   sw.checked = !!serverSettings.autoLog;
