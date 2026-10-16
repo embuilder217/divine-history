@@ -372,6 +372,18 @@ main { max-width: 1200px; margin: 0 auto; padding: 28px 20px 48px; }
 .plan-group { font-size: 12px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); margin: 6px 0 -4px; }
 .input-disabled { opacity: .6; pointer-events: none; }
 
+.switch-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
+.switch-row .sw-text b { display: block; font-weight: 600; }
+.switch-row .sw-text span { font-size: 12.5px; color: var(--muted); line-height: 1.45; display: block; margin-top: 2px; }
+.switch { position: relative; flex: none; width: 46px; height: 28px; margin-top: 2px; }
+.switch input { opacity: 0; width: 0; height: 0; position: absolute; }
+.switch i { position: absolute; inset: 0; border-radius: 99px; background: var(--surface-3); border: 1px solid var(--border-strong); transition: background .15s; cursor: pointer; }
+.switch i::after { content: ""; position: absolute; top: 2px; left: 2px; width: 22px; height: 22px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.25); transition: transform .15s; }
+.switch input:checked + i { background: var(--accent); border-color: var(--accent); }
+.switch input:checked + i::after { transform: translateX(18px); }
+.switch input:focus-visible + i { outline: 2px solid var(--accent); outline-offset: 2px; }
+.switch input:disabled + i { opacity: .5; cursor: not-allowed; }
+
 /* ---------- Dialogs ---------- */
 dialog { border: 0; padding: 0; background: transparent; color: var(--text); max-width: none; max-height: none; }
 dialog::backdrop { background: rgba(20, 19, 16, .45); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); }
@@ -705,23 +717,29 @@ code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-r
     <section class="set-sec" id="sec-cal">
       <h3>Plans &amp; calendar</h3>
       <div class="sync-box" id="cal-box" data-state="busy"><div class="sync-line"><span class="dot"></span><span id="cal-status">Waiting for the first sync</span></div></div>
+      <div class="switch-row">
+        <div class="sw-text"><b>Auto-log plans when they end</b><span id="autolog-hint">Each planned activity is logged for you once it ends, so you can plan and log from Google Calendar alone. Delete or move it before it ends if plans change, or tap “Didn’t happen”. Plans that ended before you turned this on stay in To confirm.</span></div>
+        <label class="switch"><input type="checkbox" id="set-autolog" aria-label="Auto-log plans when they end"><i></i></label>
+      </div>
       <details class="setup" id="cal-update">
-        <summary>Update your backend script (needed once for plans &amp; calendar)</summary>
+        <summary>Update your backend script (needed for plans &amp; calendars)</summary>
         <ol>
           <li>Tap <b>Copy backend script</b> above. In your Google Sheet open <b>Extensions › Apps Script</b>, select everything in the editor and paste over it. Save.</li>
-          <li>In the toolbar choose the function <b>setup</b> and click <b>Run</b>. Approve the permissions; Google now also asks for Calendar access.</li>
+          <li>Check the <code>SECRET</code> line near the top holds your token (the button fills it in for you).</li>
+          <li>In the toolbar choose the function <b>setup</b> and click <b>Run</b>. Approve the permissions; Google asks for Calendar access and to run a background task.</li>
           <li><b>Deploy › Manage deployments</b> › pencil icon › Version: <b>New version</b> › Deploy. Your Web app URL stays the same.</li>
           <li>Come back here and tap <b>Sync now</b>.</li>
         </ol>
       </details>
       <details class="setup">
-        <summary>See your plans in the iPhone Calendar app</summary>
+        <summary>See it in the iPhone Calendar app</summary>
         <ol>
           <li>On your iPhone open <b>Settings › Apps › Calendar › Calendar Accounts › Add Account › Google</b> and sign in with the Google account that owns your sheet.</li>
           <li>Make sure <b>Calendars</b> is switched on for that account.</li>
-          <li>In the Calendar app tap <b>Calendars</b> and tick <b>Timesheet Plans</b>.</li>
+          <li>In the Calendar app tap <b>Calendars</b> and tick <b>Timesheet Plans</b> and <b>Timesheet Log</b>.</li>
         </ol>
-        <p class="hint" style="margin-top:8px">Events you add to the Timesheet Plans calendar, from your iPhone or Google Calendar, show up here as plans to confirm. One-time plans you move or delete in the calendar update here too. Edit repeating plans in this app.</p>
+        <p class="hint" style="margin-top:8px"><b>Timesheet Plans</b> holds what’s still ahead. Add an event there from your iPhone or Google Calendar and it shows up here as a plan to confirm. <b>Timesheet Log</b> mirrors everything you log that has a start and end time; when you confirm a plan it moves from Plans to Log at the actual time. Hide either calendar any time with its checkbox. Edit entries and repeating plans in this app.</p>
+        <p class="hint" style="margin-top:8px">With <b>Auto-log</b> on you can work from your calendar alone: add an event to Timesheet Plans (put the tag code in the title, like “CM with Isaac”), delete or drag it if plans change, and once it ends it’s logged automatically and moves to Timesheet Log with a ✓.</p>
       </details>
     </section>
 
@@ -819,16 +837,19 @@ code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-r
 // 1) Paste this over everything in Extensions > Apps Script. Put your token in SECRET
 //    (the app's "Copy backend script" button fills it in for you). Save.
 // 2) In the toolbar, choose the function "setup" and click Run. Approve the permissions
-//    (Sheets + Calendar). This creates the "Timesheet Plans" calendar.
+//    (Sheets, Calendar, triggers). This creates the "Timesheet Plans" and "Timesheet Log" calendars.
 // 3) Deploy > Manage deployments > pencil icon > Version: "New version" > Deploy.
 //    The Web app URL stays the same.
 
 var SECRET = 'CHANGE_ME_TO_A_LONG_RANDOM_STRING';
-var VERSION = 2;
+var VERSION = 4;
 var HEADERS = ['ID', 'Date', 'Subject', 'TotalMinutes', 'Tag', 'Description', 'CreatedAt', 'UpdatedAt', 'Deleted', 'StartTime', 'EndTime'];
 var PLAN_HEADERS = ['ID', 'Title', 'Tag', 'Notes', 'Date', 'StartTime', 'EndTime', 'Days', 'Until', 'Skips',
                     'CreatedAt', 'UpdatedAt', 'Deleted', 'Source', 'CalEventId', 'CalSig'];
-var CAL_NAME = 'Timesheet Plans';
+var CAL_NAME = 'Timesheet Plans';      // what's still ahead
+var LOG_CAL_NAME = 'Timesheet Log';    // everything you logged, at the actual times
+var LOG_BATCH = 15;                    // log events written per app sync (keeps syncs quick)
+var LOG_BATCH_BACKGROUND = 120;        // per background run while catching up
 var PULL_EVERY_SECONDS = 300;   // how often calendar changes are read back (a manual "Sync now" always reads)
 var EPOCH = '1970-01-01T00:00:00.000Z';
 
@@ -836,8 +857,89 @@ function setup() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   entriesSheet_(ss);
   plansSheet_(ss);
-  var cal = getCal_();
-  Logger.log('Ready. Calendar: ' + cal.getName() + ' (' + cal.getTimeZone() + ')');
+  var cal = getCal_(), log = getLogCal_();
+  logSheet_(ss);
+  ensureTrigger_(false);   // asks for trigger permission now; nothing is scheduled yet
+  Logger.log('Ready. Calendars: ' + cal.getName() + ' and ' + log.getName() + ' (' + cal.getTimeZone() + ')');
+}
+
+// Runs every 10 minutes only while older entries are still being copied into the Log calendar.
+function backgroundSync() {
+  var lock = LockService.getScriptLock();
+  if (!lock.tryLock(5000)) return;
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sh = entriesSheet_(ss), ps = plansSheet_(ss);
+    var cs = ss.getSheetByName('Categories') || ss.insertSheet('Categories');
+    var rows = readRows_(sh), plans = readPlans_(ps), cats = readCats_(cs);
+    var auto = autoLogOn_();
+    if (auto) {
+      var c1 = syncCalendar_(plans, cats, true, rows);                       // read calendar changes first
+      var al = autoLog_(plans, rows, cats, ss.getSpreadsheetTimeZone());
+      var c2 = al.logged ? syncCalendar_(plans, cats, false, rows) : { changed: false };   // logged ones leave Plans
+      if (al.logged) writeRows_(sh, rows);
+      if (al.catsChanged) writeCats_(cs, cats);
+      if (c1.changed || c2.changed) writePlans_(ps, plans);
+    }
+    var res = syncLogCalendar_(ss, rows, LOG_BATCH_BACKGROUND, plans);
+    if (!res.pending && !auto) ensureTrigger_(false);
+  } finally { lock.releaseLock(); }
+}
+
+/* ------------------------------ Auto-log ------------------------------ */
+// When on, every plan occurrence that ends is logged automatically, unless it was deleted,
+// marked "didn't happen", or already logged. Only occurrences that end after auto-log was
+// switched on are logged, so turning it on never back-fills old weeks.
+
+function autoLogOn_() { return PropertiesService.getScriptProperties().getProperty('autoLog') === 'on'; }
+
+function setAutoLog_(on) {
+  var props = PropertiesService.getScriptProperties();
+  var was = props.getProperty('autoLog') === 'on';
+  props.setProperty('autoLog', on ? 'on' : 'off');
+  if (on && !was) props.setProperty('autoLogSince', new Date().toISOString());
+  if (on) { try { ensureTrigger_(true); } catch (e) {} }
+}
+
+function autoLog_(plans, rows, cats, tz) {
+  var props = PropertiesService.getScriptProperties();
+  var now = new Date(), since = new Date(props.getProperty('autoLogSince') || now.toISOString());
+  var sinceIso = Utilities.formatDate(since, tz, 'yyyy-MM-dd'), todayIso = Utilities.formatDate(now, tz, 'yyyy-MM-dd');
+  var exists = {}, stamp = now.toISOString(), logged = 0, catsChanged = false;
+  rows.forEach(function (r) { exists[r[0]] = true; });   // includes deleted entries, so a log you removed is never re-created
+  plans.forEach(function (p) {
+    if (p.deleted === 'yes' || !p.title || !p.date || !p.startTime || !p.endTime) return;
+    var days = p.days ? String(p.days).split(',').filter(String).map(Number) : [];
+    var dates = [];
+    if (!days.length) dates = [p.date];
+    else {
+      var last = p.until && p.until < todayIso ? p.until : todayIso;
+      for (var d = p.date > sinceIso ? p.date : sinceIso; d <= last; d = addDaysIso_(d, 1)) {
+        if (days.indexOf(new Date(d + 'T12:00:00Z').getUTCDay()) >= 0) dates.push(d);
+      }
+    }
+    var skips = String(p.skips || '').split(',');
+    dates.forEach(function (d) {
+      var id = 'plan_' + p.id + '_' + d;
+      if (exists[id] || skips.indexOf(d) >= 0) return;
+      var st = at_(d, p.startTime, tz), en = at_(d, p.endTime, tz);
+      if (en <= st) en = new Date(en.getTime() + 86400000);
+      if (en > now || en <= since) return;
+      var tag = p.tag || 'Untagged';
+      if (cats.indexOf(tag) < 0) { cats.push(tag); catsChanged = true; }
+      rows.push(makeRow_({ id: id, date: d, subject: p.title, totalMinutes: Math.round((en - st) / 60000), tag: tag,
+                           description: p.notes || '', startTime: p.startTime, endTime: p.endTime }, stamp, stamp));
+      exists[id] = true;
+      logged++;
+    });
+  });
+  return { logged: logged, catsChanged: catsChanged };
+}
+
+function ensureTrigger_(on) {
+  var mine = ScriptApp.getProjectTriggers().filter(function (t) { return t.getHandlerFunction() === 'backgroundSync'; });
+  if (on && !mine.length) ScriptApp.newTrigger('backgroundSync').timeBased().everyMinutes(10).create();
+  if (!on) mine.forEach(function (t) { ScriptApp.deleteTrigger(t); });
 }
 
 function doGet() {
@@ -862,16 +964,29 @@ function doPost(e) {
     var plans = readPlans_(ps);
 
     var res = applyOps_(rows, cats, plans, req.ops || []);
+    var cal = syncCalendar_(plans, cats, !!req.forceCalendar, rows);
+    var auto = autoLogOn_();
+    if (auto) {
+      var al = autoLog_(plans, rows, cats, ss.getSpreadsheetTimeZone());
+      if (al.logged) {
+        res.rowsChanged = true;
+        var cal2 = syncCalendar_(plans, cats, false, rows);   // logged occurrences leave the Plans calendar
+        cal.changed = cal.changed || cal2.changed;
+      }
+      if (al.catsChanged) res.catsChanged = true;
+    }
     if (res.rowsChanged) writeRows_(sh, rows);
     if (res.catsChanged) writeCats_(cs, cats);
-
-    var cal = syncCalendar_(plans, cats, !!req.forceCalendar);
     if (res.plansChanged || cal.changed) writePlans_(ps, plans);
+    var log = syncLogCalendar_(ss, rows, LOG_BATCH, plans);
+    if (log.pending > LOG_BATCH) { try { ensureTrigger_(true); } catch (e) {} }
 
     return out_({
       status: 'success', version: VERSION, serverTime: new Date().toISOString(),
       entries: rows.map(toEntry_), categories: cats, plans: plans.map(toPlan_),
-      calendar: { ok: cal.ok, message: cal.message, name: CAL_NAME }
+      calendar: { ok: cal.ok && log.ok, message: cal.message || log.message, name: CAL_NAME, logName: LOG_CAL_NAME,
+                  logPending: log.pending, limited: log.limited },
+      settings: { autoLog: auto, autoLogSince: PropertiesService.getScriptProperties().getProperty('autoLogSince') || '' }
     });
   } catch (err) {
     return out_({ status: 'error', message: String(err) });
@@ -922,6 +1037,8 @@ function applyOps_(rows, cats, plans, ops) {
         plans[q] = planFromOp_(p, plans[q]);
         plansChanged = true;
       }
+    } else if (op.type === 'setting' && op.key === 'autoLog') {
+      setAutoLog_(!!op.value);
     } else if (op.type === 'planDelete' && op.id) {
       var r = pIndex[String(op.id)], ds = String(op.updatedAt || '');
       if (r !== undefined && plans[r].updatedAt <= ds) {
@@ -1011,19 +1128,40 @@ function writePlans_(ps, plans) {
 
 /* --------------------------- Google Calendar --------------------------- */
 
-function getCal_() {
+function getCalNamed_(key, name, color, summary) {
   var props = PropertiesService.getScriptProperties();
-  var id = props.getProperty('calId');
+  var id = props.getProperty(key);
   var cal = id ? CalendarApp.getCalendarById(id) : null;
   if (!cal) {
-    var found = CalendarApp.getCalendarsByName(CAL_NAME);
-    cal = found.length ? found[0] : CalendarApp.createCalendar(CAL_NAME, { color: CalendarApp.Color.GREEN, summary: 'Plans from your Timesheet app' });
-    props.setProperty('calId', cal.getId());
+    var found = CalendarApp.getCalendarsByName(name);
+    if (found.length) cal = found[0];
+    else {
+      try { cal = CalendarApp.createCalendar(name, { color: color, summary: summary }); }
+      catch (e) { cal = CalendarApp.createCalendar(name, { summary: summary }); }
+    }
+    props.setProperty(key, cal.getId());
   }
   return cal;
 }
+function getCal_() { return getCalNamed_('calId', CAL_NAME, CalendarApp.Color.GREEN, 'Plans from your Timesheet app'); }
+function getLogCal_() { return getCalNamed_('logCalId', LOG_CAL_NAME, '#0B8043', 'Everything logged in your Timesheet app'); }
 
-function syncCalendar_(plans, cats, force) {
+// planId -> dates already confirmed (logged as plan_<planId>_<date>)
+function confirmedMap_(rows) {
+  var map = {};
+  (rows || []).forEach(function (r) {
+    var m = /^plan_(.+)_(\d{4}-\d{2}-\d{2})$/.exec(r[0]);
+    if (m && !/^(yes|true)$/i.test(r[8])) (map[m[1]] = map[m[1]] || []).push(m[2]);
+  });
+  return map;
+}
+// A one-time plan is "resolved" once it has been confirmed or marked as didn't happen.
+function resolvedOnce_(p, done) {
+  return !p.days && (((done || []).indexOf(p.date) >= 0) || String(p.skips || '').split(',').indexOf(p.date) >= 0);
+}
+
+function syncCalendar_(plans, cats, force, rows) {
+  var done = confirmedMap_(rows);
   var result = { ok: true, message: '', changed: false };
   var cal;
   try { cal = getCal_(); }
@@ -1033,16 +1171,24 @@ function syncCalendar_(plans, cats, force) {
   try {
     var tz = cal.getTimeZone();
     plans.forEach(function (p) {          // app → calendar (only plans whose content changed)
-      if (p.source === 'calendar') return;
-      var s = sig_(p);
+      if (p.source === 'calendar') {
+        // A calendar event you confirmed (or marked as didn't happen) leaves the Plans calendar;
+        // confirmed ones now live in the Log calendar. Repeating events you made yourself are left alone.
+        if (p.calEventId && p.calSig !== 'rec' && p.deleted !== 'yes' && resolvedOnce_(p, done[p.id])) {
+          try { var one = cal.getEventById(p.calEventId); if (one) one.deleteEvent(); } catch (e) {}
+          p.calEventId = ''; p.calSig = 'removed'; result.changed = true;
+        }
+        return;
+      }
+      var s = sig_(p, done[p.id]);
       if (s === p.calSig) return;
-      pushPlan_(cal, p, tz);
+      pushPlan_(cal, p, tz, done[p.id]);
       p.calSig = s;
       result.changed = true;
     });
     var cache = CacheService.getScriptCache();
     if (force || !cache.get('calPulled')) {   // calendar → app
-      if (pullCalendar_(cal, plans, cats, tz)) result.changed = true;
+      if (pullCalendar_(cal, plans, cats, tz, done)) result.changed = true;
       cache.put('calPulled', '1', PULL_EVERY_SECONDS);
     }
   } catch (e) {
@@ -1052,8 +1198,8 @@ function syncCalendar_(plans, cats, force) {
   return result;
 }
 
-function sig_(p) {
-  return [p.title, p.tag, p.notes, p.date, p.startTime, p.endTime, p.days, p.until, p.skips, p.deleted].join('|');
+function sig_(p, doneDates) {
+  return [p.title, p.tag, p.notes, p.date, p.startTime, p.endTime, p.days, p.until, p.skips, p.deleted, (doneDates || []).slice().sort().join(',')].join('|');
 }
 
 var WEEKDAYS_ = null;
@@ -1093,10 +1239,12 @@ function removeEvent_(cal, id) {
 }
 
 // Recreates the plan's event (or weekly series). Simple and reliable: edits in the app always win.
-function pushPlan_(cal, p, tz) {
+function pushPlan_(cal, p, tz, doneDates) {
   if (p.calEventId) { removeEvent_(cal, p.calEventId); p.calEventId = ''; }
   if (p.deleted === 'yes' || !p.title || !p.date || !p.startTime || !p.endTime) return;
+  if (resolvedOnce_(p, doneDates)) return;   // confirmed or didn't happen: no longer a plan
   var days = p.days ? String(p.days).split(',').filter(String).map(Number) : [];
+  var excluded = (p.skips ? String(p.skips).split(',') : []).concat(doneDates || []);
   var first = days.length ? firstOnOrAfter_(p.date, days) : p.date;
   if (p.until && first > p.until) return;
   var start = at_(first, p.startTime, tz), end = at_(first, p.endTime, tz);
@@ -1107,7 +1255,7 @@ function pushPlan_(cal, p, tz) {
     var W = weekdays_();
     var rule = CalendarApp.newRecurrence().addWeeklyRule().onlyOnWeekdays(days.map(function (d) { return W[d]; }));
     if (p.until) rule = rule.until(at_(p.until, '23:59', tz));
-    (p.skips ? String(p.skips).split(',') : []).forEach(function (s) { if (s) rule = rule.addDateExclusion(at_(s, p.startTime, tz)); });
+    excluded.forEach(function (s) { if (s) rule = rule.addDateExclusion(at_(s, p.startTime, tz)); });
     ev = cal.createEventSeries(p.title, start, end, rule, opts);
   } else {
     ev = cal.createEvent(p.title, start, end, opts);
@@ -1118,7 +1266,8 @@ function pushPlan_(cal, p, tz) {
 
 // Events added in the Timesheet Plans calendar become plans; edits/deletions of one-time
 // app plans made in the calendar flow back. Repeating plans are edited in the app.
-function pullCalendar_(cal, plans, cats, tz) {
+function pullCalendar_(cal, plans, cats, tz, done) {
+  done = done || {};
   var now = new Date(), stamp = now.toISOString(), changed = false;
   var from = new Date(now.getTime() - 21 * 86400000), to = new Date(now.getTime() + 120 * 86400000);
   var fromIso = Utilities.formatDate(from, tz, 'yyyy-MM-dd'), toIso = Utilities.formatDate(to, tz, 'yyyy-MM-dd');
@@ -1139,7 +1288,7 @@ function pullCalendar_(cal, plans, cats, tz) {
         var moved = p.date !== d || p.startTime !== s || p.endTime !== e || p.title !== title;
         if (p.deleted !== 'yes' && !p.days && moved && ev.getLastUpdated().getTime() > Date.parse(p.updatedAt || EPOCH)) {
           p.date = d; p.startTime = s; p.endTime = e; p.title = title; p.updatedAt = stamp;
-          p.calSig = sig_(p);
+          p.calSig = sig_(p, done[p.id]);
           changed = true;
         }
       }
@@ -1152,12 +1301,13 @@ function pullCalendar_(cal, plans, cats, tz) {
       plans.push({
         id: id, title: title, tag: guessTag_(title, cats), notes: String(ev.getDescription() || '').replace(/<[^>]+>/g, ' ').trim(),
         date: d, startTime: s, endTime: e, days: '', until: '', skips: '', createdAt: stamp, updatedAt: stamp,
-        deleted: '', source: 'calendar', calEventId: ev.getId(), calSig: ''
+        deleted: '', source: 'calendar', calEventId: ev.getId(), calSig: ev.isRecurringEvent() ? 'rec' : ''
       });
       idx[id] = plans.length - 1;
       changed = true;
     } else {
       var c = plans[q];
+      if (resolvedOnce_(c, done[c.id])) return;
       if (c.deleted === 'yes' || c.title !== title || c.startTime !== s || c.endTime !== e) {
         c.deleted = ''; c.title = title; c.startTime = s; c.endTime = e; c.updatedAt = stamp;
         changed = true;
@@ -1169,7 +1319,7 @@ function pullCalendar_(cal, plans, cats, tz) {
     if (p.deleted === 'yes' || p.date < fromIso || p.date > toIso) return;
     if (p.source === 'calendar' && !seenCal[p.id]) {
       p.deleted = 'yes'; p.updatedAt = stamp; changed = true;          // removed from the calendar
-    } else if (p.source !== 'calendar' && !p.days && p.calEventId && p.calSig === sig_(p) && !seenApp[p.id]) {
+    } else if (p.source !== 'calendar' && !p.days && p.calEventId && p.calSig === sig_(p, done[p.id]) && !resolvedOnce_(p, done[p.id]) && !seenApp[p.id]) {
       p.deleted = 'yes'; p.updatedAt = stamp; p.calEventId = ''; p.calSig = sig_(p); changed = true;   // deleted in the calendar
     }
   });
@@ -1194,6 +1344,110 @@ function hash_(s) {
     .map(function (b) { return ((b + 256) % 256).toString(16); })
     .map(function (h) { return h.length < 2 ? '0' + h : h; })
     .join('').slice(0, 16);
+}
+
+/* ------------------------ Timesheet Log calendar ------------------------ */
+// Mirrors every entry that has a start and end time into the "Timesheet Log" calendar.
+// Which event belongs to which entry is kept in a hidden "_LogCalendar" tab.
+
+function logSheet_(ss) {
+  var s = ss.getSheetByName('_LogCalendar');
+  if (!s) {
+    s = ss.insertSheet('_LogCalendar');
+    s.getRange(1, 1, s.getMaxRows(), 3).setNumberFormat('@');
+    s.getRange(1, 1, 1, 3).setValues([['EntryID', 'EventID', 'Sig']]);
+    try { s.hideSheet(); } catch (e) {}
+  }
+  return s;
+}
+function readLogMap_(s) {
+  var map = {}, last = s.getLastRow();
+  if (last < 2) return map;
+  s.getRange(2, 1, last - 1, 3).getValues().forEach(function (r) { if (r[0] !== '') map[String(r[0])] = { ev: String(r[1]), sig: String(r[2]) }; });
+  return map;
+}
+function writeLogMap_(s, map) {
+  var ids = Object.keys(map), last = s.getLastRow();
+  if (last > 1) s.getRange(2, 1, last - 1, 3).clearContent();
+  if (!ids.length) return;
+  if (s.getMaxRows() < ids.length + 1) s.insertRowsAfter(s.getMaxRows(), ids.length + 1 - s.getMaxRows());
+  s.getRange(2, 1, ids.length, 3).setNumberFormat('@').setValues(ids.map(function (id) { return [id, map[id].ev, map[id].sig]; }));
+}
+// Entries that came from confirming a plan have ids like plan_<planId>_<date>.
+function planIdOf_(e) { var m = /^plan_(.+)_(\d{4}-\d{2}-\d{2})$/.exec(e.id); return m ? m[1] : ''; }
+function planNote_(e, planIndex) {
+  var pid = planIdOf_(e);
+  if (!pid) return '';
+  var p = planIndex && planIndex[pid];
+  if (p && p.startTime && (p.startTime !== e.startTime || p.endTime !== e.endTime)) {
+    return '✓ Logged from your plan (planned ' + time12_(p.startTime) + ' – ' + time12_(p.endTime) + ')';
+  }
+  return '✓ Logged from your plan';
+}
+function time12_(t) { var h = Number(t.slice(0, 2)), m = t.slice(3, 5); return ((h + 11) % 12 + 1) + ':' + m + (h >= 12 ? ' PM' : ' AM'); }
+function logSig_(e, planIndex) {
+  var base = [e.date, e.startTime, e.endTime, e.subject, e.tag, e.description, e.totalMinutes].join('|');
+  return planIdOf_(e) ? base + '|' + planNote_(e, planIndex) : base;   // unchanged for ordinary entries
+}
+function fmtDur_(min) { min = Math.round(Number(min) || 0); var h = Math.floor(min / 60), m = min % 60; return !h ? m + 'm' : !m ? h + 'h' : h + 'h ' + m + 'm'; }
+
+function putLogEvent_(cal, e, evId, tz, planIndex) {
+  var start = at_(e.date, e.startTime, tz), end = at_(e.date, e.endTime, tz);
+  if (end <= start) end = new Date(end.getTime() + 86400000);
+  var note = planNote_(e, planIndex);
+  var title = (note ? '✓ ' : '') + (e.subject || e.tag || 'Logged activity');
+  var desc = (e.tag ? e.tag + '\n\n' : '') + (e.description ? e.description + '\n\n' : '') + (note ? note + '\n' : '') + 'Logged in your timesheet · ' + fmtDur_(e.totalMinutes);
+  var ev = null;
+  if (evId) { try { ev = cal.getEventById(evId); } catch (x) { ev = null; } }
+  if (ev) { ev.setTitle(title); ev.setTime(start, end); ev.setDescription(desc); return ev.getId(); }
+  return cal.createEvent(title, start, end, { description: desc }).getId();
+}
+
+function syncLogCalendar_(ss, rows, budget, plans) {
+  var res = { ok: true, pending: 0, limited: false, message: '' };
+  var cal;
+  try { cal = getLogCal_(); }
+  catch (e) { return { ok: false, pending: 0, limited: false, message: 'Calendar isn’t authorized yet. In Apps Script, run “setup” once, approve, then deploy a new version.' }; }
+  var tz = cal.getTimeZone(), sheet = logSheet_(ss), map = readLogMap_(sheet);
+  var want = {}, work = [], done = 0, changed = false, planIndex = {};
+  (plans || readPlans_(plansSheet_(ss))).forEach(function (p) { planIndex[p.id] = p; });
+  rows.forEach(function (r) {
+    var e = toEntry_(r);
+    if (!e.deleted && e.date && e.startTime && e.endTime) want[e.id] = e;
+  });
+  Object.keys(want).forEach(function (id) {
+    var sg = logSig_(want[id], planIndex);
+    if (!map[id] || map[id].sig !== sg) work.push({ id: id, e: want[id], sig: sg });
+  });
+  Object.keys(map).forEach(function (id) { if (!want[id]) work.push({ id: id, remove: true }); });
+  // Removals first, then newest dates first so this week appears right away.
+  work.sort(function (a, b) {
+    if (!!a.remove !== !!b.remove) return a.remove ? -1 : 1;
+    return a.remove ? 0 : (b.e.date + b.e.startTime).localeCompare(a.e.date + a.e.startTime);
+  });
+  for (var i = 0; i < work.length && done < budget; i++) {
+    var w = work[i];
+    try {
+      if (w.remove) {
+        if (map[w.id].ev) { var old = cal.getEventById(map[w.id].ev); if (old) old.deleteEvent(); }
+        delete map[w.id];
+      } else {
+        map[w.id] = { ev: putLogEvent_(cal, w.e, map[w.id] && map[w.id].ev, tz, planIndex), sig: w.sig };
+      }
+    } catch (err) {
+      if (/too many|rate|quota|limit|exceeded/i.test(String(err))) {
+        res.limited = true;
+        res.message = 'Google is pacing how fast events are added to your calendar; it will continue shortly.';
+        break;
+      }
+      if (w.remove) delete map[w.id]; else map[w.id] = { ev: (map[w.id] && map[w.id].ev) || '', sig: w.sig };   // don't retry a bad entry forever
+    }
+    done++;
+    changed = true;
+  }
+  if (changed) writeLogMap_(sheet, map);
+  res.pending = Math.max(0, work.length - done);
+  return res;
 }
 
 /* ------------------------------ Sheets ------------------------------ */
@@ -1261,7 +1515,7 @@ function out_(obj) {
    ===================================================================== */
 const THEME_KEY = 'timetrack_pro_theme_v2';
 const LS = { store: 'ts_store_v1', cats: 'ts_cats_v1', queue: 'ts_queue_v1', token: 'ts_token_v1', last: 'ts_last_sync_v1', plans: 'ts_plans_v1' };
-const BACKEND_V_KEY = 'ts_backend_v1', CAL_KEY = 'ts_cal_status_v1';
+const BACKEND_V_KEY = 'ts_backend_v1', CAL_KEY = 'ts_cal_status_v1', SERVER_SETTINGS_KEY = 'ts_server_settings_v1';
 const URL_KEY = 'ts_script_url_v1';
 // Your Apps Script Web app. Devices still saved to the old deployment are moved over automatically.
 const DEFAULT_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwSyYvtGFseukQ5hzDhAKVv0DQBRHn1bgL6wPvQAox6gvTyl1VqtA_wnwbJ1_g-5DZW6Q/exec';
@@ -1300,6 +1554,8 @@ let plans = {};            // id -> plan, including deleted tombstones
 let backendVersion = Number(lsRaw(BACKEND_V_KEY)) || 0;
 let calStatus = lsGet(CAL_KEY, null);
 let firstSync = true;
+let catchUpTimer = null;
+let serverSettings = lsGet(SERVER_SETTINGS_KEY, {});
 const now0 = new Date();
 const ui = {
   view: 'log', mode: 'times', editingId: null,
@@ -1405,7 +1661,8 @@ function localPlanDelete(id) {
   queueOp({ type: 'planDelete', id, updatedAt: t });
 }
 const isPlanOp = o => String(o && o.type).startsWith('plan');
-const sendableOps = () => opQueue.filter(o => backendVersion >= 2 || !isPlanOp(o));
+const opMinVersion = o => o && o.type === 'setting' ? 4 : isPlanOp(o) ? 2 : 0;
+const sendableOps = () => opQueue.filter(o => backendVersion >= opMinVersion(o));
 
 // Newest updatedAt wins; nothing is ever overwritten wholesale.
 function mergeFromCloud(data) {
@@ -1471,6 +1728,10 @@ async function syncNow(manual = false) {
     lsRawSet(BACKEND_V_KEY, String(backendVersion));
     calStatus = data.calendar || null;
     lsSet(CAL_KEY, calStatus);
+    if (data.settings && !opQueue.some(o => o.type === 'setting')) {
+      serverSettings = data.settings;
+      lsSet(SERVER_SETTINGS_KEY, serverSettings);
+    }
     firstSync = false;
     const changed = mergeFromCloud(data);
     lastSyncAt = new Date().toISOString();
@@ -1488,6 +1749,10 @@ async function syncNow(manual = false) {
     syncing = false;
     refreshSyncUI();
     if (!syncError && sendableOps().length) setTimeout(() => syncNow(), 300);
+    else if (!syncError && calStatus && calStatus.logPending > 0) {
+      clearTimeout(catchUpTimer);
+      catchUpTimer = setTimeout(() => { if (!document.hidden) syncNow(); }, calStatus.limited ? 60000 : 5000);
+    }
   }
 }
 
@@ -1530,11 +1795,20 @@ function refreshSyncUI() {
   let cState = 'busy', cMsg = 'Waiting for the first sync';
   if (!isConfigured()) { cState = 'err'; cMsg = 'Connect your Google Sheet first'; }
   else if (backendVersion && backendVersion < 2) { cState = 'err'; cMsg = 'Update your backend script to sync plans and your calendar (steps below)'; }
-  else if (backendVersion >= 2 && calStatus && calStatus.ok) { cState = 'ok'; cMsg = `Plans sync with “${calStatus.name || 'Timesheet Plans'}” in Google Calendar`; }
+  else if (backendVersion >= 2 && calStatus && calStatus.ok && calStatus.logPending > 0) {
+    cState = 'busy'; cMsg = `Adding your logged entries to “${calStatus.logName || 'Timesheet Log'}”: ${calStatus.logPending.toLocaleString()} to go. This continues in the background, even with the app closed.`;
+  }
+  else if ((backendVersion === 2 || backendVersion === 3) && calStatus && calStatus.ok) { cState = 'busy'; cMsg = 'Calendars are syncing. Update the backend script once more to get the newest features, like auto-log (steps below).'; }
+  else if (backendVersion >= 4 && calStatus && calStatus.ok) { cState = 'ok'; cMsg = `Plans sync with “${calStatus.name || 'Timesheet Plans'}” and everything you log appears in “${calStatus.logName || 'Timesheet Log'}”`; }
+  else if (backendVersion >= 2 && calStatus && calStatus.limited) { cState = 'busy'; cMsg = calStatus.message; }
   else if (backendVersion >= 2 && calStatus) { cState = 'err'; cMsg = calStatus.message || 'Calendar isn’t connected yet'; }
   $('#cal-box').dataset.state = cState;
   $('#cal-status').textContent = cMsg;
-  $('#cal-update').open = isConfigured() && backendVersion > 0 && backendVersion < 2;
+  $('#cal-update').open = isConfigured() && backendVersion > 0 && backendVersion < 4;
+  const sw = $('#set-autolog');
+  sw.disabled = backendVersion < 4;
+  sw.checked = !!serverSettings.autoLog;
+  if (backendVersion > 0 && backendVersion < 4) $('#autolog-hint').textContent = 'Update your backend script (steps below) to turn this on.';
 }
 
 /* ============================ Views ============================ */
@@ -1950,7 +2224,7 @@ function renderPlanner() {
   let msg = '';
   if (isConfigured() && backendVersion > 0 && backendVersion < 2 && Object.keys(plans).length)
     msg = 'Your plans are saved on this device only until you update the backend script. Open Settings › Plans &amp; calendar for the steps.';
-  else if (backendVersion >= 2 && calStatus && !calStatus.ok)
+  else if (backendVersion >= 2 && calStatus && !calStatus.ok && !calStatus.limited)
     msg = esc(calStatus.message || 'Google Calendar isn’t connected yet.') + ' Your plans still sync between devices.';
   banner.innerHTML = msg;
   banner.classList.toggle('hidden', !msg);
@@ -2005,7 +2279,7 @@ function renderConfirm() {
   const shown = ui.showAllDue ? due : due.slice(0, 5);
   card.innerHTML = `<div class="card-head"><h3 class="card-title">To confirm <span class="badge">${due.length}</span></h3>
       ${due.length > 1 ? '<button class="btn btn-sm" data-cfall>Confirm all as planned</button>' : ''}</div>
-    <p class="hint" style="margin:0 0 6px">Did these planned activities happen? Confirming logs them to your timesheet.</p>
+    <p class="hint" style="margin:0 0 6px">${serverSettings.autoLog ? 'These ended before auto-log was turned on, or are still being logged. ' : ''}Did these planned activities happen? Confirming logs them to your timesheet.</p>
     ${shown.map(o => {
       const p = o.plan;
       return `<div class="cf-row"><div style="min-width:0"><div class="cf-title">${esc(p.title)}</div>
@@ -2589,6 +2863,15 @@ function bindEvents() {
   $('#set-save-conn').addEventListener('click', saveConnection);
   $('#set-copy-script').addEventListener('click', copyBackendScript);
   $('#set-weekstart').addEventListener('change', e => setWeekStart(e.target.value));
+  $('#set-autolog').addEventListener('change', e => {
+    const on = e.target.checked;
+    opQueue = opQueue.filter(o => o.type !== 'setting');
+    queueOp({ type: 'setting', key: 'autoLog', value: on });
+    serverSettings = { ...serverSettings, autoLog: on };
+    lsSet(SERVER_SETTINGS_KEY, serverSettings);
+    toast(on ? 'Auto-log is on. Plans are logged for you when they end.' : 'Auto-log is off. Confirm plans yourself.');
+    syncNow();
+  });
   $('#tag-list').addEventListener('click', e => { const b = e.target.closest('[data-deltag]'); if (b) deleteTag(b.dataset.deltag); });
   $('#tag-add').addEventListener('submit', e => { e.preventDefault(); const i = $('#tag-add-input'); addTag(i.value); i.value = ''; });
   $('#exp-csv').addEventListener('click', exportCSV);
@@ -2605,6 +2888,10 @@ function bindEvents() {
   // Keep the "now" line, badges and the To-confirm list current as plans end.
   setInterval(() => {
     if (document.hidden) return;
+    if (serverSettings.autoLog && backendVersion >= 4) {
+      const since = serverSettings.autoLogSince ? new Date(serverSettings.autoLogSince) : null;
+      if (dueOccurrences().some(o => !since || occEnd(o.date, o.plan.startTime, o.plan.endTime) > since)) syncNow();   // let the backend log it now
+    }
     updateBadges();
     if (ui.view === 'weekly') renderPlanner();
     if (ui.view === 'log') renderConfirm();
