@@ -22,7 +22,6 @@
 </script>
 <style>
 :root {
-  --ok: #059669;
   --bg: #f7f6f2; --surface: #fffefb; --surface-2: #f1efe8; --surface-3: #e8e5db;
   --border: #e4e0d5; --border-strong: #d2cdc0;
   --text: #22211d; --muted: #6c675d; --faint: #9b968a;
@@ -38,7 +37,6 @@
   color-scheme: light;
 }
 :root[data-theme="dark"] {
-  --ok: #34d399;
   --bg: #191917; --surface: #22211e; --surface-2: #2a2925; --surface-3: #34322d;
   --border: #33312c; --border-strong: #46433c;
   --text: #f2f0e9; --muted: #b0ab9f; --faint: #858073;
@@ -52,7 +50,6 @@
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --ok: #34d399;
     --bg: #191917; --surface: #22211e; --surface-2: #2a2925; --surface-3: #34322d;
     --border: #33312c; --border-strong: #46433c;
     --text: #f2f0e9; --muted: #b0ab9f; --faint: #858073;
@@ -111,7 +108,7 @@ button { cursor: pointer; }
   font-size: 13px; font-weight: 500; white-space: nowrap;
 }
 .sync-pill:hover { border-color: var(--border-strong); color: var(--text); }
-.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ok, #059669); flex: none; }   /* status colour, never the area colour */
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex: none; }
 [data-state="busy"] .dot { background: #d97706; }
 [data-state="err"] .dot { background: var(--danger); }
 .sync-pill .sync-ic { display: none; }
@@ -548,8 +545,7 @@ code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-r
 .context { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; font-size: 13px; color: var(--muted); padding: 10px 12px; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--border); }
 .context b { color: var(--text); font-weight: 600; }
 .saved-note { font-size: 12px; color: var(--faint); }
-.scale { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); grid-auto-rows: 1fr; gap: 8px; }
-.scale button span { overflow-wrap: break-word; hyphens: auto; line-height: 1.25; }
+.scale { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
 .scale button {
   display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 10px 4px 9px; border-radius: 12px;
   border: 1px solid var(--border-strong); background: var(--surface); color: var(--muted); font-size: 11.5px; font-weight: 500; line-height: 1.2; text-align: center;
@@ -662,11 +658,7 @@ code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-r
 }
 @media (max-width: 560px) {
   .row4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .scale button { font-size: 12px; padding: 10px 6px 9px; }
-  .subnav { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 6px; overflow: visible; }
-  .subnav button { justify-content: center; padding: 0 6px; font-size: 13.5px; min-width: 0; }
-  .subnav button .ic { display: none; }
-  .subnav button span, .subnav button { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .scale button { font-size: 10.5px; padding: 9px 2px 8px; }
   .session { grid-template-columns: 44px minmax(0, 1fr); }
   .session > :last-child { grid-column: 1 / -1; justify-self: start; }
   .type-row { grid-template-columns: 9px minmax(0, 1fr) 120px 36px; }
@@ -674,6 +666,105 @@ code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-r
   .type-add .btn { grid-column: 1 / -1; }
   .ex-row, .ex-head { grid-template-columns: minmax(0, 1.6fr) repeat(3, minmax(0, 1fr)) 32px; gap: 4px; }
 }
+
+
+/* =====================================================================
+   Garden theme. "I planted, Apollos watered, but God caused the growth." 1 Cor. 3:6
+   ===================================================================== */
+:root { --leaf: #3f8f4f; --leaf-deep: #2d6b3a; --soil: #8a6142; --soil-dark: #6b4a31; --bloom: #e58fac; --bud: #d4a017; --fruit: #c2410c; }
+:root[data-theme="dark"] { --leaf: #5fbf72; --leaf-deep: #3f8f4f; --soil: #a37b5a; --soil-dark: #7d5a3f; --bloom: #f4a3bf; --bud: #f2c14e; --fruit: #fb923c; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --leaf: #5fbf72; --leaf-deep: #3f8f4f; --soil: #a37b5a; --soil-dark: #7d5a3f; --bloom: #f4a3bf; --bud: #f2c14e; --fruit: #fb923c; } }
+
+/* ---- Progress bars are vines. "I am the vine; you are the branches." John 15:5 ---- */
+.track { height: 14px; background: none; border-radius: 0; overflow: visible; position: relative; }
+.track::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 2px; margin-top: -1px; border-radius: 2px;
+  background: repeating-linear-gradient(90deg, var(--border-strong) 0 5px, transparent 5px 9px); }
+.track > div {
+  position: relative; height: 100%; border-radius: 0; background: var(--leaf); min-width: 0;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='14' viewBox='0 0 28 14'%3E%3Cpath d='M0 7.5C5 5.5 9 9.5 14 7.5S23 5.5 28 7.5' fill='none' stroke='%23000' stroke-width='1.8'/%3E%3Cpath d='M6 6.6C6.6 3 9.4 1.2 12.6 1c-.4 3.2-2.8 5.4-6.6 5.6Z'/%3E%3Cpath d='M20 8.6c.6 3.4 3.4 5 6.6 5.2-.4-3.2-2.8-5.2-6.6-5.2Z'/%3E%3C/svg%3E") left center / 28px 14px repeat-x,
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14'%3E%3Ccircle cx='9' cy='7' r='2.4'/%3E%3Ccircle cx='9' cy='3.6' r='2.1'/%3E%3Ccircle cx='9' cy='10.4' r='2.1'/%3E%3Ccircle cx='12.2' cy='5.4' r='1.9'/%3E%3Ccircle cx='12.2' cy='8.6' r='1.9'/%3E%3Cpath d='M0 7.5h7' stroke='%23000' stroke-width='1.8'/%3E%3C/svg%3E") right center / 14px 14px no-repeat;
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='14' viewBox='0 0 28 14'%3E%3Cpath d='M0 7.5C5 5.5 9 9.5 14 7.5S23 5.5 28 7.5' fill='none' stroke='%23000' stroke-width='1.8'/%3E%3Cpath d='M6 6.6C6.6 3 9.4 1.2 12.6 1c-.4 3.2-2.8 5.4-6.6 5.6Z'/%3E%3Cpath d='M20 8.6c.6 3.4 3.4 5 6.6 5.2-.4-3.2-2.8-5.2-6.6-5.2Z'/%3E%3C/svg%3E") left center / 28px 14px repeat-x,
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14'%3E%3Ccircle cx='9' cy='7' r='2.4'/%3E%3Ccircle cx='9' cy='3.6' r='2.1'/%3E%3Ccircle cx='9' cy='10.4' r='2.1'/%3E%3Ccircle cx='12.2' cy='5.4' r='1.9'/%3E%3Ccircle cx='12.2' cy='8.6' r='1.9'/%3E%3Cpath d='M0 7.5h7' stroke='%23000' stroke-width='1.8'/%3E%3C/svg%3E") right center / 14px 14px no-repeat;
+  transition: width .9s cubic-bezier(.3, .9, .3, 1);
+}
+.track.lg { height: 20px; }
+.track.lg > div { -webkit-mask-size: 40px 20px, 20px 20px; mask-size: 40px 20px, 20px 20px; }
+.share-cell .track { height: 12px; }
+.share-cell .track > div { -webkit-mask-size: 24px 12px, 12px 12px; mask-size: 24px 12px, 12px 12px; }
+.stat .track { margin-top: 8px; }
+
+/* ---- Checkboxes are planter boxes that sprout. "the seed sprouts and lengthens" Mark 4:27 ---- */
+.check-row input[type="checkbox"] {
+  -webkit-appearance: none; appearance: none; flex: none; margin: 0; width: 26px; height: 26px; cursor: pointer;
+  border: 1.5px solid var(--border-strong); border-radius: 7px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 8' preserveAspectRatio='none'%3E%3Crect width='26' height='8' fill='%238a6142'/%3E%3Ccircle cx='5' cy='3' r='.9' fill='%236b4a31'/%3E%3Ccircle cx='13' cy='5' r='.9' fill='%236b4a31'/%3E%3Ccircle cx='20' cy='2.6' r='.9' fill='%236b4a31'/%3E%3C/svg%3E") bottom / 100% 7px no-repeat, var(--surface);
+  transition: border-color .2s, box-shadow .2s;
+}
+.check-row input[type="checkbox"]:hover { border-color: var(--leaf); }
+.check-row input[type="checkbox"]:checked {
+  border-color: var(--leaf);
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 26'%3E%3Cpath d='M13 20V11' stroke='%233f8f4f' stroke-width='2' stroke-linecap='round'/%3E%3Cpath d='M13 12.5C13 8.6 15.8 6 20 6c0 4-2.8 6.5-7 6.5Z' fill='%233f8f4f'/%3E%3Cpath d='M13 14.5C13 11 10.4 8.6 6.6 8.6c0 3.6 2.6 5.9 6.4 5.9Z' fill='%2357a866'/%3E%3C/svg%3E") bottom center / 100% 100% no-repeat,
+              url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 8' preserveAspectRatio='none'%3E%3Crect width='26' height='8' fill='%238a6142'/%3E%3Ccircle cx='5' cy='3' r='.9' fill='%236b4a31'/%3E%3Ccircle cx='13' cy='5' r='.9' fill='%236b4a31'/%3E%3Ccircle cx='20' cy='2.6' r='.9' fill='%236b4a31'/%3E%3C/svg%3E") bottom / 100% 7px no-repeat, var(--surface);
+  animation: sprout .5s cubic-bezier(.3, 1.4, .5, 1);
+}
+@keyframes sprout { from { background-size: 100% 0%, 100% 7px; } to { background-size: 100% 100%, 100% 7px; } }
+
+/* ---- The weekly goal grows as a plant. "first a blade, then an ear, then full grain in the ear" Mark 4:28 ---- */
+.plant-stat { display: flex; align-items: stretch; justify-content: space-between; gap: 6px; }
+.plant-stat .ps-text { min-width: 0; display: flex; flex-direction: column; }
+.plant-stat .stage { margin-top: auto; padding-top: 6px; font-size: 12px; font-weight: 600; color: var(--leaf-deep); display: flex; align-items: center; gap: 5px; }
+:root[data-theme="dark"] .plant-stat .stage { color: var(--leaf); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .plant-stat .stage { color: var(--leaf); } }
+.plant { width: 74px; height: 92px; flex: none; margin: -6px -6px -10px 0; overflow: visible; }
+.plant .stem { fill: none; stroke: var(--leaf-deep); stroke-width: 2.6; stroke-linecap: round; }
+.plant .leaf { fill: var(--leaf); }
+.plant .leaf.alt { fill: var(--leaf-deep); }
+.plant .box { fill: var(--soil); }
+.plant .box-rim { fill: var(--soil-dark); }
+.plant .seed { fill: var(--soil-dark); }
+.plant .bud { fill: var(--leaf); }
+.plant .petal { fill: var(--bloom); }
+.plant .heart-of { fill: var(--bud); }
+.plant .fruit { fill: var(--fruit); }
+.plant.grow .stem { stroke-dasharray: 120; stroke-dashoffset: 120; animation: stemGrow 1s ease-out forwards; }
+.plant.grow .leaf, .plant.grow .bloom { transform-box: fill-box; transform-origin: center bottom; animation: leafIn .45s cubic-bezier(.3, 1.5, .5, 1) both; }
+@keyframes stemGrow { to { stroke-dashoffset: 0; } }
+@keyframes leafIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+/* ---- Verse ribbon. "For everything there is a season" Eccl. 3:1 ---- */
+.verse { display: flex; gap: 12px; align-items: flex-start; margin: -8px 0 22px; padding: 12px 14px 12px 12px; border-radius: 14px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--leaf) 9%, var(--surface)), var(--surface) 70%); border: 1px solid color-mix(in srgb, var(--leaf) 22%, var(--border)); }
+.verse-ic { width: 34px; height: 34px; border-radius: 10px; flex: none; display: grid; place-items: center; color: var(--leaf-deep); background: color-mix(in srgb, var(--leaf) 16%, transparent); }
+:root[data-theme="dark"] .verse-ic { color: var(--leaf); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .verse-ic { color: var(--leaf); } }
+.verse blockquote { margin: 0; min-width: 0; flex: 1; }
+.verse p { margin: 0; font-family: var(--serif); font-style: italic; font-size: 16.5px; line-height: 1.45; color: var(--text); }
+.verse footer { margin-top: 4px; font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.verse footer a { color: var(--leaf-deep); font-weight: 600; text-decoration: none; }
+:root[data-theme="dark"] .verse footer a { color: var(--leaf); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .verse footer a { color: var(--leaf); } }
+.verse footer a:hover { text-decoration: underline; }
+.verse footer button { border: 0; background: none; color: var(--faint); padding: 2px 4px; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px; font-size: 12px; }
+.verse footer button:hover { color: var(--text); background: var(--surface-2); }
+.empty-verse { font-family: var(--serif); font-style: italic; font-size: 14.5px; color: var(--muted); margin-top: 8px !important; }
+.empty-verse span { font-family: var(--sans); font-style: normal; font-size: 12px; color: var(--faint); }
+
+/* ---- Done states sprout ---- */
+.pill.ok .ic { width: 12px; height: 12px; vertical-align: -2px; margin-right: 2px; }
+
+/* ---- Connect a device & template ---- */
+.steps { margin: 0; padding-left: 0; list-style: none; counter-reset: s; display: flex; flex-direction: column; gap: 12px; }
+.steps li { counter-increment: s; display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 10px; font-size: 13.5px; color: var(--muted); line-height: 1.5; }
+.steps li::before { content: counter(s); width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font-weight: 600; font-size: 13px;
+  background: color-mix(in srgb, var(--leaf) 16%, var(--surface)); color: var(--leaf-deep); border: 1px solid color-mix(in srgb, var(--leaf) 35%, var(--border)); }
+.steps li b { color: var(--text); }
+.steps li .btn { margin-top: 6px; }
+.pair-box { display: grid; grid-template-columns: 148px minmax(0, 1fr); gap: 16px; align-items: center; }
+.qr { width: 148px; height: 148px; border-radius: 12px; background: #fff; display: grid; place-items: center; padding: 6px; border: 1px solid var(--border); }
+.qr svg { width: 100%; height: 100%; }
+.qr .hint { color: #6c675d; text-align: center; padding: 8px; }
+@media (max-width: 560px) { .pair-box { grid-template-columns: minmax(0, 1fr); justify-items: center; text-align: center; } .pair-box .btn-row { justify-content: center; } }
+@media (prefers-reduced-motion: reduce) { .plant.grow .stem { stroke-dashoffset: 0; } }
 
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 </style>
@@ -714,13 +805,14 @@ code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-r
     <symbol id="i-food" viewBox="0 0 24 24"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2M7 2v20M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></symbol>
     <symbol id="i-dumbbell" viewBox="0 0 24 24"><path d="M6.5 6.5 17.5 17.5M21 21l-1-1M3 3l1 1M18 22l4-4M2 6l4-4M3 10l7-7M14 21l7-7"/></symbol>
     <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M12 3l1.9 5.6L19.5 10.5 13.9 12.4 12 18l-1.9-5.6L4.5 10.5l5.6-1.9Z"/></symbol>
+    <symbol id="i-sprout" viewBox="0 0 24 24"><path d="M12 21v-9"/><path d="M12 12.5c0-4 2.8-6.6 7-6.6 0 4.1-2.8 6.6-7 6.6Z"/><path d="M12 14.5C12 11 9.6 8.6 5.6 8.6c0 3.6 2.5 5.9 6.4 5.9Z"/><path d="M6.5 21h11"/></symbol>
   </defs>
 </svg>
 
 <header class="topbar">
   <div class="topbar-inner">
     <div class="brand">
-      <span class="brand-mark"><svg class="ic"><use href="#i-clock"/></svg></span>
+      <span class="brand-mark"><svg class="ic"><use href="#i-sprout"/></svg></span>
       <div>
         <div class="brand-name">Ecclesiastes 3:1</div>
         <div class="brand-sub">For everything there is a season, and a time for every purpose under heaven</div>
@@ -748,6 +840,7 @@ code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-r
 
 <main>
   <nav class="subnav" id="subnav" aria-label="Sections"></nav>
+  <aside class="verse" id="verse" aria-label="Verse for today"></aside>
   <!-- ============ DAILY LOG ============ -->
   <section class="view" id="view-log">
     <div class="log-layout">
@@ -874,7 +967,7 @@ code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-r
   <!-- ============ HEART · JOURNAL ============ -->
   <section class="view hidden" id="view-heart">
     <div class="page-head">
-      <div><p class="eyebrow" id="hj-rel">Today</p><h1 class="page-title" id="hj-title">Heart journal</h1><p class="page-sub">The dealings of your conscience, from dirty feet to enjoyment &amp; satisfaction</p></div>
+      <div><p class="eyebrow" id="hj-rel">Today</p><h1 class="page-title" id="hj-title">Heart journal</h1><p class="page-sub">The dealings of your conscience, from dirty feet to joy unspeakable</p></div>
       <div class="pager">
         <button class="btn-icon bordered" data-dnav="heart:-1" aria-label="Previous day"><svg class="ic"><use href="#i-left"/></svg></button>
         <button class="btn btn-sm" data-dnav="heart:0">Today</button>
@@ -1034,27 +1127,60 @@ code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-r
 
     <section class="set-sec" id="sec-sync">
       <h3>Google Sheet sync</h3>
-      <p class="notice info" style="margin:0">Your journal, conscience readings and health data are stored in your Google Sheet in plain text. Keep that Sheet private: don’t share it, and only give your sync token to devices you own. Anyone the Sheet is shared with can read everything in it.</p>
       <div class="sync-box" id="set-sync-box" data-state="ok">
         <div class="sync-line"><span class="dot"></span><span id="set-status">Not synced yet</span></div>
         <button class="btn btn-sm" id="set-sync-now"><svg class="ic sm"><use href="#i-refresh"/></svg>Sync now</button>
       </div>
+      <div id="start-box">
+        <ol class="steps">
+          <li><div><b>Make your own copy of the Eccl 3:1 sheet.</b> Everything you write stays in your own Google Drive.<br>
+            <a class="btn btn-sm btn-primary hidden" id="tpl-copy" target="_blank" rel="noopener"><svg class="ic sm"><use href="#i-copy"/></svg>Make my copy</a>
+            <span id="tpl-none" class="mini">Open the setup link from whoever invited you, or set up from scratch below.</span></div></li>
+          <li><div><b>Deploy it once.</b> In your copy choose <b>Extensions › Apps Script</b>, then <b>Deploy › New deployment</b>. Click the gear and pick <b>Web app</b>. Set <b>Execute as: Me</b> and <b>Who has access: Anyone</b>, tap <b>Deploy</b> and approve. Copy the <b>Web app URL</b>.</div></li>
+          <li><div><b>Paste it here and tap Connect.</b> No token or code needed.</div></li>
+        </ol>
+      </div>
       <label class="field"><span>Web app URL</span><input type="url" id="set-url" placeholder="https://script.google.com/macros/s/…/exec" autocomplete="off" spellcheck="false"></label>
-      <label class="field"><span>Sync token</span><input type="password" id="set-token" placeholder="Sync token" autocomplete="off"></label>
+      <details class="setup" id="tok-details">
+        <summary>Have a sync token? (older setups and other people’s sheets)</summary>
+        <label class="field" style="margin-top:10px"><span>Sync token</span><input type="password" id="set-token" placeholder="Sync token" autocomplete="off"></label>
+      </details>
       <div class="btn-row">
-        <button class="btn btn-primary" id="set-save-conn">Save connection</button>
+        <button class="btn btn-primary" id="set-save-conn">Connect</button>
         <button class="btn" id="set-copy-script"><svg class="ic sm"><use href="#i-copy"/></svg>Copy backend script</button>
       </div>
+
+      <div id="pair-box" class="hidden" style="display:flex;flex-direction:column;gap:10px;margin-top:6px">
+        <h3>Connect another device</h3>
+        <div class="pair-box">
+          <div class="qr" id="pair-qr"></div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <p class="hint" style="font-size:13px;color:var(--muted)">Scan this with your phone’s camera, or send yourself the link. It opens the app already connected to your sheet. Keep it private; it works like a key.</p>
+            <div class="btn-row"><button class="btn btn-sm" id="pair-copy"><svg class="ic sm"><use href="#i-copy"/></svg>Copy link</button><button class="btn btn-sm" id="pair-share">Share…</button></div>
+          </div>
+        </div>
+      </div>
+
       <details class="setup">
-        <summary>First-time setup with your own Google Sheet</summary>
+        <summary>Set up from scratch with your own Google Sheet</summary>
         <ol>
           <li>Create a Google Sheet, then open <b>Extensions › Apps Script</b>.</li>
           <li>Tap <b>Copy backend script</b> above. Paste it over everything in the editor and save. A private token is generated for you and already filled in.</li>
-          <li>In the toolbar choose the function <b>setup</b> and click <b>Run</b>. Approve the permissions (Sheets and Calendar).</li>
-          <li><b>Deploy › New deployment › Web app.</b> Execute as <b>Me</b>, access <b>Anyone</b>. Copy the Web app URL.</li>
-          <li>Paste the URL above and tap <b>Save connection</b>.</li>
-          <li>On your other devices, enter the same URL and the token from the <code>SECRET</code> line in Apps Script.</li>
+          <li><b>Deploy › New deployment › Web app.</b> Execute as <b>Me</b>, access <b>Anyone</b>. Approve the permissions and copy the Web app URL.</li>
+          <li>Paste the URL above and tap <b>Connect</b>.</li>
         </ol>
+      </details>
+      <details class="setup">
+        <summary>Invite others: make a template sheet</summary>
+        <ol>
+          <li>Create a <b>new, empty</b> Google Sheet named <b>Eccl 3:1</b>. Don’t use your own timesheet; its data would be copied too.</li>
+          <li>Open <b>Extensions › Apps Script</b>, paste the template script, and save. <button class="btn btn-sm" type="button" id="tpl-script" style="margin-left:4px"><svg class="ic sm"><use href="#i-copy"/></svg>Copy template script</button></li>
+          <li>Tap <b>Share</b> in the sheet and set General access to <b>Anyone with the link · Viewer</b>.</li>
+          <li>Paste the sheet’s link here to get a setup link to send people:</li>
+        </ol>
+        <div class="tag-add" style="margin-top:10px"><input type="url" id="tpl-link" placeholder="https://docs.google.com/spreadsheets/d/…" autocomplete="off" spellcheck="false"><button class="btn" type="button" id="tpl-make">Create link</button></div>
+        <div class="hidden" id="tpl-out" style="margin-top:10px"><p class="codeblock" id="tpl-out-link" style="white-space:normal;overflow-wrap:anywhere"></p><button class="btn btn-sm" type="button" id="tpl-out-copy" style="margin-top:8px"><svg class="ic sm"><use href="#i-copy"/></svg>Copy setup link</button></div>
+        <p class="hint" style="margin-top:8px">Each person who opens the setup link gets a <b>Make my copy</b> button. Their copy has its own private token and its own data; you can’t see it. When you update the backend later, they paste the new script into their copy (Plans &amp; calendar › Update your backend script).</p>
       </details>
     </section>
 
@@ -1069,7 +1195,7 @@ code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-r
         <summary>Update your backend script (needed for plans, calendars, Heart &amp; Body)</summary>
         <ol>
           <li>Tap <b>Copy backend script</b> above. In your Google Sheet open <b>Extensions › Apps Script</b>, select everything in the editor and paste over it. Save.</li>
-          <li>Check the <code>SECRET</code> line near the top holds your token (the button fills it in for you). Keep the Sheet itself private; it holds your journal.</li>
+          <li>Check the <code>SECRET</code> line near the top holds your token (the button fills it in for you).</li>
           <li>In the toolbar choose the function <b>setup</b> and click <b>Run</b>. Approve the permissions; Google asks for Calendar access and to run a background task.</li>
           <li><b>Deploy › Manage deployments</b> › pencil icon › Version: <b>New version</b> › Deploy. Your Web app URL stays the same.</li>
           <li>Come back here and tap <b>Sync now</b>.</li>
@@ -1154,19 +1280,17 @@ code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-r
 
     <section class="set-sec">
       <h3>Backup &amp; export</h3>
-      <div class="pref-row"><span>Spreadsheet (CSV) of</span>
-        <select id="exp-kind" aria-label="What to export">
-          <option value="spirit">Spirit timesheet</option><option value="journal">Journal</option><option value="conscience">Conscience readings</option>
-          <option value="meal">Meals</option><option value="food">Saved foods</option><option value="workout">Workouts</option>
-          <option value="check">Check-ins</option><option value="health">Apple Health</option>
-        </select>
-      </div>
       <div class="btn-row">
         <button class="btn" id="exp-csv"><svg class="ic sm"><use href="#i-file"/></svg>Export CSV</button>
         <button class="btn" id="exp-json"><svg class="ic sm"><use href="#i-download"/></svg>Export JSON</button>
         <label class="btn"><svg class="ic sm"><use href="#i-upload"/></svg>Import JSON<input type="file" id="imp-json" accept=".json,application/json" hidden></label>
       </div>
-      <p class="hint">CSV files open in Excel, Numbers or Google Sheets. Export JSON is a full backup of everything; importing it merges, so nothing existing is overwritten.</p>
+      <p class="hint">Importing merges entries into your timesheet; nothing existing is overwritten.</p>
+    </section>
+
+    <section class="set-sec">
+      <h3>Scripture</h3>
+      <p class="hint" style="font-size:12.5px;line-height:1.55">Verses in the app are short quotations from the <i>Holy Bible Recovery Version</i>, &copy; Living Stream Ministry, Anaheim, California. Each one links to its chapter at <a href="https://text.recoveryversion.bible/" target="_blank" rel="noopener">text.recoveryversion.bible</a>.</p>
     </section>
 
     <section class="set-sec">
@@ -1300,9 +1424,13 @@ code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-r
 
 <!-- Backend (Google Apps Script) template copied by "Copy backend script". -->
 <script type="text/plain" id="backendScript">
-// Timesheet sync backend (container-bound to your Google Sheet): Spirit, Heart & Body.
+// Timesheet sync backend v3 (container-bound to your Google Sheet): Spirit, Heart & Body.
 //
-// Updating or installing:
+// Easiest setup: make a copy of a template sheet that already holds this script, then
+// Deploy > New deployment > Web app (Execute as: Me, Who has access: Anyone), and paste the
+// Web app URL into the app's Settings. The copy makes its own private token.
+//
+// Updating or installing by hand:
 // 1) Paste this over everything in Extensions > Apps Script. Put your token in SECRET
 //    (the app's "Copy backend script" button fills it in for you). Save.
 // 2) In the toolbar, choose the function "setup" and click Run. Approve the permissions
@@ -1312,12 +1440,9 @@ code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-r
 
 var SECRET = 'CHANGE_ME_TO_A_LONG_RANDOM_STRING';
 var VERSION = 8;
-var HEADERS = ['ID', 'Date', 'Subject', 'TotalMinutes', 'Tag', 'Description', 'CreatedAt', 'UpdatedAt', 'Deleted', 'StartTime', 'EndTime', 'ServerAt'];
-// ServerAt is the server's time when a row last changed. Apps send the time of their last sync
-// ("since") and only rows changed after it are sent back, so syncs stay small as history grows.
-var SNAP_ = { entries: {}, plans: {}, recs: {} };
+var HEADERS = ['ID', 'Date', 'Subject', 'TotalMinutes', 'Tag', 'Description', 'CreatedAt', 'UpdatedAt', 'Deleted', 'StartTime', 'EndTime'];
 var PLAN_HEADERS = ['ID', 'Title', 'Tag', 'Notes', 'Date', 'StartTime', 'EndTime', 'Days', 'Until', 'Skips',
-                    'CreatedAt', 'UpdatedAt', 'Deleted', 'Source', 'CalEventId', 'CalSig', 'ServerAt'];
+                    'CreatedAt', 'UpdatedAt', 'Deleted', 'Source', 'CalEventId', 'CalSig'];
 var CAL_NAME = 'Timesheet Plans';      // what's still ahead
 var LOG_CAL_NAME = 'Timesheet Log';    // everything you logged, at the actual times
 var LOG_BATCH = 15;                    // log events written per app sync (keeps syncs quick)
@@ -1437,7 +1562,9 @@ function doPost(e) {
   try {
     lock.waitLock(25000);
     var req = JSON.parse(e.postData.contents);
-    if (!req.token || req.token !== SECRET) return out_({ status: 'error', message: 'Unauthorized' });
+    if (req.action === 'pair') return pair_();
+    if (!req.token || req.token !== secret_()) return out_({ status: 'error', message: 'Unauthorized' });
+    markPaired_();
     applyTz_(req.tz);
 
     var ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -1451,11 +1578,9 @@ function doPost(e) {
     var cats = readCats_(cs);
     var plans = readPlans_(ps);
     var rs = recordsSheet_(ss), recRows = readRecs_(rs);
-    var since = /^\d{4}-\d{2}-\d{2}T/.test(String(req.since || '')) ? String(req.since) : '';
 
     var res = applyOps_(rows, cats, plans, req.ops || []);
     if (applyRecOps_(recRows, req.ops || [])) writeRecs_(rs, recRows);
-    else { try { refreshMirrors_(ss, recRows, null); } catch (e) {} }   // builds any readable tab that doesn't exist yet
     var cal = syncCalendar_(plans, cats, !!req.forceCalendar, rows);
     var auto = autoLogOn_();
     if (auto) {
@@ -1475,9 +1600,7 @@ function doPost(e) {
 
     return out_({
       status: 'success', version: VERSION, serverTime: new Date().toISOString(),
-      since: since, entries: since_(rows, since, function (r) { return r[11]; }).map(toEntry_), categories: cats,
-      plans: since_(plans, since, function (p) { return p.serverAt; }).map(toPlan_),
-      records: since_(recRows, since, function (r) { return r[6]; }).map(toRec_),
+      entries: rows.map(toEntry_), categories: cats, plans: plans.map(toPlan_), records: recRows.map(toRec_),
       calendar: { ok: cal.ok && log.ok, message: cal.message || log.message, name: CAL_NAME, logName: LOG_CAL_NAME,
                   logPending: log.pending, limited: log.limited },
       settings: { autoLog: auto, autoLogSince: PropertiesService.getScriptProperties().getProperty('autoLogSince') || '' }
@@ -1585,7 +1708,7 @@ function toPlan_(p) {
 function plansSheet_(ss) {
   var ps = ss.getSheetByName('Plans');
   if (!ps) ps = ss.insertSheet('Plans');
-  if (ps.getRange(1, PLAN_HEADERS.length).getValue() !== 'ServerAt') {
+  if (ps.getRange(1, 1).getValue() !== 'ID') {
     ps.getRange(1, 1, ps.getMaxRows(), PLAN_HEADERS.length).setNumberFormat('@');
     ps.getRange(1, 1, 1, PLAN_HEADERS.length).setValues([PLAN_HEADERS]);
     ps.setFrozenRows(1);
@@ -1604,23 +1727,19 @@ function readPlans_(ps) {
       return {
         id: v(0), title: v(1), tag: v(2), notes: v(3), date: v(4, 'yyyy-MM-dd'), startTime: v(5, 'HH:mm'), endTime: v(6, 'HH:mm'),
         days: v(7), until: v(8, 'yyyy-MM-dd'), skips: v(9), createdAt: stamp_(r[10]), updatedAt: stamp_(r[11]),
-        deleted: v(12), source: v(13), calEventId: v(14), calSig: v(15), serverAt: stamp_(r[16])
+        deleted: v(12), source: v(13), calEventId: v(14), calSig: v(15)
       };
-    })
-    .map(function (p) { SNAP_.plans[p.id] = planSig_(p); return p; });
+    });
 }
-function planSig_(p) { var c = {}; Object.keys(p).forEach(function (k) { if (k !== 'serverAt') c[k] = p[k]; }); return JSON.stringify(c, Object.keys(c).sort()); }
 
 function writePlans_(ps, plans) {
-  var now = new Date().toISOString();
-  plans.forEach(function (p) { var sg = planSig_(p); if (SNAP_.plans[p.id] !== sg) { p.serverAt = now; SNAP_.plans[p.id] = sg; } });
   var last = ps.getLastRow();
   if (last > 1) ps.getRange(2, 1, last - 1, PLAN_HEADERS.length).clearContent();
   if (!plans.length) return;
   if (ps.getMaxRows() < plans.length + 1) ps.insertRowsAfter(ps.getMaxRows(), plans.length + 1 - ps.getMaxRows());
   ps.getRange(2, 1, plans.length, PLAN_HEADERS.length).setNumberFormat('@').setValues(plans.map(function (p) {
     return [p.id, p.title, p.tag, p.notes, p.date, p.startTime, p.endTime, p.days, p.until, p.skips,
-            p.createdAt, p.updatedAt, p.deleted, p.source, p.calEventId, p.calSig, p.serverAt || ''];
+            p.createdAt, p.updatedAt, p.deleted, p.source, p.calEventId, p.calSig];
   }));
 }
 
@@ -1992,10 +2111,10 @@ function syncLogCalendar_(ss, rows, budget, plans) {
 // Date objects or treating notes that start with "=" as formulas. Existing rows are kept.
 function entriesSheet_(ss) {
   var sh = ss.getSheetByName('Entries') || ss.insertSheet('Entries');
-  if (sh.getRange(1, HEADERS.length).getValue() !== 'ServerAt') {
+  if (sh.getRange(1, HEADERS.length).getValue() !== 'EndTime') {
     var rows = readRows_(sh); // read first so legacy Date cells become text
     sh.getRange('A:C').setNumberFormat('@');
-    sh.getRange('E:L').setNumberFormat('@');
+    sh.getRange('E:K').setNumberFormat('@');
     sh.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]);
     sh.setFrozenRows(1);
     writeRows_(sh, rows);
@@ -2011,9 +2130,8 @@ function readRows_(sh) {
     .filter(function (r) { return r[0] !== ''; })
     .map(function (r) {
       return [String(r[0]), r[1] instanceof Date ? Utilities.formatDate(r[1], tz, 'yyyy-MM-dd') : String(r[1]),
-              String(r[2]), Number(r[3]) || 0, String(r[4]), String(r[5]), stamp_(r[6]), stamp_(r[7]), String(r[8] || ''), time_(r[9], tz), time_(r[10], tz), stamp_(r[11])];
-    })
-    .map(function (r) { SNAP_.entries[r[0]] = JSON.stringify(r.slice(0, 11)); return r; });
+              String(r[2]), Number(r[3]) || 0, String(r[4]), String(r[5]), stamp_(r[6]), stamp_(r[7]), String(r[8] || ''), time_(r[9], tz), time_(r[10], tz)];
+    });
 }
 
 function time_(v, tz) { return v instanceof Date ? Utilities.formatDate(v, tz, 'HH:mm') : String(v || ''); }
@@ -2021,17 +2139,10 @@ function time_(v, tz) { return v instanceof Date ? Utilities.formatDate(v, tz, '
 function stamp_(v) { return v instanceof Date ? v.toISOString() : String(v || ''); }
 
 function writeRows_(sh, rows) {
-  var now = new Date().toISOString();
-  rows.forEach(function (r) {
-    while (r.length < HEADERS.length) r.push('');
-    var sig = JSON.stringify(r.slice(0, 11));
-    if (SNAP_.entries[r[0]] !== sig) { r[11] = now; SNAP_.entries[r[0]] = sig; }
-  });
   var last = sh.getLastRow();
   if (last > 1) sh.getRange(2, 1, last - 1, HEADERS.length).clearContent();
   if (rows.length) sh.getRange(2, 1, rows.length, HEADERS.length).setValues(rows);
 }
-function since_(list, since, get) { return since ? list.filter(function (x) { return String(get(x) || '') >= since; }) : list; }
 
 function writeCats_(cs, cats) {
   var last = cs.getLastRow();
@@ -2048,12 +2159,12 @@ function readCats_(cs) {
 /* ------------------------- Heart & Body records ------------------------- */
 // One "Records" sheet holds journal entries, conscience readings, meals, saved foods,
 // workouts, check-ins, Apple Health days and Body settings. Newest UpdatedAt wins.
-var REC_HEADERS = ['ID', 'Kind', 'Date', 'UpdatedAt', 'Deleted', 'Data', 'ServerAt'];
+var REC_HEADERS = ['ID', 'Kind', 'Date', 'UpdatedAt', 'Deleted', 'Data'];
 var HEALTH_NUMBERS = ['steps', 'activeCalories', 'restingHR', 'sleepHours', 'weight', 'exerciseMinutes', 'distance'];
 
 function recordsSheet_(ss) {
   var s = ss.getSheetByName('Records') || ss.insertSheet('Records');
-  if (s.getRange(1, REC_HEADERS.length).getValue() !== 'ServerAt') {
+  if (s.getRange(1, 1).getValue() !== 'ID') {
     s.getRange(1, 1, s.getMaxRows(), REC_HEADERS.length).setNumberFormat('@');
     s.getRange(1, 1, 1, REC_HEADERS.length).setValues([REC_HEADERS]);
     s.setFrozenRows(1);
@@ -2069,25 +2180,14 @@ function readRecs_(s) {
     .filter(function (r) { return r[0] !== ''; })
     .map(function (r) {
       return [String(r[0]), String(r[1]), r[2] instanceof Date ? Utilities.formatDate(r[2], tz, 'yyyy-MM-dd') : String(r[2]),
-              stamp_(r[3]), String(r[4] || ''), String(r[5] || ''), stamp_(r[6])];
-    })
-    .map(function (r) { SNAP_.recs[r[0]] = JSON.stringify(r.slice(0, 6)); return r; });
+              stamp_(r[3]), String(r[4] || ''), String(r[5] || '')];
+    });
 }
 
 function writeRecs_(s, rows) {
-  var now = new Date().toISOString(), kinds = {};
-  rows.forEach(function (r) {
-    while (r.length < REC_HEADERS.length) r.push('');
-    var sig = JSON.stringify(r.slice(0, 6));
-    if (SNAP_.recs[r[0]] !== sig) { r[6] = now; SNAP_.recs[r[0]] = sig; kinds[r[1]] = true; }
-  });
   var last = s.getLastRow();
   if (last > 1) s.getRange(2, 1, last - 1, REC_HEADERS.length).clearContent();
-  if (rows.length) {
-    if (s.getMaxRows() < rows.length + 1) s.insertRowsAfter(s.getMaxRows(), rows.length + 1 - s.getMaxRows());
-    s.getRange(2, 1, rows.length, REC_HEADERS.length).setNumberFormat('@').setValues(rows);
-  }
-  try { refreshMirrors_(s.getParent(), rows, kinds); } catch (e) {}   // readable tabs never block a sync
+  if (rows.length) s.getRange(2, 1, rows.length, REC_HEADERS.length).setValues(rows);
 }
 
 function recRow_(rec, stamp) {
@@ -2119,73 +2219,6 @@ function applyRecOps_(rows, ops) {
   return changed;
 }
 
-/* -------------------- Readable Heart & Body tabs -------------------- */
-// Plain, filterable copies of the Records tab, one tab per kind. They are rebuilt automatically
-// whenever that kind changes. They're for reading, filtering and exporting; edits there are not
-// synced back (the app is where you change things), so each tab warns before editing.
-var LEVEL_NAMES_ = ['', 'Dirty feet', 'Troubled', 'Neutral', 'Peace', 'Enjoyment & Satisfaction'];
-var FEEL_NAMES_ = ['', 'Easy', 'Just right', 'Hard', 'Too hard'];
-var ENERGY_NAMES_ = ['', 'Drained', 'Low', 'OK', 'Good', 'Great'];
-var SORE_NAMES_ = ['', 'None', 'Mild', 'Some', 'Sore', 'Pain'];
-
-function mirrorDefs_(units) {
-  var mi = units.dist === 'km' ? 1 : 0.621371, lb = units.weight === 'kg' ? 1 : 2.20462;
-  var n = function (v, dp) { v = Number(v); return v || v === 0 ? (dp === undefined ? v : Math.round(v * Math.pow(10, dp)) / Math.pow(10, dp)) : ''; };
-  var kcal = function (r) { return n(r.calories) || Math.round(4 * (+r.carbs || 0) + 4 * (+r.protein || 0) + 9 * (+r.fat || 0)); };
-  return {
-    journal: { tab: 'Journal', cols: [['Date', 't', 'date'], ['Dealings & denying the self', 't', 'dealings'], ['What God is operating within me', 't', 'operating'],
-                                      ['What He is calling out in my heart', 't', 'calling'], ['Last edited', 't', function (r) { return String(r.updatedAt || '').slice(0, 16).replace('T', ' '); }]] },
-    conscience: { tab: 'Conscience', cols: [['Date', 't', 'date'], ['Time', 't', 'time'], ['Reading', 't', function (r) { return LEVEL_NAMES_[+r.level] || ''; }],
-                                            ['Level (1–5)', 'n', function (r) { return n(r.level); }], ['Note', 't', 'note']] },
-    meal: { tab: 'Meals', cols: [['Date', 't', 'date'], ['Time', 't', 'time'], ['Meal', 't', 'slot'], ['Food', 't', 'name'], ['Calories', 'n', kcal],
-                                 ['Carbs (g)', 'n', function (r) { return n(r.carbs); }], ['Protein (g)', 'n', function (r) { return n(r.protein); }], ['Fat (g)', 'n', function (r) { return n(r.fat); }]] },
-    food: { tab: 'Saved foods', cols: [['Food', 't', 'name'], ['Calories', 'n', kcal], ['Carbs (g)', 'n', function (r) { return n(r.carbs); }],
-                                       ['Protein (g)', 'n', function (r) { return n(r.protein); }], ['Fat (g)', 'n', function (r) { return n(r.fat); }]] },
-    workout: { tab: 'Workouts', cols: [['Date', 't', 'date'], ['Time', 't', 'time'], ['Type', 't', 'type'], ['Title', 't', 'title'], ['Minutes', 'n', function (r) { return n(r.minutes); }],
-      ['Distance (' + (units.dist === 'km' ? 'km' : 'mi') + ')', 'n', function (r) { return r.distanceKm ? n(r.distanceKm * mi, 2) : ''; }],
-      ['Pace (min/' + (units.dist === 'km' ? 'km' : 'mi') + ')', 't', function (r) { if (!r.distanceKm || !r.minutes) return ''; var p = r.minutes / (r.distanceKm * mi); return Math.floor(p) + ':' + ('0' + Math.round((p % 1) * 60)).slice(-2); }],
-      ['Felt', 't', function (r) { return FEEL_NAMES_[+r.feel] || ''; }],
-      ['Exercises', 't', function (r) { return (r.exercises || []).map(function (x) { return x.name + (x.sets ? ' ' + x.sets + '×' + (x.reps || '') : '') + (x.weight ? ' @ ' + x.weight + ' ' + (r.weightUnit || '') : ''); }).join('; '); }],
-      ['Notes', 't', 'notes']] },
-    check: { tab: 'Check-ins', cols: [['Date', 't', 'date'], ['Energy', 't', function (r) { return ENERGY_NAMES_[+r.energy] || ''; }], ['Soreness', 't', function (r) { return SORE_NAMES_[+r.soreness] || ''; }],
-      ['Sleep (hrs)', 'n', function (r) { return n(r.sleep); }], ['Weight (' + (units.weight === 'kg' ? 'kg' : 'lb') + ')', 'n', function (r) { return r.weightKg ? n(r.weightKg * lb, 1) : ''; }]] },
-    health: { tab: 'Apple Health', cols: [['Date', 't', 'date'], ['Steps', 'n', function (r) { return n(r.steps); }], ['Active calories', 'n', function (r) { return n(r.activeCalories); }],
-      ['Exercise (min)', 'n', function (r) { return n(r.exerciseMinutes); }], ['Distance', 'n', function (r) { return n(r.distance); }], ['Distance unit', 't', 'distanceUnit'],
-      ['Resting heart rate', 'n', function (r) { return n(r.restingHR); }], ['Sleep (hrs)', 'n', function (r) { return n(r.sleepHours); }],
-      ['Weight', 'n', function (r) { return n(r.weight); }], ['Weight unit', 't', 'weightUnit'], ['Source', 't', 'source']] }
-  };
-}
-
-function refreshMirrors_(ss, rows, changedKinds) {
-  var present = {}, tabs = { journal: 'Journal', conscience: 'Conscience', meal: 'Meals', food: 'Saved foods', workout: 'Workouts', check: 'Check-ins', health: 'Apple Health' };
-  rows.forEach(function (r) { if (!/^(yes|true)$/i.test(r[4])) present[r[1]] = true; });
-  var todo = Object.keys(tabs).filter(function (k) {
-    return (present[k] && !ss.getSheetByName(tabs[k])) || (changedKinds && (changedKinds[k] || changedKinds.config));
-  });
-  if (!todo.length) return;                       // nothing new to show: no extra work on ordinary syncs
-  var recs = rows.map(toRec_).filter(function (r) { return !r.deleted; });
-  var conf = recs.filter(function (r) { return r.kind === 'config'; })[0] || {};
-  var defs = mirrorDefs_({ dist: conf.distUnit === 'km' ? 'km' : 'mi', weight: conf.weightUnit === 'kg' ? 'kg' : 'lb' });
-  todo.forEach(function (kind) {
-    var def = defs[kind], sh = ss.getSheetByName(def.tab);
-    if (!sh) {
-      sh = ss.insertSheet(def.tab);
-      try { sh.protect().setWarningOnly(true).setDescription('View only: changes here are not synced. Edit in the app.'); } catch (e) {}
-    }
-    var list = recs.filter(function (r) { return r.kind === kind; })
-      .sort(function (a, b) { return (String(b.date) + String(b.time || '')).localeCompare(String(a.date) + String(a.time || '')) || String(a.name || '').localeCompare(String(b.name || '')); });
-    var values = [def.cols.map(function (c) { return c[0]; })].concat(list.map(function (r) {
-      return def.cols.map(function (c) { var v = typeof c[2] === 'function' ? c[2](r) : r[c[2]]; return v === undefined || v === null ? '' : v; });
-    }));
-    sh.clearContents();
-    def.cols.forEach(function (c, i) { sh.getRange(1, i + 1, Math.max(values.length, 2), 1).setNumberFormat(c[1] === 'n' ? '#,##0.##' : '@'); });
-    sh.getRange(1, 1, values.length, def.cols.length).setValues(values);
-    sh.getRange(1, 1, 1, def.cols.length).setFontWeight('bold');
-    sh.getRange(1, 1).setNote('View only. This tab is rebuilt from the app automatically. Edit entries in the app; changes made here are not synced.');
-    sh.setFrozenRows(1);
-  });
-}
-
 // Apple Health days sent by an iPhone Shortcut: {token, health: {date, steps, activeCalories, ...}}
 // (or a list of days). Fields are merged into that day, so several shortcuts can each send a few.
 function saveHealth_(ss, health) {
@@ -2212,6 +2245,61 @@ function saveHealth_(ss, health) {
   return saved;
 }
 
+/* ---------------------- Token, pairing and the sheet menu ---------------------- */
+// "A time to plant" (Eccl. 3:2): a copy of the template sheet makes its own private token the
+// first time it's used. Leave SECRET as it is in a template. If you paste a script whose SECRET
+// holds your token, that token is used instead, so existing devices stay connected.
+var PLACEHOLDER_ = 'CHANGE_ME_' + 'TO_A_LONG_RANDOM_STRING';
+function fixedSecret_() { return SECRET && SECRET !== PLACEHOLDER_ ? SECRET : ''; }
+function propKey_(name) { return name + '_' + SpreadsheetApp.getActiveSpreadsheet().getId(); }
+function secret_() {
+  if (fixedSecret_()) return fixedSecret_();
+  var props = PropertiesService.getScriptProperties(), key = propKey_('token'), t = props.getProperty(key);
+  if (!t) { t = Utilities.getUuid().replace(/-/g, '') + Utilities.getUuid().replace(/-/g, ''); props.setProperty(key, t); }
+  return t;
+}
+// The first device can connect with just the Web app URL. After that, connecting is locked
+// unless you choose Eccl 3:1 > Connect a device in the sheet (open for 15 minutes), or use
+// "Connect another device" in the app on a device that's already connected.
+function pairingOpen_() {
+  var props = PropertiesService.getScriptProperties();
+  if (Number(props.getProperty(propKey_('pairUntil')) || 0) > Date.now()) return true;
+  return !fixedSecret_() && props.getProperty(propKey_('paired')) !== 'yes';
+}
+function markPaired_() {
+  var props = PropertiesService.getScriptProperties(), key = propKey_('paired');
+  if (props.getProperty(key) !== 'yes') props.setProperty(key, 'yes');
+  if (props.getProperty(propKey_('pairUntil'))) props.deleteProperty(propKey_('pairUntil'));
+}
+function pair_() {
+  if (!pairingOpen_()) {
+    return out_({ status: 'error', code: 'pairing_closed', message: 'For your privacy, new devices can’t connect on their own. Either open the app on a device that’s already connected and use Settings › Connect another device, or open your Google Sheet, choose Eccl 3:1 › Connect a device, then tap Connect again within 15 minutes.' });
+  }
+  var token = secret_();
+  markPaired_();
+  return out_({ status: 'success', version: VERSION, token: token });
+}
+
+function onOpen() {
+  SpreadsheetApp.getUi().createMenu('Eccl 3:1')
+    .addItem('Connect a device…', 'connectDevice')
+    .addItem('Show my sync token', 'showToken')
+    .addSeparator()
+    .addItem('Set up sheets & calendars', 'setup')
+    .addToUi();
+}
+function connectDevice() {
+  PropertiesService.getScriptProperties().setProperty(propKey_('pairUntil'), String(Date.now() + 15 * 60000));
+  var ui = SpreadsheetApp.getUi();
+  ui.alert('Connect a device', 'For the next 15 minutes, a device can connect with just your Web app URL.\n\n' +
+    '1. In the Eccl 3:1 app, open Settings.\n2. Paste your Web app URL (in Apps Script: Deploy › Manage deployments) and tap Connect.\n\n' +
+    'Haven’t deployed yet? In Apps Script choose Deploy › New deployment › Web app. Set Execute as: Me and Who has access: Anyone.', ui.ButtonSet.OK);
+}
+function showToken() {
+  var ui = SpreadsheetApp.getUi();
+  ui.alert('Your sync token', secret_() + '\n\nOnly needed for the Apple Health shortcut or older versions of the app. Keep it private: with it and your Web app URL, anyone could read your timesheet.', ui.ButtonSet.OK);
+}
+
 function out_(obj) {
   return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
 }
@@ -2226,7 +2314,6 @@ function out_(obj) {
    ===================================================================== */
 const THEME_KEY = 'timetrack_pro_theme_v2';
 const LS = { store: 'ts_store_v1', cats: 'ts_cats_v1', queue: 'ts_queue_v1', token: 'ts_token_v1', last: 'ts_last_sync_v1', plans: 'ts_plans_v1' };
-const SINCE_KEY = 'ts_since_v1', FULL_SYNC_KEY = 'ts_full_sync_v1';
 const BACKEND_V_KEY = 'ts_backend_v1', CAL_KEY = 'ts_cal_status_v1', SERVER_SETTINGS_KEY = 'ts_server_settings_v1';
 const URL_KEY = 'ts_script_url_v1';
 const WEEK_START_KEY = 'ts_week_start_v1';
@@ -2480,16 +2567,11 @@ async function syncNow(manual = false) {
   syncing = true; refreshSyncUI();
   const sending = sendableOps();
   const forceCalendar = manual || firstSync;
-  // After the first full download, ask only for what changed since the last sync.
-  // A full refresh still happens once a day as a safety net.
-  const lastFull = Number(lsRaw(FULL_SYNC_KEY)) || 0;
-  const wantFull = !lsRaw(SINCE_KEY) || Date.now() - lastFull > 24 * 3600 * 1000;
-  const since = wantFull ? '' : lsRaw(SINCE_KEY);
   try {
     const res = await fetch(getScriptUrl(), {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ token: getToken(), ops: sending, forceCalendar, tz: deviceTz(), since })
+      body: JSON.stringify({ token: getToken(), ops: sending, forceCalendar, tz: deviceTz() })
     });
     const data = await res.json();
     if (data.status !== 'success') throw new Error(data.message || 'Server error');
@@ -2505,10 +2587,6 @@ async function syncNow(manual = false) {
     }
     firstSync = false;
     const changed = mergeFromCloud(data);
-    if (backendVersion >= DELTA_MIN_VERSION && data.serverTime) {
-      lsRawSet(SINCE_KEY, data.serverTime);
-      if (!since) lsRawSet(FULL_SYNC_KEY, String(Date.now()));
-    }
     lastSyncAt = new Date().toISOString();
     lsSet(LS.last, lastSyncAt);
     syncError = '';
@@ -2533,7 +2611,7 @@ async function syncNow(manual = false) {
 
 function startAutoSync() {
   refreshSyncUI();
-  if (!isConfigured()) openSettings(true);
+  if (!isConfigured() && !/^#(connect|template)=/.test(location.hash)) openSettings(true);
   syncNow();
   setInterval(() => { if (!document.hidden) syncNow(); }, SYNC_INTERVAL_MS);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) syncNow(); });
@@ -2574,13 +2652,12 @@ function refreshSyncUI() {
     cState = 'busy'; cMsg = `Adding your logged entries to “${calStatus.logName || 'Timesheet Log'}”: ${calStatus.logPending.toLocaleString()} to go. This continues in the background, even with the app closed.`;
   }
   else if (backendVersion >= 2 && backendVersion < REC_MIN_VERSION && calStatus && calStatus.ok) { cState = 'busy'; cMsg = 'Calendars are syncing. Update the backend script once more so Heart and Body sync too (steps below).'; }
-  else if (backendVersion >= REC_MIN_VERSION && backendVersion < DELTA_MIN_VERSION && calStatus && calStatus.ok) { cState = 'busy'; cMsg = 'Everything syncs. Update the backend script once more for faster syncs and readable Heart & Body tabs in your Sheet (steps below).'; }
-  else if (backendVersion >= DELTA_MIN_VERSION && calStatus && calStatus.ok) { cState = 'ok'; cMsg = `Plans sync with “${calStatus.name || 'Timesheet Plans'}” and everything you log appears in “${calStatus.logName || 'Timesheet Log'}”`; }
+  else if (backendVersion >= REC_MIN_VERSION && calStatus && calStatus.ok) { cState = 'ok'; cMsg = `Plans sync with “${calStatus.name || 'Timesheet Plans'}” and everything you log appears in “${calStatus.logName || 'Timesheet Log'}”`; }
   else if (backendVersion >= 2 && calStatus && calStatus.limited) { cState = 'busy'; cMsg = calStatus.message; }
   else if (backendVersion >= 2 && calStatus) { cState = 'err'; cMsg = calStatus.message || 'Calendar isn’t connected yet'; }
   $('#cal-box').dataset.state = cState;
   $('#cal-status').textContent = cMsg;
-  $('#cal-update').open = isConfigured() && backendVersion > 0 && backendVersion < DELTA_MIN_VERSION;
+  $('#cal-update').open = isConfigured() && backendVersion > 0 && backendVersion < REC_MIN_VERSION;
   const sw = $('#set-autolog');
   sw.disabled = backendVersion < 4;
   sw.checked = !!serverSettings.autoLog;
@@ -2596,6 +2673,7 @@ function setView(v, save = true) {
   rememberRealmView(v);
   $$('.view').forEach(s => s.classList.toggle('hidden', s.id !== 'view-' + v));
   renderRealmNav();
+  renderVerse();
   renderView();
 }
 function renderView() {
@@ -2604,6 +2682,7 @@ function renderView() {
   else if (v === 'weekly') renderWeekly();
   else if (v === 'monthly') renderMonthly();
   else if (v === 'annual') renderAnnual();
+  if (v === 'log' || v === 'weekly') checkWeekBloom();
   else {
     renderRecNotice();
     if (v === 'heart') renderHeart();
@@ -2655,9 +2734,9 @@ function renderLog() {
   const box = $('#log-list');
   if (!list.length) {
     const filtered = q || tag !== 'ALL';
-    box.innerHTML = `<div class="card empty"><div class="empty-mark">${icon('calendar')}</div>
+    box.innerHTML = `<div class="card empty"><div class="empty-mark">${icon('sprout')}</div>
       <h3>${filtered ? 'No matching entries' : 'Nothing logged yet'}</h3>
-      <p>${filtered ? 'Try a different search or tag.' : 'Activities you log for this week will appear here.'}</p></div>`;
+      <p>${filtered ? 'Try a different search or tag.' : 'Activities you log for this week will appear here.'}</p>${filtered ? '' : verseLine(VERSES.spirit[5])}</div>`;
     return;
   }
   const groups = {};
@@ -2888,7 +2967,7 @@ function renderWeekly() {
     stat('Total hours', hrs(total), 'hrs', `${fmtDur(total)} logged`, 'accent') +
     stat('Daily average', active ? hrs(total / active) : '0.0', 'hrs', `across ${plural(active, 'active day', 'active days')}`) +
     stat('Entries', list.length, '', `${plural(list.filter(e => e.startTime).length, 'with a set time', 'with set times')}`) +
-    stat(`${WEEKLY_GOAL_HOURS}-hour goal`, goalPct, '%', `<div class="track"><div style="width:${Math.min(100, goalPct)}%"></div></div>`);
+    plantTile(`${WEEKLY_GOAL_HOURS}-hour goal`, total / 60 / WEEKLY_GOAL_HOURS, `${hrs(total)} of ${WEEKLY_GOAL_HOURS} hrs`, 'week' + ui.sumWeek);
 
   // Hours per day
   const perDay = isos.map(d => sum(list.filter(e => e.date === d), e => e.totalMinutes));
@@ -3349,6 +3428,7 @@ function openSettings(highlightSync = false) {
   $('#sec-sync').classList.toggle('highlight', !!highlightSync);
   renderTagManager();
   renderBodySettings();
+  renderPairBox();
   refreshSyncUI();
   if (!d.open) d.showModal();
 }
@@ -3405,10 +3485,16 @@ async function saveConnection() {
   }
   if (!url && !getScriptUrl()) return toast('Paste your Web app URL first.', true);
   const oldUrl = getScriptUrl();
+  if (url && !tok && (url !== oldUrl || !getToken())) {   // connect with just the URL
+    const paired = await pairWith(url);
+    if (!paired) return;
+    $('#set-token').value = paired;
+    return saveConnection();
+  }
   if (url && oldUrl && url !== oldUrl) {
     const ok = await ask({ title: 'Switch to a different sheet?', message: 'This clears this device’s local copy and any changes that haven’t synced yet, then loads the new sheet.', confirmText: 'Switch sheet', danger: true });
     if (!ok) return;
-    [LS.store, LS.queue, LS.cats, LS.last, SINCE_KEY, FULL_SYNC_KEY].forEach(lsDel);
+    [LS.store, LS.queue, LS.cats, LS.last, REC_KEY].forEach(lsDel);
     lsRawSet(URL_KEY, url);
     if (tok) lsRawSet(LS.token, tok);
     location.reload();
@@ -3419,8 +3505,9 @@ async function saveConnection() {
   $('#set-token').value = '';
   $('#sec-sync').classList.remove('highlight');
   syncError = '';
-  toast('Connection saved.');
+  toast(oldUrl ? 'Connection saved.' : 'Connected. Your sheet is syncing.');
   syncNow(true);
+  renderPairBox();
 }
 function newToken() {
   const bytes = new Uint8Array(24);
@@ -3468,38 +3555,7 @@ function downloadBlob(content, filename, type) {
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
-// Plain columns for Heart & Body CSVs (same layout as the readable tabs in your Google Sheet).
-function recCsvDef(kind) {
-  const c = cfg(), mi = c.distUnit === 'km' ? 1 : 0.621371, dU2 = c.distUnit === 'km' ? 'km' : 'mi', lb = c.weightUnit === 'kg' ? 1 : 2.20462;
-  const num = (v, dp) => v === '' || v == null || isNaN(+v) ? '' : (dp == null ? +v : +(+v).toFixed(dp));
-  const kcal = r => +r.calories || Math.round(4 * (+r.carbs || 0) + 4 * (+r.protein || 0) + 9 * (+r.fat || 0));
-  const defs = {
-    journal: [['Date', 'date'], ['Dealings & denying the self', 'dealings'], ['What God is operating within me', 'operating'], ['What He is calling out in my heart', 'calling']],
-    conscience: [['Date', 'date'], ['Time', 'time'], ['Reading', r => (LEVELS[+r.level] || {}).name || ''], ['Level (1-5)', r => num(r.level)], ['Note', 'note']],
-    meal: [['Date', 'date'], ['Time', 'time'], ['Meal', 'slot'], ['Food', 'name'], ['Calories', kcal], ['Carbs (g)', r => num(r.carbs)], ['Protein (g)', r => num(r.protein)], ['Fat (g)', r => num(r.fat)]],
-    food: [['Food', 'name'], ['Calories', kcal], ['Carbs (g)', r => num(r.carbs)], ['Protein (g)', r => num(r.protein)], ['Fat (g)', r => num(r.fat)]],
-    workout: [['Date', 'date'], ['Time', 'time'], ['Type', 'type'], ['Title', 'title'], ['Minutes', r => num(r.minutes)], [`Distance (${dU2})`, r => r.distanceKm ? num(r.distanceKm * mi, 2) : ''],
-      ['Felt', r => FEELS[+r.feel] || ''], ['Exercises', r => (r.exercises || []).map(x => x.name + (x.sets ? ` ${x.sets}x${x.reps || ''}` : '') + (x.weight ? ` @ ${x.weight} ${r.weightUnit || ''}` : '')).join('; ')], ['Notes', 'notes']],
-    check: [['Date', 'date'], ['Energy', r => ENERGY[+r.energy - 1] || ''], ['Soreness', r => SORE[+r.soreness - 1] || ''], ['Sleep (hrs)', r => num(r.sleep)], [`Weight (${c.weightUnit === 'kg' ? 'kg' : 'lb'})`, r => r.weightKg ? num(r.weightKg * lb, 1) : '']],
-    health: [['Date', 'date'], ['Steps', r => num(r.steps)], ['Active calories', r => num(r.activeCalories)], ['Exercise (min)', r => num(r.exerciseMinutes)], ['Distance', r => num(r.distance)], ['Distance unit', 'distanceUnit'],
-      ['Resting heart rate', r => num(r.restingHR)], ['Sleep (hrs)', r => num(r.sleepHours)], ['Weight', r => num(r.weight)], ['Weight unit', 'weightUnit']]
-  };
-  return defs[kind];
-}
-const CSV_NAMES = { journal: 'Journal', conscience: 'Conscience', meal: 'Meals', food: 'Saved_foods', workout: 'Workouts', check: 'Check-ins', health: 'Apple_Health' };
-function exportRecordsCSV(kind) {
-  const def = recCsvDef(kind);
-  const list = Object.values(recs).filter(r => r && !r.deleted && r.kind === kind && !isSample(r.id))
-    .sort((a, b) => (String(b.date) + String(b.time || '')).localeCompare(String(a.date) + String(a.time || '')));
-  if (!list.length) return toast('Nothing to export there yet.', true);
-  const q = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
-  const csv = [def.map(d => q(d[0])).join(',')].concat(list.map(r => def.map(([, f]) => q(typeof f === 'function' ? f(r) : r[f])).join(','))).join('\n') + '\n';
-  downloadBlob('\ufeff' + csv, `${CSV_NAMES[kind]}_${todayISO()}.csv`, 'text/csv');
-  toast(`${plural(list.length, 'row', 'rows')} exported.`);
-}
 function exportCSV() {
-  const kind = $('#exp-kind') ? $('#exp-kind').value : 'spirit';
-  if (kind !== 'spirit') return exportRecordsCSV(kind);
   const real = realEntries();
   if (!real.length) return toast('No entries to export yet.', true);
   const q = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
@@ -3751,7 +3807,6 @@ function bindEvents() {
    ===================================================================== */
 const REC_KEY = 'ts_recs_v1', REALM_VIEW_KEY = 'ts_realm_views_v1', HT_TAG_KEY = 'ts_ht_tag_v1';
 const REC_MIN_VERSION = 7;
-const DELTA_MIN_VERSION = 8;
 const REALMS = {
   spirit: { label: 'Spirit', views: [['log', 'Daily log', 'calendar'], ['weekly', 'Weekly', 'week'], ['monthly', 'Monthly', 'pie'], ['annual', 'Annual', 'trend']] },
   heart: { label: 'Heart', views: [['heart', 'Journal', 'pen'], ['heart-trends', 'Trends', 'trend']] },
@@ -3760,12 +3815,12 @@ const REALMS = {
 const ALL_VIEWS = Object.values(REALMS).flatMap(r => r.views.map(v => v[0]));
 const realmOf = v => Object.keys(REALMS).find(k => REALMS[k].views.some(x => x[0] === v)) || 'spirit';
 const LEVELS = [null,
-  { n: 1, name: 'Dirty feet', sub: '', hex: '#8a6142' },
+  { n: 1, name: 'Condemned', sub: 'dirty feet', hex: '#8a6142' },
   { n: 2, name: 'Troubled', sub: '', hex: '#c97d3a' },
   { n: 3, name: 'Neutral', sub: '', hex: '#9b968a' },
   { n: 4, name: 'Peace', sub: '', hex: '#2b9c8c' },
-  { n: 5, name: 'Enjoyment & Satisfaction', sub: '', hex: '#d4a017' }];
-const LEVEL_SHORT = { 1: 'Dirty feet', 2: 'Troubled', 3: 'Neutral', 4: 'Peace', 5: 'Enjoyment' };
+  { n: 5, name: 'Joy unspeakable', sub: '', hex: '#d4a017' }];
+const LEVEL_SHORT = { 1: 'Condemned', 2: 'Troubled', 3: 'Neutral', 4: 'Peace', 5: 'Joy' };
 const FEELS = [null, 'Easy', 'Just right', 'Hard', 'Too hard'];
 const ENERGY = ['Drained', 'Low', 'OK', 'Good', 'Great'];
 const SORE = ['None', 'Mild', 'Some', 'Sore', 'Pain'];
@@ -3928,7 +3983,7 @@ function renderHeart() {
 }
 function renderScale() {
   $('#hc-scale').innerHTML = LEVELS.slice(1).map(l =>
-    `<button type="button" data-level="${l.n}" style="--c:${l.hex}" class="${ui.level === l.n ? 'on' : ''}" aria-pressed="${ui.level === l.n}" title="${l.name}${l.sub ? ` (${l.sub})` : ''}"><i></i><span>${esc(l.name)}${l.sub ? `<br><span style="font-weight:400;color:var(--faint)">${l.sub}</span>` : ''}</span></button>`).join('');
+    `<button type="button" data-level="${l.n}" style="--c:${l.hex}" class="${ui.level === l.n ? 'on' : ''}" aria-pressed="${ui.level === l.n}" title="${l.name}${l.sub ? ` (${l.sub})` : ''}"><i></i><span>${l.name}${l.sub ? `<br><span style="font-weight:400;color:var(--faint)">${l.sub}</span>` : ''}</span></button>`).join('');
 }
 function renderReadings() {
   const list = readingsFor(ui.hDate);
@@ -3950,7 +4005,7 @@ function renderRecentDays() {
   $('#hj-recent').innerHTML = list.length ? list.map(d => {
     const j = journalFor(d), text = j ? (j.calling || j.operating || j.dealings || '') : '';
     return `<button class="recent-day" data-hday="${d}"><div class="rd-date"><span>${d === ui.hDate ? '› ' : ''}${shortDay(d)}</span><span class="dots">${readingsFor(d).map(r => `<i style="--c:${LEVELS[r.level].hex}"></i>`).join('')}</span></div>${text ? `<div class="rd-text">${esc(text)}</div>` : ''}</button>`;
-  }).join('') : '<p class="hint">Days you journal or take a reading will appear here.</p>';
+  }).join('') : '<p class="hint">Days you journal or take a reading will appear here.</p>' + verseLine(VERSES.heart[0]);
 }
 function onJournalInput() {
   if (journalFor(ui.jDate) && isSample(journalFor(ui.jDate).id)) return;
@@ -3998,9 +4053,9 @@ function renderHeartTrends() {
   const restored = readDays.filter(d => byDay[d][0].level <= 2 && byDay[d][byDay[d].length - 1].level >= 4).length;
   $('#ht-stats').innerHTML =
     stat('Average reading', all.length ? avgAll.toFixed(1) : '—', '', all.length ? `closest to ${LEVELS[Math.round(avgAll)].name}` : 'no readings yet', 'accent') +
-    stat('Days at peace or enjoyment', peaceDays, '', `of ${plural(readDays.length, 'day', 'days')} with readings`) +
+    stat('Days at peace or joy', peaceDays, '', `of ${plural(readDays.length, 'day', 'days')} with readings`) +
     stat('Days journaled', js.length, '', `of the last ${n} days`) +
-    stat('Restored days', restored, '', 'began with dirty feet or troubled, ended in peace or enjoyment');
+    stat('Restored days', restored, '', 'began condemned or troubled, ended in peace or joy');
 
   const c = themeColors();
   const labels = dates.map(d => { const x = parseDate(d); return n > 28 ? `${MONTHS[x.getMonth()]} ${x.getDate()}` : [DAY_NAMES[x.getDay()], String(x.getDate())]; });
@@ -4042,7 +4097,7 @@ function renderHeartTrends() {
     return `<div><div class="catbar-top"><span class="catbar-name"><i style="background:${LEVELS[l].hex}"></i><span>${LEVELS[l].name}</span></span><span class="catbar-val">${k}<em>${p}%</em></span></div><div class="track"><div style="width:${p}%;background:${LEVELS[l].hex}"></div></div></div>`;
   }).join('') : '<p class="hint">Take conscience readings in the Journal to see the spread here.</p>';
   const calls = js.filter(j => String(j.calling || '').trim()).sort((a, b) => b.date.localeCompare(a.date)).slice(0, 5);
-  $('#ht-calls').innerHTML = calls.length ? calls.map(j => `<blockquote class="quote">${esc(j.calling)}<cite>${shortDay(j.date)}</cite></blockquote>`).join('') : '<p class="hint">What you write under “What is He calling out in your heart?” gathers here.</p>';
+  $('#ht-calls').innerHTML = calls.length ? calls.map(j => `<blockquote class="quote">${esc(j.calling)}<cite>${shortDay(j.date)}</cite></blockquote>`).join('') : '<p class="hint">What you write under “What is He calling out in your heart?” gathers here.</p>' + verseLine(VERSES.heart[0]);
 }
 
 /* ============================ BODY · TODAY ============================ */
@@ -4074,7 +4129,7 @@ function renderBodyDay() {
       <div class="macro-line"><span>Carbs <b>${+m.carbs || 0}g</b></span><span>Protein <b>${+m.protein || 0}g</b></span><span>Fat <b>${+m.fat || 0}g</b></span></div></div>
       <div class="la"><span class="kcal">${kcalOf(m).toLocaleString()} kcal</span>${isSample(m.id) ? '' : `<button class="btn-icon" data-editmeal="${esc(m.id)}" aria-label="Edit">${icon('pencil', 'sm')}</button><button class="btn-icon danger" data-delrec="${esc(m.id)}" aria-label="Delete">${icon('trash', 'sm')}</button>`}</div></div>`).join('')}</div>`;
   });
-  $('#bd-meals').innerHTML = html || `<div class="empty" style="padding:24px 10px"><div class="empty-mark">${icon('food')}</div><h3>Nothing logged ${d === todayISO() ? 'yet today' : 'this day'}</h3><p>Add what you eat, or tap a favorite to add it in one go.</p></div>`;
+  $('#bd-meals').innerHTML = html || `<div class="empty" style="padding:24px 10px"><div class="empty-mark">${icon('sprout')}</div><h3>Nothing logged ${d === todayISO() ? 'yet today' : 'this day'}</h3><p>Add what you eat, or tap a favorite to add it in one go.</p>${verseLine(VERSES.body[1])}</div>`;
   renderFavs();
   renderDayTraining(d);
   renderCheckin(d);
@@ -4324,7 +4379,7 @@ function sessionCard(s) {
   const d = parseDate(s.date), m = s.match ? recList('workout').find(w => w.id === s.match) : null;
   const pill = s.status === 'today' ? '<span class="pill acc">Today</span>' : s.status === 'missed' ? '<span class="pill">Missed</span>' : '';
   const doneTxt = m ? [m.distanceKm ? fmtDist(m.distanceKm, 2) : '', m.minutes ? fmtDur(m.minutes) : '', m.feel ? FEELS[m.feel] : ''].filter(Boolean).join(' · ') : '';
-  const right = m ? `<button class="pill ok" data-editwo="${esc(m.id)}" style="border:0;cursor:pointer" title="Open workout">✓ ${esc(doneTxt || 'Done')}</button>`
+  const right = m ? `<button class="pill ok" data-editwo="${esc(m.id)}" style="border:0;cursor:pointer" title="Open workout">${icon('sprout')}${esc(doneTxt || 'Done')}</button>`
                   : `<button class="btn btn-sm${s.status === 'today' ? ' btn-primary' : ''}" data-logsession="${esc(s.id)}">Log it</button>`;
   return `<div class="session ${s.status}${s.cat === 'race' ? ' race' : ''}"><div class="sd"><b>${DAY_NAMES[d.getDay()]}</b><span>${d.getDate()}</span></div>
     <div><div class="st">${esc(s.title)} ${pill}</div><div class="sx">${esc(s.detail || '')}</div></div><div>${right}</div></div>`;
@@ -4351,10 +4406,10 @@ function renderTraining() {
   const soFar = prog.weeks.flatMap(w => w.sessions).filter(s => s.date <= t);
   const runKm = recList('workout').filter(w => isRunType(w.type, p) && w.date >= cur.start && w.date <= cur.end).reduce((a, w) => a + (+w.distanceKm || 0), 0);
   const planKm = cur.sessions.filter(s => s.km).reduce((a, s) => a + s.km, 0);
-  const done = soFar.filter(s => s.status === 'done').length;
+  const done = soFar.filter(s => s.status === 'done').length, allSessions = prog.weeks.reduce((a, w) => a + w.sessions.length, 0);
   body.innerHTML = `<div class="stats">
       ${stat('Week', cur.n === 0 ? 'Start' : `${cur.n}<span class="unit">of ${prog.N}</span>`, '', cur.kind === 'race' ? 'Race week' : cur.kind === 'start' ? 'Getting started' : cur.kind === 'cutback' ? 'Lighter week to absorb training' : cur.kind === 'peak' ? 'Peak week' : 'Building', 'accent')}
-      ${stat('Sessions done', done, '', `of ${soFar.length} so far${soFar.length ? ` · ${Math.round(done / soFar.length * 100)}%` : ''}`)}
+      ${plantTile('Plan completed', allSessions ? done / allSessions : 0, `${done} of ${allSessions} sessions · ${soFar.length - done} missed or open`, 'plan')}
       ${stat('Run distance this week', +kmTo(runKm).toFixed(1), dU(), `of about ${+kmTo(planKm).toFixed(1)} ${dU()} planned`)}
       ${stat('Longest run so far', prog.adapt.longest ? +kmTo(prog.adapt.longest).toFixed(1) : '—', prog.adapt.longest ? dU() : '', `race distance ${fmtDist(prog.G)}`)}
     </div>
@@ -4545,7 +4600,7 @@ function renderHistory() {
     stat('Distance', +kmTo(dist).toFixed(1), dU(), 'runs, walks and anything with distance') +
     stat('Longest run', longest ? +kmTo(longest.distanceKm).toFixed(2) : '—', longest ? dU() : '', best ? `best pace ${fmtPace(best.minutes / best.distanceKm)} (3 km or more)` : longest ? shortDay(longest.date) : 'no runs yet');
   if (!list.length) {
-    $('#wh-list').innerHTML = `<div class="card empty"><div class="empty-mark">${icon('activity')}</div><h3>${all.length ? 'No matching workouts' : 'No workouts yet'}</h3><p>${all.length ? 'Try another type or search.' : 'Log your first workout and it will show up here.'}</p></div>`;
+    $('#wh-list').innerHTML = `<div class="card empty"><div class="empty-mark">${icon('activity')}</div><h3>${all.length ? 'No matching workouts' : 'No workouts yet'}</h3><p>${all.length ? 'Try another type or search.' : 'Log your first workout and it will show up here.'}</p>${all.length ? '' : verseLine(VERSES.body[3])}</div>`;
     return;
   }
   const groups = {};
@@ -4821,12 +4876,235 @@ function bindHeartBody() {
   }, 60000);
 }
 
+/* =====================================================================
+   Garden: verses, growing plants, and connecting devices.
+   "you are God's cultivated land" 1 Cor. 3:9
+   Scripture quotations: Holy Bible Recovery Version, © Living Stream Ministry, Anaheim, CA.
+   Each verse links to its chapter at text.recoveryversion.bible.
+   ===================================================================== */
+const RCV = 'https://text.recoveryversion.bible/';
+const V = (ref, file, text) => ({ ref, url: RCV + file + '.htm', text });
+const VERSES = {
+  spirit: [
+    V('Ecclesiastes 3:1', '21_Ecclesiastes_3', 'For everything there is a season, / And a time for every purpose under heaven:'),
+    V('Ecclesiastes 3:2', '21_Ecclesiastes_3', 'A time to plant, and a time to pluck up what is planted;'),
+    V('John 15:5', '43_John_15', 'I am the vine; you are the branches. He who abides in Me and I in him, he bears much fruit;'),
+    V('1 Corinthians 3:6', '46_1Corinthians_3', 'I planted, Apollos watered, but God caused the growth.'),
+    V('1 Corinthians 3:9', '46_1Corinthians_3', 'For we are God’s fellow workers; you are God’s cultivated land, God’s building.'),
+    V('Mark 4:28', '41_Mark_4', 'The earth bears fruit by itself: first a blade, then an ear, then full grain in the ear.'),
+    V('Mark 4:27', '41_Mark_4', 'And sleeps and rises night and day, and the seed sprouts and lengthens — how, he does not know.'),
+    V('Psalm 1:3', '19_Psalms_1', 'And he will be like a tree / Transplanted beside streams of water,'),
+    V('Colossians 2:7', '51_Colossians_2', 'Having been rooted and being built up in Him,'),
+    V('Colossians 2:19', '51_Colossians_2', '…grows with the growth of God.'),
+    V('John 12:24', '43_John_12', 'Unless the grain of wheat falls into the ground and dies, it abides alone;'),
+    V('Galatians 5:25', '48_Galatians_5', 'If we live by the Spirit, let us also walk by the Spirit.')
+  ],
+  heart: [
+    V('Luke 8:15', '42_Luke_8', 'But that which is in the good earth, these are those who in a noble and good heart hear the word and hold it fast'),
+    V('Acts 24:16', '44_Acts_24', 'Because of this I also exercise myself to always have a conscience without offense toward God and men.'),
+    V('1 John 1:9', '62_1John_1', 'If we confess our sins, He is faithful and righteous to forgive us our sins and cleanse us from all unrighteousness.'),
+    V('Colossians 3:15', '51_Colossians_3', 'And let the peace of Christ arbitrate in your hearts, to which also you were called in one Body; and be thankful.'),
+    V('1 Peter 1:8', '60_1Peter_1', '…you exult with joy that is unspeakable and full of glory,'),
+    V('Galatians 5:22', '48_Galatians_5', 'But the fruit of the Spirit is love, joy, peace, long-suffering, kindness, goodness, faithfulness,'),
+    V('Mark 4:27', '41_Mark_4', 'And sleeps and rises night and day, and the seed sprouts and lengthens — how, he does not know.')
+  ],
+  body: [
+    V('1 Timothy 4:8', '54_1Timothy_4', 'For bodily exercise is profitable for a little, but godliness is profitable for all things,'),
+    V('3 John 2', '64_3John_1', 'Beloved, concerning all things I wish that you may prosper and be in health, even as your soul prospers.'),
+    V('1 Corinthians 6:20', '46_1Corinthians_6', 'For you have been bought with a price. So then glorify God in your body.'),
+    V('Hebrews 12:1–2', '58_Hebrews_12', '…run with endurance the race which is set before us, / Looking away unto Jesus,'),
+    V('Isaiah 40:31', '23_Isaiah_40', 'They will run and will not become weary; / They will walk and will not faint.'),
+    V('Psalm 1:3', '19_Psalms_1', 'And he will be like a tree / Transplanted beside streams of water,')
+  ]
+};
+const GOAL_VERSE = VERSES.spirit[3];   // "God caused the growth"
+let verseShift = 0;
+const dayOfYear = () => { const n = new Date(), s = new Date(n.getFullYear(), 0, 0); return Math.floor((n - s) / 86400000); };
+function verseFor(view) {
+  const realm = realmOf(view), pool = VERSES[realm] || VERSES.spirit;
+  const off = REALMS[realm].views.findIndex(v => v[0] === view) * 3;
+  return pool[((dayOfYear() + off + verseShift) % pool.length + pool.length) % pool.length];
+}
+function renderVerse() {
+  const v = verseFor(ui.view);
+  $('#verse').innerHTML = `<span class="verse-ic">${icon('sprout')}</span><blockquote><p>“${esc(v.text)}”</p>
+    <footer><a href="${v.url}" target="_blank" rel="noopener">${esc(v.ref)}</a><span>Recovery Version</span><button type="button" data-verse-next aria-label="Show another verse">${icon('refresh', 'xs')}Another</button></footer></blockquote>`;
+}
+const verseLine = v => `<p class="empty-verse">“${esc(v.text)}” <span>${esc(v.ref)}</span></p>`;
+
+/* ---------------------- A plant that grows with progress ---------------------- */
+const STAGES = [[0, 'A seed in the ground'], [.01, 'Sprouting'], [.15, 'First leaves'], [.35, 'Growing'], [.6, 'Leafing out'], [.8, 'Budding'], [1, 'In bloom'], [1.25, 'Bearing fruit']];
+const plantStage = p => STAGES.filter(s => p >= s[0]).pop()[1];
+const plantMemo = {};
+function plantSVG(p, key = '') {
+  p = Math.max(0, p || 0);
+  const g = Math.min(p, 1), base = 82, H = 8 + 62 * g, top = base - H;
+  const grow = key && plantMemo[key] !== Math.round(p * 100) ? ' grow' : '';
+  if (key) plantMemo[key] = Math.round(p * 100);
+  let s = `<svg class="plant${grow}" viewBox="0 0 80 100" aria-hidden="true">`;
+  if (p <= 0) s += '<ellipse class="seed" cx="40" cy="79" rx="5" ry="3.2"/>';
+  else {
+    s += `<path class="stem" d="M40 ${base} C ${39 - 3 * g} ${base - H * .35}, ${41 + 4 * g} ${base - H * .7}, 40 ${top}"/>`;
+    const n = p < .01 ? 0 : Math.min(8, 1 + Math.floor(g * 8)), sc = .55 + .45 * g;
+    for (let i = 0; i < n; i++) {
+      const y = base - H * (.22 + .66 * (i / Math.max(1, 7))) , right = i % 2 === 0, w = 19 * sc * (1 - i * .04), h = 8.5 * sc;
+      const x = 40, dir = right ? 1 : -1;
+      s += `<path class="leaf${i % 3 === 1 ? ' alt' : ''}" style="animation-delay:${.25 + i * .08}s" d="M${x} ${y} C ${x + dir * w * .3} ${y - h * 1.3}, ${x + dir * w * .85} ${y - h * 1.2}, ${x + dir * w} ${y - h * .9} C ${x + dir * w * .75} ${y + h * .3}, ${x + dir * w * .3} ${y + h * .35}, ${x} ${y} Z"/>`;
+    }
+    if (p < .01) s += `<path class="leaf" d="M40 ${top + 1} C 43 ${top - 4}, 47 ${top - 4}, 48 ${top - 2} C 46 ${top + 1}, 43 ${top + 2}, 40 ${top + 1} Z"/>`;
+    if (p >= .8 && p < 1) s += `<ellipse class="bud bloom" style="animation-delay:.9s" cx="40" cy="${top - 3}" rx="3.4" ry="5"/>`;
+    if (p >= 1) {
+      s += `<g class="bloom" style="animation-delay:.9s">`;
+      for (let k = 0; k < 6; k++) { const a = k * Math.PI / 3; s += `<ellipse class="petal" cx="${40 + 5.6 * Math.cos(a)}" cy="${top - 5 + 5.6 * Math.sin(a)}" rx="4" ry="4"/>`; }
+      s += `<circle class="heart-of" cx="40" cy="${top - 5}" r="3.6"/></g>`;
+    }
+    if (p >= 1.25) s += `<g class="bloom" style="animation-delay:1.1s"><circle class="fruit" cx="${40 - 13}" cy="${base - H * .5}" r="3.6"/><circle class="fruit" cx="${40 + 12}" cy="${base - H * .62}" r="3.3"/></g>`;
+  }
+  s += `<rect class="box-rim" x="14" y="${base - 2}" width="52" height="5" rx="2"/><path class="box" d="M17 ${base + 3}h46l-4 15H21Z"/></svg>`;
+  return s;
+}
+function plantTile(label, p, sub, key) {
+  return `<div class="stat plant-stat${p >= 1 ? ' accent' : ''}"><div class="ps-text"><div class="stat-label">${label}</div>
+    <div class="stat-value">${Math.round(p * 100)}<span class="unit">%</span></div><div class="stat-sub">${sub}</div>
+    <div class="stage">${icon('sprout', 'sm')}${plantStage(p)}</div></div>${plantSVG(p, key)}</div>`;
+}
+// When the week first reaches its goal, celebrate once.
+function checkWeekBloom() {
+  const days = weekDays(0), first = isoDate(days[0]), last = isoDate(days[6]);
+  const total = sum(realEntries().filter(e => e.date >= first && e.date <= last), e => e.totalMinutes);
+  if (total / 60 < WEEKLY_GOAL_HOURS || lsRaw('ts_bloom_week_v1') === first) return;
+  lsRawSet('ts_bloom_week_v1', first);
+  toast(`${WEEKLY_GOAL_HOURS} hours this week. “${GOAL_VERSE.text}” ${GOAL_VERSE.ref}`);
+}
+
+/* ------------------------- Connect devices (pairing) ------------------------- */
+const TEMPLATE_KEY = 'ts_template_v1';
+// Optional: put your template sheet's ID here so every copy of the app offers "Make my copy".
+const TEMPLATE_SHEET_ID = '';
+const templateId = () => TEMPLATE_SHEET_ID || lsRaw(TEMPLATE_KEY);
+const appBaseUrl = () => location.href.split('#')[0];
+const b64u = s => btoa(unescape(encodeURIComponent(s))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+const unb64u = s => decodeURIComponent(escape(atob(s.replace(/-/g, '+').replace(/_/g, '/'))));
+const sheetIdFrom = s => { const m = String(s || '').match(/\/d\/([\w-]{20,})/) || String(s || '').match(/^([\w-]{25,})$/); return m ? m[1] : ''; };
+const connectLink = () => `${appBaseUrl()}#connect=${b64u(JSON.stringify({ u: getScriptUrl(), t: getToken() }))}`;
+
+async function pairWith(url) {
+  const btn = $('#set-save-conn'), label = btn.textContent;
+  btn.disabled = true; btn.textContent = 'Connecting…';
+  try {
+    const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'pair' }) });
+    const d = await res.json();
+    if (d.status === 'success' && d.token) return d.token;
+    if (d.code === 'pairing_closed') { await ask({ title: 'Connecting is locked', message: d.message, confirmText: 'Done' }); return null; }
+    if (/unauthori/i.test(d.message || '')) {
+      $('#tok-details').open = true; $('#set-token').focus();
+      toast('This sheet runs an older script. Paste its sync token below, or update the script.', true);
+      return null;
+    }
+    toast('Couldn’t connect: ' + (d.message || 'unknown error'), true);
+  } catch (e) {
+    toast('Couldn’t reach that Web app URL. Check it, and that “Who has access” is set to Anyone.', true);
+  } finally { btn.disabled = false; btn.textContent = label; }
+  return null;
+}
+async function handleConnectHash() {
+  const h = location.hash;
+  const clear = () => history.replaceState(null, '', appBaseUrl());
+  if (h.startsWith('#template=')) {
+    const id = sheetIdFrom(decodeURIComponent(h.slice(10)));
+    clear();
+    if (id) { lsRawSet(TEMPLATE_KEY, id); if (!isConfigured()) openSettings(true); }
+    return;
+  }
+  if (!h.startsWith('#connect=')) return;
+  let data = null;
+  try { data = JSON.parse(unb64u(h.slice(9))); } catch (e) {}
+  clear();
+  if (!data || !data.u || !data.t) return toast('That connect link is incomplete.', true);
+  if (getScriptUrl() === data.u && getToken() === data.t) return toast('This device is already connected.');
+  const switching = getScriptUrl() && getScriptUrl() !== data.u;
+  const ok = await ask({ title: 'Connect this device?', confirmText: 'Connect',
+    message: switching ? 'This device is connected to a different sheet. Connecting replaces this device’s local copy with the linked sheet.'
+                       : 'This device will sync with the Google Sheet from your connect link.' });
+  if (!ok) return;
+  if (switching) [LS.store, LS.queue, LS.cats, LS.last, REC_KEY].forEach(lsDel);
+  lsRawSet(URL_KEY, data.u); lsRawSet(LS.token, data.t);
+  if (switching) return location.reload();
+  const d = $('#settings'); if (d.open) d.close();
+  toast('Connected. Syncing now.');
+  syncNow(true);
+}
+let qrLoading = null;
+function loadQR() {
+  if (window.qrcode) return Promise.resolve();
+  if (!qrLoading) qrLoading = new Promise((res, rej) => {
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js';
+    s.onload = res; s.onerror = () => { qrLoading = null; rej(new Error('qr')); };
+    document.head.appendChild(s);
+  });
+  return qrLoading;
+}
+async function renderPairBox() {
+  const box = $('#pair-box'), on = isConfigured();
+  box.classList.toggle('hidden', !on);
+  $('#start-box').classList.toggle('hidden', on);
+  const tid = templateId(), copy = $('#tpl-copy');
+  copy.classList.toggle('hidden', !tid);
+  if (tid) copy.href = `https://docs.google.com/spreadsheets/d/${tid}/copy`;
+  $('#tpl-none').classList.toggle('hidden', !!tid);
+  if (!on) return;
+  const qr = $('#pair-qr');
+  if (location.protocol === 'file:') { qr.innerHTML = '<p class="hint">Open the app from its web address to get a QR code.</p>'; return; }
+  try {
+    await loadQR();
+    const q = window.qrcode(0, 'M'); q.addData(connectLink()); q.make();
+    qr.innerHTML = q.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
+  } catch (e) { qr.innerHTML = '<p class="hint">QR code needs a connection. Use Copy link instead.</p>'; }
+}
+async function copyText(text, okMsg) {
+  try { await navigator.clipboard.writeText(text); toast(okMsg); }
+  catch (e) {
+    const ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    ($('dialog[open]') || document.body).appendChild(ta); ta.select();
+    let ok = false; try { ok = document.execCommand('copy'); } catch (x) {}
+    ta.remove(); toast(ok ? okMsg : 'Copy failed. Try a desktop browser.', !ok);
+  }
+}
+async function copyTemplateScript() {
+  await copyText($('#backendScript').textContent.trim(), 'Template script copied. Paste it into your template sheet’s Apps Script.');
+}
+function makeShareLink() {
+  const id = sheetIdFrom($('#tpl-link').value.trim());
+  if (!id) return toast('Paste your template sheet’s link (it contains /d/…/).', true);
+  lsRawSet(TEMPLATE_KEY, id);
+  const link = `${appBaseUrl()}#template=${id}`;
+  $('#tpl-out').classList.remove('hidden');
+  $('#tpl-out-link').textContent = link;
+  copyText(link, 'Setup link copied. Send it to anyone you want to invite.');
+  renderPairBox();
+}
+function bindGarden() {
+  document.addEventListener('click', e => {
+    if (e.target.closest('[data-verse-next]')) { verseShift++; renderVerse(); }
+  });
+  $('#pair-copy').addEventListener('click', () => copyText(connectLink(), 'Connect link copied. Open it on your other device.'));
+  $('#pair-share').addEventListener('click', async () => {
+    if (navigator.share) { try { await navigator.share({ title: 'Connect Eccl 3:1', url: connectLink() }); } catch (e) {} }
+    else copyText(connectLink(), 'Connect link copied.');
+  });
+  $('#tpl-script').addEventListener('click', copyTemplateScript);
+  $('#tpl-make').addEventListener('click', makeShareLink);
+  $('#tpl-out-copy').addEventListener('click', () => copyText($('#tpl-out-link').textContent, 'Setup link copied.'));
+}
+
 /* ============================ Start ============================ */
 function init() {
   loadLocalState();
   setupChartDefaults();
   bindEvents();
   bindHeartBody();
+  bindGarden();
   renderTagOptions();
   resetFoodForm();
   resetForm();
@@ -4834,6 +5112,8 @@ function init() {
   setView(lsRaw(VIEW_KEY) || 'log', false);
   updateBadges();
   startAutoSync();
+  handleConnectHash();
+  window.addEventListener('hashchange', handleConnectHash);
 }
 init();
 </script>
