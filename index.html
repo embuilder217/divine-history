@@ -771,7 +771,7 @@ code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-r
     <section class="set-sec">
       <h3>Sample data</h3>
       <div class="switch-row">
-        <div class="sw-text"><b>Show sample data</b><span>Fills the log, planner and summaries with about 16 weeks of example activities so you can see how everything looks. It’s a preview only: it is never saved to your Google Sheet or added to your calendars, and your real entries stay untouched.</span></div>
+        <div class="sw-text"><b>Show sample data</b><span>Fills the log, planner and summaries with about 16 weeks of random example activities (a new mix each time) so you can see how everything looks. It’s a preview only: it is never saved to your Google Sheet or added to your calendars, and your real entries stay untouched.</span></div>
         <label class="switch"><input type="checkbox" id="set-sample" aria-label="Show sample data"><i></i></label>
       </div>
     </section>
@@ -795,7 +795,7 @@ code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-r
 <dialog id="ask" class="ask" aria-labelledby="ask-title">
   <div class="ask-inner">
     <h3 id="ask-title"></h3>
-    <p id="ask-msg"></p>
+    <p id="ask-msg" style="white-space:pre-line;overflow-wrap:anywhere"></p>
     <select id="ask-select" class="hidden" aria-label="Choose"></select>
     <div class="btn-row end">
       <button class="btn" id="ask-cancel">Cancel</button>
@@ -1568,10 +1568,6 @@ const THEME_KEY = 'timetrack_pro_theme_v2';
 const LS = { store: 'ts_store_v1', cats: 'ts_cats_v1', queue: 'ts_queue_v1', token: 'ts_token_v1', last: 'ts_last_sync_v1', plans: 'ts_plans_v1' };
 const BACKEND_V_KEY = 'ts_backend_v1', CAL_KEY = 'ts_cal_status_v1', SERVER_SETTINGS_KEY = 'ts_server_settings_v1';
 const URL_KEY = 'ts_script_url_v1';
-// Your Apps Script Web app. Devices still saved to the old deployment are moved over automatically.
-const DEFAULT_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwSyYvtGFseukQ5hzDhAKVv0DQBRHn1bgL6wPvQAox6gvTyl1VqtA_wnwbJ1_g-5DZW6Q/exec';
-const OLD_SCRIPT_URLS = ['https://script.google.com/macros/s/AKfycbyWQWevAupdbHWd0RBecY0xgHTfAPuBxfgbU4CBCC4poJoDFv3xaK-ztBNI8lfLkFDafw/exec',
-                         'https://script.google.com/macros/s/AKfycbyQOEFmsxeMdBep7e0txXA7JqjlXuWNJaakwLVJTxc384uG2dZZrHWbaWFuP-6r1q7aDg/exec'];
 const WEEK_START_KEY = 'ts_week_start_v1';
 const VIEW_KEY = 'ts_view_v2';
 const LAST_TAG_KEY = 'ts_last_tag_v2';
@@ -1611,34 +1607,45 @@ let sampleOn = false, sampleEntries = [];
 const isSample = id => String(id).startsWith('sample_');
 const realEntries = () => entries.filter(e => !isSample(e.id));
 
-// Sample data: a believable full-timer's rhythm over the last 16 weeks (preview only, never stored).
+// Sample data: a believable but random full-timer week pattern over the last 16 weeks (preview only, never stored).
+// A new random set is made every time it's switched on.
 function buildSampleEntries() {
-  const pick = (code, i) => categories.find(c => new RegExp('\\(' + code + '\\)\\s*$').test(c)) || categories[i % Math.max(1, categories.length)] || 'Sample';
-  let seed = 7;
-  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const pick = (code, i) => categories.find(c => new RegExp('\(' + code + '\)\s*$').test(c)) || categories[i % Math.max(1, categories.length)] || 'Sample';
+  const rnd = Math.random, chance = p => rnd() < p, one = a => a[Math.floor(rnd() * a.length)];
+  const between = (a, b, step = 15) => a + step * Math.floor(rnd() * ((b - a) / step + 1));
+  const hm = m => `${pad(Math.floor(m / 60) % 24)}:${pad(m % 60)}`;
+  const people = ['Isaac', 'Julio', 'Don', 'Nathan', 'Gio', 'Alex', 'Cielo', 'Jose', 'Ken', 'Garrett', 'Priscilla', 'Joseph', 'Mel', 'Jay', 'Yeziel'];
+  const books = ['Genesis', 'John', 'Romans', 'Ephesians', 'Nehemiah', 'Matthew', 'Acts', 'Hebrews', '1 Peter', 'Psalms'];
+  const kinds = [
+    { code: 'MR', p: .85, days: [1, 2, 3, 4, 5, 6], start: [390, 480], dur: [20, 45], subj: () => `MR with ${one(people)}`, note: () => `Week ${1 + Math.floor(rnd() * 8)} · Day ${1 + Math.floor(rnd() * 6)}` },
+    { code: 'PTL', p: .4, days: [0, 1, 2, 3, 4, 5, 6], start: [360, 420], dur: [15, 45], subj: () => one(['Personal time with the Lord', 'Morning prayer', 'Quiet time']), note: () => '' },
+    { code: 'LD', p: .95, days: [0], start: [570, 630], dur: [90, 150], subj: () => one(["Lord's Day meeting", "Lord's table meeting", "Lord's Day & prophesying"]), note: () => one(['Prophesied on the week’s MR', 'Enjoyed the Lord’s table', '']) },
+    { code: 'PM', p: .85, days: [2], start: [1140, 1170], dur: [60, 105], subj: () => one(['Prayer meeting', 'Church prayer meeting']), note: () => '' },
+    { code: 'VG', p: .8, days: [5, 0], start: [720, 1140], dur: [90, 180], subj: () => one(['Small group meeting', 'Home meeting', 'Small group lunch']), note: () => '' },
+    { code: 'CM', p: .5, days: [1, 2, 3, 4], start: [540, 660], dur: [30, 90], subj: () => `CM with ${one(people)}${chance(.4) ? ' & ' + one(people) : ''}`, note: () => one(['Coordinated the week', 'Campus planning', 'Conference hosting', '']) },
+    { code: 'CW', p: .55, days: [1, 2, 3, 4], start: [690, 810], dur: [60, 150], subj: () => one(['Campus table', 'Bible reading on campus', 'Campus outreach']), note: () => chance(.5) ? `Read ${one(books)} with students` : '' },
+    { code: 'TP', p: .5, days: [1, 2, 3, 4, 5, 6], start: [540, 960], dur: [30, 90], subj: () => `TP with ${one(people)}`, note: () => `Life-study of ${one(books)}` },
+    { code: 'MS', p: .55, days: [0, 1, 2, 3, 4, 5, 6], start: [720, 1230], dur: [45, 150], subj: () => one(['Fellowship with ', 'Lunch with ', 'Dinner with ', 'Coffee with ']) + one(people), note: () => '' },
+    { code: 'GP', p: .35, days: [3, 6], start: [600, 1080], dur: [60, 180], subj: () => one(['Gospel outreach', 'Door knocking', 'Gospel tabling', 'Follow-up visits']), note: () => '' },
+    { code: 'BR', p: .4, days: [1, 2, 3, 4, 5], start: [900, 1260], dur: [30, 75], subj: () => `Bible reading with ${one(people)}`, note: () => `${one(books)} ${1 + Math.floor(rnd() * 20)}` },
+    { code: 'PA', p: .3, days: [1, 3, 5, 6], start: [1050, 1260], dur: [45, 120], subj: () => one(['Basketball', 'Running', 'Gym', 'Hike', 'Walk dogs']), note: () => '' }
+  ];
   const out = [];
-  const add = (d, start, mins, code, subject, desc = '') => {
-    const s = toMin(start), e = (s + mins) % 1440;
-    out.push({ id: `sample_${isoDate(d)}_${start.replace(':', '')}_${out.length}`, date: isoDate(d), subject, description: desc, totalMinutes: mins,
-               tag: pick(code, out.length), startTime: start, endTime: `${pad(Math.floor(e / 60))}:${pad(e % 60)}`, createdAt: '2026-01-01T00:00:00.000Z' });
-  };
-  const people = ['Isaac', 'Julio', 'Don', 'Nathan', 'Gio', 'Alex', 'Cielo', 'Jose'];
-  const who = () => people[Math.floor(rnd() * people.length)];
   const today = new Date(); today.setHours(0, 0, 0, 0);
+  const nowMin = new Date().getHours() * 60 + new Date().getMinutes();
   for (let back = 112; back >= 0; back--) {
     const d = new Date(today); d.setDate(today.getDate() - back);
-    const w = d.getDay();
-    if (back === 0 && new Date().getHours() < 12) continue;
-    if (w >= 1 && w <= 6 && rnd() < .9) add(d, '07:00', 30, 'MR', `MR with ${who()}`, 'Morning revival');
-    if (w === 0) { add(d, '10:00', 120, 'LD', "Lord's Day meeting", 'Table meeting and prophesying'); if (rnd() < .6) add(d, '12:30', 90, 'VG', 'Small group lunch'); }
-    if (w === 2) add(d, '19:30', 90, 'PM', 'Prayer meeting');
-    if (w === 5) add(d, '18:30', 180, 'VG', 'Friday small group');
-    if (w === 1 || w === 3) { add(d, '09:00', 60, 'CM', `CM with ${who()}`); add(d, '12:00', 120, 'CW', 'Campus table & Bible reading'); }
-    if (w === 2 || w === 4) { add(d, '09:30', 60 + 15 * Math.floor(rnd() * 3), 'TP', `TP with ${who()}`, 'Life-study reading'); add(d, '14:00', 75, 'MS', `Fellowship with ${who()}`); }
-    if (w === 6 && rnd() < .7) add(d, '10:00', 120, 'GP', 'Gospel outreach');
-    if (w >= 1 && w <= 5 && rnd() < .5) add(d, '16:00', 45, 'BR', `Bible reading with ${who()}`);
-    if (w >= 1 && w <= 6 && rnd() < .35) add(d, '06:30', 20, 'PTL', 'Personal time with the Lord');
-    if (rnd() < .25) add(d, '20:30', 60, 'PA', 'Basketball');
+    const busy = [];
+    if (chance(.06)) continue;                                   // the odd day off
+    kinds.forEach((k, i) => {
+      if (!k.days.includes(d.getDay()) || !chance(k.p)) return;
+      const s = between(k.start[0], k.start[1]), mins = between(k.dur[0], k.dur[1], 5);
+      if (s + mins > 1435 || busy.some(([a, b]) => s < b && s + mins > a)) return;   // keep the day realistic: no overlaps
+      if (back === 0 && s + mins > nowMin) return;                // nothing in the future today
+      busy.push([s, s + mins]);
+      out.push({ id: `sample_${isoDate(d)}_${hm(s).replace(':', '')}_${out.length}`, date: isoDate(d), subject: k.subj(), description: k.note(),
+                 totalMinutes: mins, tag: pick(k.code, i), startTime: hm(s), endTime: hm(s + mins), createdAt: '2026-01-01T00:00:00.000Z' });
+    });
   }
   return out;
 }
@@ -2731,13 +2738,27 @@ async function saveConnection() {
   toast('Connection saved.');
   syncNow(true);
 }
+function newToken() {
+  const bytes = new Uint8Array(24);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
+}
 async function copyBackendScript() {
-  let token = $('#set-token').value.trim() || getToken();
-  if (!token) {
-    const bytes = new Uint8Array(24);
-    crypto.getRandomValues(bytes);
-    token = Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
-    lsRawSet(LS.token, token);
+  const typed = $('#set-token').value.trim(), saved = getToken();
+  let token, fresh = false;
+  if (typed) token = typed;
+  else if (saved && isConfigured()) {
+    const choice = await ask({
+      title: 'Which sync token?',
+      message: 'Keep your current token if you’re updating your own backend script, so your devices stay connected. Choose a new token if you’re setting up a different Google Sheet, for example for someone else.',
+      options: ['Keep my current token (updating my own script)', 'Use a brand-new token (setting up a different sheet)'], confirmText: 'Copy script'
+    });
+    if (choice == null) return;
+    fresh = choice.startsWith('Use');
+    token = fresh ? newToken() : saved;
+  } else {
+    token = newToken(); fresh = true;
+    if (!isConfigured()) lsRawSet(LS.token, token);   // first-time setup on this device
   }
   const code = $('#backendScript').textContent.trim().replace('CHANGE_ME_TO_A_LONG_RANDOM_STRING', token);
   let ok = false;
@@ -2750,7 +2771,10 @@ async function copyBackendScript() {
     try { ok = document.execCommand('copy'); } catch (e2) {}
     ta.remove();
   }
-  toast(ok ? 'Script copied. Paste it into Apps Script.' : 'Copy failed. Try a desktop browser.', !ok);
+  if (!ok) { toast('Copy failed. Try a desktop browser.', true); return; }
+  if (fresh && isConfigured()) {
+    await ask({ title: 'Script copied with a new token', message: `Save this token: whoever uses that sheet types it into Settings › Sync token on their devices.\n\n${token}`, confirmText: 'Done' });
+  } else toast('Script copied. Paste it into Apps Script.');
   refreshSyncUI();
 }
 function downloadBlob(content, filename, type) {
@@ -2844,6 +2868,7 @@ function ask({ title, message = '', confirmText = 'OK', danger = false, options 
     const done = v => { d.close(); okBtn.onclick = null; $('#ask-cancel').onclick = null; d.oncancel = null; resolve(v); };
     okBtn.onclick = () => done(options ? sel.value : true);
     $('#ask-cancel').onclick = () => done(null);
+    $('#ask-cancel').classList.toggle('hidden', confirmText === 'Done');
     d.oncancel = e => { e.preventDefault(); done(null); };
     d.showModal();
     (options ? sel : $('#ask-cancel')).focus();
@@ -2999,8 +3024,6 @@ function bindEvents() {
 
 /* ============================ Start ============================ */
 function init() {
-  const savedUrl = lsRaw(URL_KEY);
-  if (!savedUrl || OLD_SCRIPT_URLS.includes(savedUrl)) lsRawSet(URL_KEY, DEFAULT_SCRIPT_URL);
   loadLocalState();
   setupChartDefaults();
   bindEvents();
