@@ -696,14 +696,14 @@ code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-r
 .stat .track { margin-top: 8px; }
 
 /* ---- Checkboxes are planter boxes that sprout. "the seed sprouts and lengthens" Mark 4:27 ---- */
-.check-row input[type="checkbox"] {
+.check-row input[type="checkbox"], .walk-check input[type="checkbox"] {
   -webkit-appearance: none; appearance: none; flex: none; margin: 0; width: 26px; height: 26px; cursor: pointer;
   border: 1.5px solid var(--border-strong); border-radius: 7px;
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 8' preserveAspectRatio='none'%3E%3Crect width='26' height='8' fill='%238a6142'/%3E%3Ccircle cx='5' cy='3' r='.9' fill='%236b4a31'/%3E%3Ccircle cx='13' cy='5' r='.9' fill='%236b4a31'/%3E%3Ccircle cx='20' cy='2.6' r='.9' fill='%236b4a31'/%3E%3C/svg%3E") bottom / 100% 7px no-repeat, var(--surface);
   transition: border-color .2s, box-shadow .2s;
 }
-.check-row input[type="checkbox"]:hover { border-color: var(--leaf); }
-.check-row input[type="checkbox"]:checked {
+.check-row input[type="checkbox"]:hover, .walk-check input[type="checkbox"]:hover { border-color: var(--leaf); }
+.check-row input[type="checkbox"]:checked, .walk-check input[type="checkbox"]:checked {
   border-color: var(--leaf);
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 26'%3E%3Cpath d='M13 20V11' stroke='%233f8f4f' stroke-width='2' stroke-linecap='round'/%3E%3Cpath d='M13 12.5C13 8.6 15.8 6 20 6c0 4-2.8 6.5-7 6.5Z' fill='%233f8f4f'/%3E%3Cpath d='M13 14.5C13 11 10.4 8.6 6.6 8.6c0 3.6 2.6 5.9 6.4 5.9Z' fill='%2357a866'/%3E%3C/svg%3E") bottom center / 100% 100% no-repeat,
               url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 8' preserveAspectRatio='none'%3E%3Crect width='26' height='8' fill='%238a6142'/%3E%3Ccircle cx='5' cy='3' r='.9' fill='%236b4a31'/%3E%3Ccircle cx='13' cy='5' r='.9' fill='%236b4a31'/%3E%3Ccircle cx='20' cy='2.6' r='.9' fill='%236b4a31'/%3E%3C/svg%3E") bottom / 100% 7px no-repeat, var(--surface);
@@ -755,6 +755,10 @@ code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-r
 .pill.ok .ic { width: 12px; height: 12px; vertical-align: -2px; margin-right: 2px; }
 
 @media (prefers-reduced-motion: reduce) { .plant.grow .stem { stroke-dashoffset: 0; } }
+
+.walk-check { display: inline-flex; flex: none; cursor: pointer; }
+.tag-list-head { display: flex; justify-content: space-between; gap: 10px; font-size: 12.5px; color: var(--muted); }
+.tag-list-head b { color: var(--text); font-weight: 600; }
 
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 </style>
@@ -997,8 +1001,8 @@ code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-r
     <div class="notice hidden rec-notice"></div>
     <div class="stats" id="ht-stats"></div>
     <div class="card">
-      <div class="card-head"><h3 class="card-title">Conscience &amp; time in spirit</h3>
-        <select id="ht-tag" aria-label="Spirit time to compare" style="width:auto;min-width:200px;min-height:36px"></select></div>
+      <div class="card-head"><h3 class="card-title">Conscience &amp; walking with the Lord</h3>
+        <select id="ht-tag" aria-label="Walking with the Lord time to compare" style="width:auto;min-width:200px;min-height:36px"></select></div>
       <div class="chart tall"><canvas id="ht-chart"></canvas></div>
       <p class="insight" id="ht-insight"></p>
     </div>
@@ -1170,6 +1174,7 @@ code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-r
 
     <section class="set-sec">
       <h3>Tags</h3>
+      <div class="tag-list-head"><span>Tick the tags that count as <b>Walking with the Lord</b> time in Heart.</span></div>
       <div class="tag-list" id="tag-list"></div>
       <form class="tag-add" id="tag-add"><input type="text" id="tag-add-input" placeholder="Add a new tag" autocomplete="off"><button class="btn" type="submit"><svg class="ic sm"><use href="#i-plus"/></svg>Add</button></form>
     </section>
@@ -3319,7 +3324,7 @@ function openSettings(highlightSync = false) {
 function renderTagManager() {
   $('#tag-list').innerHTML = categories.map(cat => {
     const n = realEntries().filter(e => e.tag === cat).length;
-    return `<div class="tag-row"><i style="background:${tagHex(cat)}"></i><span class="name">${esc(cat)}</span><span class="count">${plural(n, 'entry', 'entries')}</span>
+    return `<div class="tag-row"><label class="walk-check" title="Counts as Walking with the Lord"><input type="checkbox" data-walktag="${esc(cat)}"${isWalk(cat) ? ' checked' : ''} aria-label="${esc(cat)} counts as Walking with the Lord"></label><i style="background:${tagHex(cat)}"></i><span class="name">${esc(cat)}</span><span class="count">${plural(n, 'entry', 'entries')}</span>
       <button class="btn-icon danger" data-deltag="${esc(cat)}" title="Delete tag" aria-label="Delete tag ${esc(cat)}">${icon('trash', 'sm')}</button></div>`;
   }).join('') || '<div class="tag-row"><span class="name" style="color:var(--faint)">No tags yet</span></div>';
 }
@@ -3651,6 +3656,13 @@ function bindEvents() {
     syncNow();
   });
   $('#tag-list').addEventListener('click', e => { const b = e.target.closest('[data-deltag]'); if (b) deleteTag(b.dataset.deltag); });
+  $('#tag-list').addEventListener('change', e => {
+    const box = e.target.closest('[data-walktag]'); if (!box) return;
+    const list = $$('#tag-list [data-walktag]').filter(x => x.checked).map(x => x.dataset.walktag);
+    saveCfg({ walkTags: list });
+    toast(box.checked ? `“${box.dataset.walktag}” counts as Walking with the Lord.` : `“${box.dataset.walktag}” no longer counts as Walking with the Lord.`);
+    if (ui.view === 'heart' || ui.view === 'heart-trends') renderView();
+  });
   $('#tag-add').addEventListener('submit', e => { e.preventDefault(); const i = $('#tag-add-input'); addTag(i.value); i.value = ''; });
   $('#exp-csv').addEventListener('click', exportCSV);
   $('#exp-json').addEventListener('click', exportJSON);
@@ -3765,6 +3777,12 @@ function fmtStamp(iso) {
   return isoDate(d) === todayISO() ? d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 const spiritHex = () => isDark() ? '#34d399' : '#047857';
+// Tags that count as "Walking with the Lord" time (chosen in Settings › Tags; synced with Body settings).
+function walkTags() {
+  const r = recs.bodycfg && !recs.bodycfg.deleted ? recs.bodycfg.walkTags : null;
+  return Array.isArray(r) ? r.filter(t => categories.includes(t)) : ['PTL', 'TP', 'PM', 'LD'].map(findTag).filter(Boolean);
+}
+const isWalk = tag => walkTags().includes(tag);
 const hasText = j => j && ['dealings', 'operating', 'calling'].some(k => String(j[k] || '').trim());
 
 /* --------------------------- Body config --------------------------- */
@@ -3849,11 +3867,12 @@ function renderHeart() {
   });
   ui.jDate = d;
   $('#hj-saved').innerHTML = sample ? '<span class="sample-pill">Sample</span>' : j.updatedAt ? 'Saved ' + fmtStamp(j.updatedAt) : '';
-  const day = entries.filter(e => e.date === d), total = sum(day, e => e.totalMinutes);
+  const day = entries.filter(e => e.date === d), total = sum(day.filter(e => isWalk(e.tag)), e => e.totalMinutes);
   const ptlTag = findTag('PTL'), ptl = ptlTag ? sum(day.filter(e => e.tag === ptlTag), e => e.totalMinutes) : 0;
   $('#hj-context').innerHTML = `${icon('flame', 'sm')}<span>` + (total
-    ? `In spirit ${isToday ? 'today' : 'this day'}: <b>${fmtDur(total)}</b>${ptlTag ? ` · time with the Lord: <b>${ptl ? fmtDur(ptl) : 'none logged'}</b>` : ''}`
-    : `No Spirit time logged ${isToday ? 'yet today' : 'this day'}.`) + '</span>';
+    ? `Walking with the Lord ${isToday ? 'today' : 'this day'}: <b>${fmtDur(total)}</b>${ptlTag && isWalk(ptlTag) ? ` · personal time with the Lord: <b>${ptl ? fmtDur(ptl) : 'none logged'}</b>` : ''}`
+    : !walkTags().length ? 'Choose which tags count as Walking with the Lord in Settings › Tags.'
+    : `No Walking with the Lord time logged ${isToday ? 'yet today' : 'this day'}.`) + '</span>';
   renderScale();
   renderReadings();
   renderRecentDays();
@@ -3917,14 +3936,14 @@ function renderHeartTrends() {
   const rs = recList('conscience').filter(r => r.date >= first && r.date <= last);
   const js = recList('journal').filter(j => j.date >= first && j.date <= last && hasText(j));
   const sel = $('#ht-tag'), want = lsRaw(HT_TAG_KEY) || findTag('PTL') || 'ALL';
-  sel.innerHTML = '<option value="ALL">All Spirit time</option>' + categories.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
+  sel.innerHTML = '<option value="ALL">All Walking with the Lord time</option>' + categories.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
   sel.value = categories.includes(want) ? want : 'ALL';
-  const tag = sel.value, tagLabel = tag === 'ALL' ? 'Spirit time' : tag.replace(/\s*\([^)]*\)\s*$/, '');
+  const tag = sel.value, tagLabel = tag === 'ALL' ? 'Walking with the Lord' : tag.replace(/\s*\([^)]*\)\s*$/, '');
   const byDay = {}; rs.forEach(r => (byDay[r.date] = byDay[r.date] || []).push(r));
   Object.values(byDay).forEach(a => a.sort((x, y) => String(x.time).localeCompare(String(y.time))));
   const avg = a => a.reduce((x, y) => x + y, 0) / a.length;
   const dayAvg = dates.map(d => byDay[d] ? +avg(byDay[d].map(r => r.level)).toFixed(2) : null);
-  const spirit = dates.map(d => sum(entries.filter(e => e.date === d && (tag === 'ALL' || e.tag === tag)), e => e.totalMinutes));
+  const spirit = dates.map(d => sum(entries.filter(e => e.date === d && (tag === 'ALL' ? isWalk(e.tag) : e.tag === tag)), e => e.totalMinutes));
   const readDays = Object.keys(byDay), all = rs.map(r => r.level), avgAll = all.length ? avg(all) : 0;
   const peaceDays = readDays.filter(d => byDay[d].some(r => r.level >= 4)).length;
   const restored = readDays.filter(d => byDay[d][0].level <= 2 && byDay[d][byDay[d].length - 1].level >= 4).length;
@@ -3954,7 +3973,7 @@ function renderHeartTrends() {
     }
   });
 
-  // Insight: readings on days with more vs less of the chosen Spirit time
+  // Insight: readings on days with more vs less of the chosen Walking with the Lord time
   const mins = d => spirit[dates.indexOf(d)] || 0;
   const thr = tag === 'ALL' ? Math.max(1, median(readDays.map(mins))) : 1;
   const hi = readDays.filter(d => mins(d) >= thr), lo = readDays.filter(d => mins(d) < thr);
@@ -3962,10 +3981,10 @@ function renderHeartTrends() {
   let text;
   if (hi.length >= 3 && lo.length >= 3) {
     const a = dayMean(hi), b = dayMean(lo);
-    const what = tag === 'ALL' ? `at least ${fmtDur(thr)} in spirit` : `time in ${esc(tagLabel)}`;
+    const what = tag === 'ALL' ? `at least ${fmtDur(thr)} walking with the Lord` : `time in ${esc(tagLabel)}`;
     const notWhat = tag === 'ALL' ? 'less' : 'none';
     text = `On days with ${what}, your average reading was <b>${a.toFixed(1)}</b> (${esc(LEVELS[Math.round(a)].name)}), compared with <b>${b.toFixed(1)}</b> (${esc(LEVELS[Math.round(b)].name)}) on days with ${notWhat}.`;
-  } else text = `Keep taking readings and logging Spirit time. Once there are a few days on each side, this will compare your conscience on days with and without ${esc(tagLabel)}.`;
+  } else text = `Keep taking readings and logging your time with the Lord. Once there are a few days on each side, this will compare your conscience on days with and without ${esc(tagLabel)}.`;
   $('#ht-insight').innerHTML = text;
 
   const counts = [5, 4, 3, 2, 1].map(l => [l, all.filter(x => x === l).length]);
