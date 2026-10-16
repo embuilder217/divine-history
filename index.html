@@ -542,16 +542,19 @@ code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-r
 .prompt textarea { min-height: 116px; line-height: 1.6; font-size: 15px; }
 .journal-card { display: flex; flex-direction: column; gap: 18px; }
 .journal-card .card-head { margin-bottom: 0; }
+.freedom-note { margin: -6px 0 0; display: flex; gap: 8px; align-items: flex-start; font-family: var(--serif); font-style: italic; font-size: 15px; line-height: 1.5; color: var(--muted); }
+.freedom-note .ic { margin-top: 3px; color: var(--leaf-deep); flex: none; }
 .context { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; font-size: 13px; color: var(--muted); padding: 10px 12px; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--border); }
 .context b { color: var(--text); font-weight: 600; }
 .saved-note { font-size: 12px; color: var(--faint); }
-.scale { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+.scale { display: flex; flex-direction: column; gap: 6px; }
 .scale button {
-  display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 10px 4px 9px; border-radius: 12px;
-  border: 1px solid var(--border-strong); background: var(--surface); color: var(--muted); font-size: 11.5px; font-weight: 500; line-height: 1.2; text-align: center;
+  display: flex; align-items: center; gap: 10px; width: 100%; min-height: 40px; padding: 8px 12px; border-radius: 11px; text-align: left;
+  border: 1px solid var(--border-strong); background: var(--surface); color: var(--muted); font-size: 13.5px; font-weight: 500; line-height: 1.25;
   transition: border-color .15s, background .15s, color .15s;
 }
-.scale button i { width: 16px; height: 16px; border-radius: 50%; background: var(--c); box-shadow: 0 0 0 3px color-mix(in srgb, var(--c) 18%, transparent); }
+.scale button i { width: 14px; height: 14px; flex: none; border-radius: 50%; background: var(--c); box-shadow: 0 0 0 3px color-mix(in srgb, var(--c) 18%, transparent); }
+.scale button span { min-width: 0; overflow-wrap: anywhere; }
 .scale button:hover { border-color: var(--c); color: var(--text); }
 .scale button.on { border-color: var(--c); background: color-mix(in srgb, var(--c) 13%, var(--surface)); color: var(--text); font-weight: 600; }
 .scale-ends { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--faint); margin-top: -4px; }
@@ -658,7 +661,6 @@ code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-r
 }
 @media (max-width: 560px) {
   .row4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .scale button { font-size: 10.5px; padding: 9px 2px 8px; }
   .session { grid-template-columns: 44px minmax(0, 1fr); }
   .session > :last-child { grid-column: 1 / -1; justify-self: start; }
   .type-row { grid-template-columns: 9px minmax(0, 1fr) 120px 36px; }
@@ -752,18 +754,6 @@ code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-r
 /* ---- Done states sprout ---- */
 .pill.ok .ic { width: 12px; height: 12px; vertical-align: -2px; margin-right: 2px; }
 
-/* ---- Connect a device & template ---- */
-.steps { margin: 0; padding-left: 0; list-style: none; counter-reset: s; display: flex; flex-direction: column; gap: 12px; }
-.steps li { counter-increment: s; display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 10px; font-size: 13.5px; color: var(--muted); line-height: 1.5; }
-.steps li::before { content: counter(s); width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font-weight: 600; font-size: 13px;
-  background: color-mix(in srgb, var(--leaf) 16%, var(--surface)); color: var(--leaf-deep); border: 1px solid color-mix(in srgb, var(--leaf) 35%, var(--border)); }
-.steps li b { color: var(--text); }
-.steps li .btn { margin-top: 6px; }
-.pair-box { display: grid; grid-template-columns: 148px minmax(0, 1fr); gap: 16px; align-items: center; }
-.qr { width: 148px; height: 148px; border-radius: 12px; background: #fff; display: grid; place-items: center; padding: 6px; border: 1px solid var(--border); }
-.qr svg { width: 100%; height: 100%; }
-.qr .hint { color: #6c675d; text-align: center; padding: 8px; }
-@media (max-width: 560px) { .pair-box { grid-template-columns: minmax(0, 1fr); justify-items: center; text-align: center; } .pair-box .btn-row { justify-content: center; } }
 @media (prefers-reduced-motion: reduce) { .plant.grow .stem { stroke-dashoffset: 0; } }
 
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
@@ -967,7 +957,7 @@ code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-r
   <!-- ============ HEART · JOURNAL ============ -->
   <section class="view hidden" id="view-heart">
     <div class="page-head">
-      <div><p class="eyebrow" id="hj-rel">Today</p><h1 class="page-title" id="hj-title">Heart journal</h1><p class="page-sub">The dealings of your conscience, from dirty feet to joy unspeakable</p></div>
+      <div><p class="eyebrow" id="hj-rel">Today</p><h1 class="page-title" id="hj-title">Heart journal</h1><p class="page-sub">The dealings of your conscience, from dirty feet to enjoyment &amp; satisfaction</p></div>
       <div class="pager">
         <button class="btn-icon bordered" data-dnav="heart:-1" aria-label="Previous day"><svg class="ic"><use href="#i-left"/></svg></button>
         <button class="btn btn-sm" data-dnav="heart:0">Today</button>
@@ -978,6 +968,7 @@ code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-r
     <div class="two-col">
       <div class="card journal-card">
         <div class="card-head"><h3 class="card-title">Journal</h3><span class="saved-note" id="hj-saved"></span></div>
+        <p class="freedom-note"><svg class="ic sm"><use href="#i-sprout"/></svg><span>Don’t feel you have to write here every day. Write according to your inner sense, when the Lord is speaking or something is on your heart. And feel free not to use this page at all.</span></p>
         <div class="context" id="hj-context"></div>
         <label class="field prompt"><span>Dealings &amp; denying the self</span><em>What did you pass through today, and where did you deny yourself?</em><textarea data-jf="dealings" rows="4" placeholder="Write freely…"></textarea></label>
         <label class="field prompt"><span>What is God operating within you today?</span><em>What is He working into you through today’s environment?</em><textarea data-jf="operating" rows="4" placeholder="Write freely…"></textarea></label>
@@ -1131,56 +1122,22 @@ code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-r
         <div class="sync-line"><span class="dot"></span><span id="set-status">Not synced yet</span></div>
         <button class="btn btn-sm" id="set-sync-now"><svg class="ic sm"><use href="#i-refresh"/></svg>Sync now</button>
       </div>
-      <div id="start-box">
-        <ol class="steps">
-          <li><div><b>Make your own copy of the Eccl 3:1 sheet.</b> Everything you write stays in your own Google Drive.<br>
-            <a class="btn btn-sm btn-primary hidden" id="tpl-copy" target="_blank" rel="noopener"><svg class="ic sm"><use href="#i-copy"/></svg>Make my copy</a>
-            <span id="tpl-none" class="mini">Open the setup link from whoever invited you, or set up from scratch below.</span></div></li>
-          <li><div><b>Deploy it once.</b> In your copy choose <b>Extensions › Apps Script</b>, then <b>Deploy › New deployment</b>. Click the gear and pick <b>Web app</b>. Set <b>Execute as: Me</b> and <b>Who has access: Anyone</b>, tap <b>Deploy</b> and approve. Copy the <b>Web app URL</b>.</div></li>
-          <li><div><b>Paste it here and tap Connect.</b> No token or code needed.</div></li>
-        </ol>
-      </div>
       <label class="field"><span>Web app URL</span><input type="url" id="set-url" placeholder="https://script.google.com/macros/s/…/exec" autocomplete="off" spellcheck="false"></label>
-      <details class="setup" id="tok-details">
-        <summary>Have a sync token? (older setups and other people’s sheets)</summary>
-        <label class="field" style="margin-top:10px"><span>Sync token</span><input type="password" id="set-token" placeholder="Sync token" autocomplete="off"></label>
-      </details>
+      <label class="field"><span>Sync token</span><input type="password" id="set-token" placeholder="Sync token" autocomplete="off"></label>
       <div class="btn-row">
-        <button class="btn btn-primary" id="set-save-conn">Connect</button>
+        <button class="btn btn-primary" id="set-save-conn">Save connection</button>
         <button class="btn" id="set-copy-script"><svg class="ic sm"><use href="#i-copy"/></svg>Copy backend script</button>
       </div>
-
-      <div id="pair-box" class="hidden" style="display:flex;flex-direction:column;gap:10px;margin-top:6px">
-        <h3>Connect another device</h3>
-        <div class="pair-box">
-          <div class="qr" id="pair-qr"></div>
-          <div style="display:flex;flex-direction:column;gap:10px">
-            <p class="hint" style="font-size:13px;color:var(--muted)">Scan this with your phone’s camera, or send yourself the link. It opens the app already connected to your sheet. Keep it private; it works like a key.</p>
-            <div class="btn-row"><button class="btn btn-sm" id="pair-copy"><svg class="ic sm"><use href="#i-copy"/></svg>Copy link</button><button class="btn btn-sm" id="pair-share">Share…</button></div>
-          </div>
-        </div>
-      </div>
-
       <details class="setup">
-        <summary>Set up from scratch with your own Google Sheet</summary>
+        <summary>First-time setup with your own Google Sheet</summary>
         <ol>
           <li>Create a Google Sheet, then open <b>Extensions › Apps Script</b>.</li>
           <li>Tap <b>Copy backend script</b> above. Paste it over everything in the editor and save. A private token is generated for you and already filled in.</li>
-          <li><b>Deploy › New deployment › Web app.</b> Execute as <b>Me</b>, access <b>Anyone</b>. Approve the permissions and copy the Web app URL.</li>
-          <li>Paste the URL above and tap <b>Connect</b>.</li>
+          <li>In the toolbar choose the function <b>setup</b> and click <b>Run</b>. Approve the permissions (Sheets and Calendar).</li>
+          <li><b>Deploy › New deployment › Web app.</b> Execute as <b>Me</b>, access <b>Anyone</b>. Copy the Web app URL.</li>
+          <li>Paste the URL above and tap <b>Save connection</b>.</li>
+          <li>On your other devices, enter the same URL and the token from the <code>SECRET</code> line in Apps Script.</li>
         </ol>
-      </details>
-      <details class="setup">
-        <summary>Invite others: make a template sheet</summary>
-        <ol>
-          <li>Create a <b>new, empty</b> Google Sheet named <b>Eccl 3:1</b>. Don’t use your own timesheet; its data would be copied too.</li>
-          <li>Open <b>Extensions › Apps Script</b>, paste the template script, and save. <button class="btn btn-sm" type="button" id="tpl-script" style="margin-left:4px"><svg class="ic sm"><use href="#i-copy"/></svg>Copy template script</button></li>
-          <li>Tap <b>Share</b> in the sheet and set General access to <b>Anyone with the link · Viewer</b>.</li>
-          <li>Paste the sheet’s link here to get a setup link to send people:</li>
-        </ol>
-        <div class="tag-add" style="margin-top:10px"><input type="url" id="tpl-link" placeholder="https://docs.google.com/spreadsheets/d/…" autocomplete="off" spellcheck="false"><button class="btn" type="button" id="tpl-make">Create link</button></div>
-        <div class="hidden" id="tpl-out" style="margin-top:10px"><p class="codeblock" id="tpl-out-link" style="white-space:normal;overflow-wrap:anywhere"></p><button class="btn btn-sm" type="button" id="tpl-out-copy" style="margin-top:8px"><svg class="ic sm"><use href="#i-copy"/></svg>Copy setup link</button></div>
-        <p class="hint" style="margin-top:8px">Each person who opens the setup link gets a <b>Make my copy</b> button. Their copy has its own private token and its own data; you can’t see it. When you update the backend later, they paste the new script into their copy (Plans &amp; calendar › Update your backend script).</p>
       </details>
     </section>
 
@@ -1191,16 +1148,6 @@ code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-r
         <div class="sw-text"><b>Auto-log plans when they end</b><span id="autolog-hint">Each planned activity is logged for you once it ends, so you can plan and log from Google Calendar alone. Delete or move it before it ends if plans change, or tap “Didn’t happen”. Plans that ended before you turned this on stay in To confirm.</span></div>
         <label class="switch"><input type="checkbox" id="set-autolog" aria-label="Auto-log plans when they end"><i></i></label>
       </div>
-      <details class="setup" id="cal-update">
-        <summary>Update your backend script (needed for plans, calendars, Heart &amp; Body)</summary>
-        <ol>
-          <li>Tap <b>Copy backend script</b> above. In your Google Sheet open <b>Extensions › Apps Script</b>, select everything in the editor and paste over it. Save.</li>
-          <li>Check the <code>SECRET</code> line near the top holds your token (the button fills it in for you).</li>
-          <li>In the toolbar choose the function <b>setup</b> and click <b>Run</b>. Approve the permissions; Google asks for Calendar access and to run a background task.</li>
-          <li><b>Deploy › Manage deployments</b> › pencil icon › Version: <b>New version</b> › Deploy. Your Web app URL stays the same.</li>
-          <li>Come back here and tap <b>Sync now</b>.</li>
-        </ol>
-      </details>
       <details class="setup">
         <summary>See it in the iPhone Calendar app</summary>
         <ol>
@@ -1256,7 +1203,7 @@ code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-r
       <div class="sync-box" id="hl-box" data-state="busy"><div class="sync-line"><span class="dot"></span><span id="hl-status">No Apple Health data yet</span></div></div>
       <details class="setup">
         <summary>Send your Apple Watch stats here every morning</summary>
-        <p class="hint" style="margin-top:8px">A web page can’t read Apple Health directly, so a free iPhone Shortcut sends yesterday’s stats to your Google Sheet each morning. Update your backend script first (Plans &amp; calendar › Update your backend script).</p>
+        <p class="hint" style="margin-top:8px">A web page can’t read Apple Health directly, so a free iPhone Shortcut sends yesterday’s stats to your Google Sheet each morning.</p>
         <ol>
           <li>Open the <b>Shortcuts</b> app › <b>Automation</b> › <b>+</b> › <b>Time of Day</b>. Pick a time you’re usually on your phone (like 7:30 AM), <b>Daily</b>, and <b>Run Immediately</b>.</li>
           <li>Add <b>Find Health Samples</b>: Type <b>Steps</b>, Start Date <b>is yesterday</b>. Then add <b>Calculate Statistics</b> › <b>Sum</b>.</li>
@@ -1426,11 +1373,7 @@ code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-r
 <script type="text/plain" id="backendScript">
 // Timesheet sync backend v3 (container-bound to your Google Sheet): Spirit, Heart & Body.
 //
-// Easiest setup: make a copy of a template sheet that already holds this script, then
-// Deploy > New deployment > Web app (Execute as: Me, Who has access: Anyone), and paste the
-// Web app URL into the app's Settings. The copy makes its own private token.
-//
-// Updating or installing by hand:
+// Updating or installing:
 // 1) Paste this over everything in Extensions > Apps Script. Put your token in SECRET
 //    (the app's "Copy backend script" button fills it in for you). Save.
 // 2) In the toolbar, choose the function "setup" and click Run. Approve the permissions
@@ -1439,7 +1382,7 @@ code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-r
 //    The Web app URL stays the same.
 
 var SECRET = 'CHANGE_ME_TO_A_LONG_RANDOM_STRING';
-var VERSION = 8;
+var VERSION = 7;
 var HEADERS = ['ID', 'Date', 'Subject', 'TotalMinutes', 'Tag', 'Description', 'CreatedAt', 'UpdatedAt', 'Deleted', 'StartTime', 'EndTime'];
 var PLAN_HEADERS = ['ID', 'Title', 'Tag', 'Notes', 'Date', 'StartTime', 'EndTime', 'Days', 'Until', 'Skips',
                     'CreatedAt', 'UpdatedAt', 'Deleted', 'Source', 'CalEventId', 'CalSig'];
@@ -1562,9 +1505,7 @@ function doPost(e) {
   try {
     lock.waitLock(25000);
     var req = JSON.parse(e.postData.contents);
-    if (req.action === 'pair') return pair_();
-    if (!req.token || req.token !== secret_()) return out_({ status: 'error', message: 'Unauthorized' });
-    markPaired_();
+    if (!req.token || req.token !== SECRET) return out_({ status: 'error', message: 'Unauthorized' });
     applyTz_(req.tz);
 
     var ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -2245,61 +2186,6 @@ function saveHealth_(ss, health) {
   return saved;
 }
 
-/* ---------------------- Token, pairing and the sheet menu ---------------------- */
-// "A time to plant" (Eccl. 3:2): a copy of the template sheet makes its own private token the
-// first time it's used. Leave SECRET as it is in a template. If you paste a script whose SECRET
-// holds your token, that token is used instead, so existing devices stay connected.
-var PLACEHOLDER_ = 'CHANGE_ME_' + 'TO_A_LONG_RANDOM_STRING';
-function fixedSecret_() { return SECRET && SECRET !== PLACEHOLDER_ ? SECRET : ''; }
-function propKey_(name) { return name + '_' + SpreadsheetApp.getActiveSpreadsheet().getId(); }
-function secret_() {
-  if (fixedSecret_()) return fixedSecret_();
-  var props = PropertiesService.getScriptProperties(), key = propKey_('token'), t = props.getProperty(key);
-  if (!t) { t = Utilities.getUuid().replace(/-/g, '') + Utilities.getUuid().replace(/-/g, ''); props.setProperty(key, t); }
-  return t;
-}
-// The first device can connect with just the Web app URL. After that, connecting is locked
-// unless you choose Eccl 3:1 > Connect a device in the sheet (open for 15 minutes), or use
-// "Connect another device" in the app on a device that's already connected.
-function pairingOpen_() {
-  var props = PropertiesService.getScriptProperties();
-  if (Number(props.getProperty(propKey_('pairUntil')) || 0) > Date.now()) return true;
-  return !fixedSecret_() && props.getProperty(propKey_('paired')) !== 'yes';
-}
-function markPaired_() {
-  var props = PropertiesService.getScriptProperties(), key = propKey_('paired');
-  if (props.getProperty(key) !== 'yes') props.setProperty(key, 'yes');
-  if (props.getProperty(propKey_('pairUntil'))) props.deleteProperty(propKey_('pairUntil'));
-}
-function pair_() {
-  if (!pairingOpen_()) {
-    return out_({ status: 'error', code: 'pairing_closed', message: 'For your privacy, new devices can’t connect on their own. Either open the app on a device that’s already connected and use Settings › Connect another device, or open your Google Sheet, choose Eccl 3:1 › Connect a device, then tap Connect again within 15 minutes.' });
-  }
-  var token = secret_();
-  markPaired_();
-  return out_({ status: 'success', version: VERSION, token: token });
-}
-
-function onOpen() {
-  SpreadsheetApp.getUi().createMenu('Eccl 3:1')
-    .addItem('Connect a device…', 'connectDevice')
-    .addItem('Show my sync token', 'showToken')
-    .addSeparator()
-    .addItem('Set up sheets & calendars', 'setup')
-    .addToUi();
-}
-function connectDevice() {
-  PropertiesService.getScriptProperties().setProperty(propKey_('pairUntil'), String(Date.now() + 15 * 60000));
-  var ui = SpreadsheetApp.getUi();
-  ui.alert('Connect a device', 'For the next 15 minutes, a device can connect with just your Web app URL.\n\n' +
-    '1. In the Eccl 3:1 app, open Settings.\n2. Paste your Web app URL (in Apps Script: Deploy › Manage deployments) and tap Connect.\n\n' +
-    'Haven’t deployed yet? In Apps Script choose Deploy › New deployment › Web app. Set Execute as: Me and Who has access: Anyone.', ui.ButtonSet.OK);
-}
-function showToken() {
-  var ui = SpreadsheetApp.getUi();
-  ui.alert('Your sync token', secret_() + '\n\nOnly needed for the Apple Health shortcut or older versions of the app. Keep it private: with it and your Web app URL, anyone could read your timesheet.', ui.ButtonSet.OK);
-}
-
 function out_(obj) {
   return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
 }
@@ -2594,7 +2480,7 @@ async function syncNow(manual = false) {
     persistLocal();
     if (changed) renderAll();
     else { updateBadges(); if (ui.view === 'weekly') renderPlanner(); else if (ui.view === 'log') renderConfirm(); }
-    if (manual) toast(backendVersion > 0 && backendVersion < REC_MIN_VERSION ? 'Synced. Update your backend script to sync Heart & Body too.' : 'Synced with Google Sheets.');
+    if (manual) toast('Synced with Google Sheets.');
   } catch (e) {
     syncError = (e instanceof TypeError) ? 'network error' : (e.message || 'failed');
     if (manual) toast('Sync failed: ' + syncError, true);
@@ -2611,7 +2497,7 @@ async function syncNow(manual = false) {
 
 function startAutoSync() {
   refreshSyncUI();
-  if (!isConfigured() && !/^#(connect|template)=/.test(location.hash)) openSettings(true);
+  if (!isConfigured()) openSettings(true);
   syncNow();
   setInterval(() => { if (!document.hidden) syncNow(); }, SYNC_INTERVAL_MS);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) syncNow(); });
@@ -2647,21 +2533,20 @@ function refreshSyncUI() {
   // Plans & calendar status
   let cState = 'busy', cMsg = 'Waiting for the first sync';
   if (!isConfigured()) { cState = 'err'; cMsg = 'Connect your Google Sheet first'; }
-  else if (backendVersion && backendVersion < 2) { cState = 'err'; cMsg = 'Update your backend script to sync plans and your calendar (steps below)'; }
+  else if (backendVersion && backendVersion < 2) { cState = 'err'; cMsg = 'Your backend script is too old to sync plans and your calendar'; }
   else if (backendVersion >= 2 && calStatus && calStatus.ok && calStatus.logPending > 0) {
     cState = 'busy'; cMsg = `Adding your logged entries to “${calStatus.logName || 'Timesheet Log'}”: ${calStatus.logPending.toLocaleString()} to go. This continues in the background, even with the app closed.`;
   }
-  else if (backendVersion >= 2 && backendVersion < REC_MIN_VERSION && calStatus && calStatus.ok) { cState = 'busy'; cMsg = 'Calendars are syncing. Update the backend script once more so Heart and Body sync too (steps below).'; }
+  else if (backendVersion >= 2 && backendVersion < REC_MIN_VERSION && calStatus && calStatus.ok) { cState = 'busy'; cMsg = 'Calendars are syncing. Heart and Body need the newer backend script to sync.'; }
   else if (backendVersion >= REC_MIN_VERSION && calStatus && calStatus.ok) { cState = 'ok'; cMsg = `Plans sync with “${calStatus.name || 'Timesheet Plans'}” and everything you log appears in “${calStatus.logName || 'Timesheet Log'}”`; }
   else if (backendVersion >= 2 && calStatus && calStatus.limited) { cState = 'busy'; cMsg = calStatus.message; }
   else if (backendVersion >= 2 && calStatus) { cState = 'err'; cMsg = calStatus.message || 'Calendar isn’t connected yet'; }
   $('#cal-box').dataset.state = cState;
   $('#cal-status').textContent = cMsg;
-  $('#cal-update').open = isConfigured() && backendVersion > 0 && backendVersion < REC_MIN_VERSION;
   const sw = $('#set-autolog');
   sw.disabled = backendVersion < 4;
   sw.checked = !!serverSettings.autoLog;
-  if (backendVersion > 0 && backendVersion < 4) $('#autolog-hint').textContent = 'Update your backend script (steps below) to turn this on.';
+  if (backendVersion > 0 && backendVersion < 4) $('#autolog-hint').textContent = 'Needs the newer backend script.';
 }
 
 /* ============================ Views ============================ */
@@ -3428,7 +3313,6 @@ function openSettings(highlightSync = false) {
   $('#sec-sync').classList.toggle('highlight', !!highlightSync);
   renderTagManager();
   renderBodySettings();
-  renderPairBox();
   refreshSyncUI();
   if (!d.open) d.showModal();
 }
@@ -3485,12 +3369,6 @@ async function saveConnection() {
   }
   if (!url && !getScriptUrl()) return toast('Paste your Web app URL first.', true);
   const oldUrl = getScriptUrl();
-  if (url && !tok && (url !== oldUrl || !getToken())) {   // connect with just the URL
-    const paired = await pairWith(url);
-    if (!paired) return;
-    $('#set-token').value = paired;
-    return saveConnection();
-  }
   if (url && oldUrl && url !== oldUrl) {
     const ok = await ask({ title: 'Switch to a different sheet?', message: 'This clears this device’s local copy and any changes that haven’t synced yet, then loads the new sheet.', confirmText: 'Switch sheet', danger: true });
     if (!ok) return;
@@ -3505,9 +3383,8 @@ async function saveConnection() {
   $('#set-token').value = '';
   $('#sec-sync').classList.remove('highlight');
   syncError = '';
-  toast(oldUrl ? 'Connection saved.' : 'Connected. Your sheet is syncing.');
+  toast('Connection saved.');
   syncNow(true);
-  renderPairBox();
 }
 function newToken() {
   const bytes = new Uint8Array(24);
@@ -3815,12 +3692,12 @@ const REALMS = {
 const ALL_VIEWS = Object.values(REALMS).flatMap(r => r.views.map(v => v[0]));
 const realmOf = v => Object.keys(REALMS).find(k => REALMS[k].views.some(x => x[0] === v)) || 'spirit';
 const LEVELS = [null,
-  { n: 1, name: 'Condemned', sub: 'dirty feet', hex: '#8a6142' },
+  { n: 1, name: 'Dirty Feet', sub: '', hex: '#8a6142' },
   { n: 2, name: 'Troubled', sub: '', hex: '#c97d3a' },
   { n: 3, name: 'Neutral', sub: '', hex: '#9b968a' },
   { n: 4, name: 'Peace', sub: '', hex: '#2b9c8c' },
-  { n: 5, name: 'Joy unspeakable', sub: '', hex: '#d4a017' }];
-const LEVEL_SHORT = { 1: 'Condemned', 2: 'Troubled', 3: 'Neutral', 4: 'Peace', 5: 'Joy' };
+  { n: 5, name: 'Enjoyment & Satisfaction', sub: '', hex: '#d4a017' }];
+const LEVEL_SHORT = { 1: 'Dirty Feet', 2: 'Troubled', 3: 'Neutral', 4: 'Peace', 5: ['Enjoyment &', 'Satisfaction'] };
 const FEELS = [null, 'Easy', 'Just right', 'Hard', 'Too hard'];
 const ENERGY = ['Drained', 'Low', 'OK', 'Good', 'Great'];
 const SORE = ['None', 'Mild', 'Some', 'Sore', 'Pain'];
@@ -3944,7 +3821,7 @@ function renderRealmNav() {
   updateBadges();
 }
 function renderRecNotice() {
-  const show = isConfigured() && backendVersion > 0 && backendVersion < REC_MIN_VERSION;
+  const show = false;   // no update banners: the owner updates the script themselves
   $$('.rec-notice').forEach(n => {
     n.classList.toggle('hidden', !show);
     if (show) n.innerHTML = `Heart and Body are saved on this device for now. Update your backend script once to sync them to your Google Sheet and your other devices. <button class="btn btn-sm" data-open-update style="margin-left:6px;height:30px">Show me how</button>`;
@@ -3958,7 +3835,7 @@ function journalFor(d) {
   return sampleOn ? sampleRecs.find(r => r.kind === 'journal' && r.date === d) || null : null;
 }
 const readingsFor = d => recList('conscience').filter(r => r.date === d).sort((a, b) => String(a.time).localeCompare(String(b.time)));
-const lvlBadge = n => LEVELS[n] ? `<span class="lvl" style="--c:${LEVELS[n].hex}"><i></i>${LEVELS[n].name}</span>` : '';
+const lvlBadge = n => LEVELS[n] ? `<span class="lvl" style="--c:${LEVELS[n].hex}"><i></i>${esc(LEVELS[n].name)}</span>` : '';
 
 function renderHeart() {
   const d = ui.hDate, isToday = d === todayISO();
@@ -3982,8 +3859,8 @@ function renderHeart() {
   renderRecentDays();
 }
 function renderScale() {
-  $('#hc-scale').innerHTML = LEVELS.slice(1).map(l =>
-    `<button type="button" data-level="${l.n}" style="--c:${l.hex}" class="${ui.level === l.n ? 'on' : ''}" aria-pressed="${ui.level === l.n}" title="${l.name}${l.sub ? ` (${l.sub})` : ''}"><i></i><span>${l.name}${l.sub ? `<br><span style="font-weight:400;color:var(--faint)">${l.sub}</span>` : ''}</span></button>`).join('');
+  $('#hc-scale').innerHTML = LEVELS.slice(1).reverse().map(l =>
+    `<button type="button" data-level="${l.n}" style="--c:${l.hex}" class="${ui.level === l.n ? 'on' : ''}" aria-pressed="${ui.level === l.n}" title="${l.name}${l.sub ? ` (${l.sub})` : ''}"><i></i><span>${esc(l.name)}</span></button>`).join('');
 }
 function renderReadings() {
   const list = readingsFor(ui.hDate);
@@ -3992,7 +3869,7 @@ function renderReadings() {
   let move = '';
   if (list.length > 1) {
     const a = list[0].level, b = list[list.length - 1].level;
-    move = `<div class="day-move">${a === b ? `Held at <b>${LEVELS[a].name}</b> through the day` : `Moved from <b>${LEVELS[a].name}</b> to <b>${LEVELS[b].name}</b> through the day`}</div>`;
+    move = `<div class="day-move">${a === b ? `Held at <b>${esc(LEVELS[a].name)}</b> through the day` : `Moved from <b>${esc(LEVELS[a].name)}</b> to <b>${esc(LEVELS[b].name)}</b> through the day`}</div>`;
   }
   $('#hc-day').innerHTML = move + `<div class="timeline">${list.map(r => `<div class="tl-row"><span class="t">${fmtTime(r.time)}</span>
     <div>${lvlBadge(r.level)}${r.note ? `<div class="n">${esc(r.note)}</div>` : ''}</div>
@@ -4052,10 +3929,10 @@ function renderHeartTrends() {
   const peaceDays = readDays.filter(d => byDay[d].some(r => r.level >= 4)).length;
   const restored = readDays.filter(d => byDay[d][0].level <= 2 && byDay[d][byDay[d].length - 1].level >= 4).length;
   $('#ht-stats').innerHTML =
-    stat('Average reading', all.length ? avgAll.toFixed(1) : '—', '', all.length ? `closest to ${LEVELS[Math.round(avgAll)].name}` : 'no readings yet', 'accent') +
-    stat('Days at peace or joy', peaceDays, '', `of ${plural(readDays.length, 'day', 'days')} with readings`) +
+    stat('Average reading', all.length ? avgAll.toFixed(1) : '—', '', all.length ? `closest to ${esc(LEVELS[Math.round(avgAll)].name)}` : 'no readings yet', 'accent') +
+    stat('Days at peace or enjoyment', peaceDays, '', `of ${plural(readDays.length, 'day', 'days')} with readings`) +
     stat('Days journaled', js.length, '', `of the last ${n} days`) +
-    stat('Restored days', restored, '', 'began condemned or troubled, ended in peace or joy');
+    stat('Restored days', restored, '', 'began with dirty feet or troubled, ended in peace or enjoyment');
 
   const c = themeColors();
   const labels = dates.map(d => { const x = parseDate(d); return n > 28 ? `${MONTHS[x.getMonth()]} ${x.getDate()}` : [DAY_NAMES[x.getDay()], String(x.getDate())]; });
@@ -4087,14 +3964,14 @@ function renderHeartTrends() {
     const a = dayMean(hi), b = dayMean(lo);
     const what = tag === 'ALL' ? `at least ${fmtDur(thr)} in spirit` : `time in ${esc(tagLabel)}`;
     const notWhat = tag === 'ALL' ? 'less' : 'none';
-    text = `On days with ${what}, your average reading was <b>${a.toFixed(1)}</b> (${LEVELS[Math.round(a)].name}), compared with <b>${b.toFixed(1)}</b> (${LEVELS[Math.round(b)].name}) on days with ${notWhat}.`;
+    text = `On days with ${what}, your average reading was <b>${a.toFixed(1)}</b> (${esc(LEVELS[Math.round(a)].name)}), compared with <b>${b.toFixed(1)}</b> (${esc(LEVELS[Math.round(b)].name)}) on days with ${notWhat}.`;
   } else text = `Keep taking readings and logging Spirit time. Once there are a few days on each side, this will compare your conscience on days with and without ${esc(tagLabel)}.`;
   $('#ht-insight').innerHTML = text;
 
   const counts = [5, 4, 3, 2, 1].map(l => [l, all.filter(x => x === l).length]);
   $('#ht-dist').innerHTML = all.length ? counts.map(([l, k]) => {
     const p = Math.round(k / all.length * 100);
-    return `<div><div class="catbar-top"><span class="catbar-name"><i style="background:${LEVELS[l].hex}"></i><span>${LEVELS[l].name}</span></span><span class="catbar-val">${k}<em>${p}%</em></span></div><div class="track"><div style="width:${p}%;background:${LEVELS[l].hex}"></div></div></div>`;
+    return `<div><div class="catbar-top"><span class="catbar-name"><i style="background:${LEVELS[l].hex}"></i><span>${esc(LEVELS[l].name)}</span></span><span class="catbar-val">${k}<em>${p}%</em></span></div><div class="track"><div style="width:${p}%;background:${LEVELS[l].hex}"></div></div></div>`;
   }).join('') : '<p class="hint">Take conscience readings in the Journal to see the spread here.</p>';
   const calls = js.filter(j => String(j.calling || '').trim()).sort((a, b) => b.date.localeCompare(a.date)).slice(0, 5);
   $('#ht-calls').innerHTML = calls.length ? calls.map(j => `<blockquote class="quote">${esc(j.calling)}<cite>${shortDay(j.date)}</cite></blockquote>`).join('') : '<p class="hint">What you write under “What is He calling out in your heart?” gathers here.</p>' + verseLine(VERSES.heart[0]);
@@ -4809,7 +4686,6 @@ function bindHeartBody() {
     }
     if (ds.editwo) return openWorkout(ds.editwo);
     if (ds.whtype) { ui.whType = ds.whtype; return renderHistory(); }
-    if ('openUpdate' in ds) { openSettings(false); const det = $('#cal-update'); det.open = true; return setTimeout(() => det.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80); }
     if ('openHealth' in ds) { openSettings(false); const sec = $('#hl-box').closest('.set-sec'); sec.querySelector('details').open = true; return setTimeout(() => sec.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80); }
     if (ds.ck) {
       const v = +ds.v, cur = ds.ck === 'energy' ? ui.ckEnergy : ui.ckSore;
@@ -4877,7 +4753,7 @@ function bindHeartBody() {
 }
 
 /* =====================================================================
-   Garden: verses, growing plants, and connecting devices.
+   Garden: verses and growing plants.
    "you are God's cultivated land" 1 Cor. 3:9
    Scripture quotations: Holy Bible Recovery Version, © Living Stream Ministry, Anaheim, CA.
    Each verse links to its chapter at text.recoveryversion.bible.
@@ -4977,125 +4853,10 @@ function checkWeekBloom() {
   toast(`${WEEKLY_GOAL_HOURS} hours this week. “${GOAL_VERSE.text}” ${GOAL_VERSE.ref}`);
 }
 
-/* ------------------------- Connect devices (pairing) ------------------------- */
-const TEMPLATE_KEY = 'ts_template_v1';
-// Optional: put your template sheet's ID here so every copy of the app offers "Make my copy".
-const TEMPLATE_SHEET_ID = '';
-const templateId = () => TEMPLATE_SHEET_ID || lsRaw(TEMPLATE_KEY);
-const appBaseUrl = () => location.href.split('#')[0];
-const b64u = s => btoa(unescape(encodeURIComponent(s))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-const unb64u = s => decodeURIComponent(escape(atob(s.replace(/-/g, '+').replace(/_/g, '/'))));
-const sheetIdFrom = s => { const m = String(s || '').match(/\/d\/([\w-]{20,})/) || String(s || '').match(/^([\w-]{25,})$/); return m ? m[1] : ''; };
-const connectLink = () => `${appBaseUrl()}#connect=${b64u(JSON.stringify({ u: getScriptUrl(), t: getToken() }))}`;
-
-async function pairWith(url) {
-  const btn = $('#set-save-conn'), label = btn.textContent;
-  btn.disabled = true; btn.textContent = 'Connecting…';
-  try {
-    const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'pair' }) });
-    const d = await res.json();
-    if (d.status === 'success' && d.token) return d.token;
-    if (d.code === 'pairing_closed') { await ask({ title: 'Connecting is locked', message: d.message, confirmText: 'Done' }); return null; }
-    if (/unauthori/i.test(d.message || '')) {
-      $('#tok-details').open = true; $('#set-token').focus();
-      toast('This sheet runs an older script. Paste its sync token below, or update the script.', true);
-      return null;
-    }
-    toast('Couldn’t connect: ' + (d.message || 'unknown error'), true);
-  } catch (e) {
-    toast('Couldn’t reach that Web app URL. Check it, and that “Who has access” is set to Anyone.', true);
-  } finally { btn.disabled = false; btn.textContent = label; }
-  return null;
-}
-async function handleConnectHash() {
-  const h = location.hash;
-  const clear = () => history.replaceState(null, '', appBaseUrl());
-  if (h.startsWith('#template=')) {
-    const id = sheetIdFrom(decodeURIComponent(h.slice(10)));
-    clear();
-    if (id) { lsRawSet(TEMPLATE_KEY, id); if (!isConfigured()) openSettings(true); }
-    return;
-  }
-  if (!h.startsWith('#connect=')) return;
-  let data = null;
-  try { data = JSON.parse(unb64u(h.slice(9))); } catch (e) {}
-  clear();
-  if (!data || !data.u || !data.t) return toast('That connect link is incomplete.', true);
-  if (getScriptUrl() === data.u && getToken() === data.t) return toast('This device is already connected.');
-  const switching = getScriptUrl() && getScriptUrl() !== data.u;
-  const ok = await ask({ title: 'Connect this device?', confirmText: 'Connect',
-    message: switching ? 'This device is connected to a different sheet. Connecting replaces this device’s local copy with the linked sheet.'
-                       : 'This device will sync with the Google Sheet from your connect link.' });
-  if (!ok) return;
-  if (switching) [LS.store, LS.queue, LS.cats, LS.last, REC_KEY].forEach(lsDel);
-  lsRawSet(URL_KEY, data.u); lsRawSet(LS.token, data.t);
-  if (switching) return location.reload();
-  const d = $('#settings'); if (d.open) d.close();
-  toast('Connected. Syncing now.');
-  syncNow(true);
-}
-let qrLoading = null;
-function loadQR() {
-  if (window.qrcode) return Promise.resolve();
-  if (!qrLoading) qrLoading = new Promise((res, rej) => {
-    const s = document.createElement('script');
-    s.src = 'https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js';
-    s.onload = res; s.onerror = () => { qrLoading = null; rej(new Error('qr')); };
-    document.head.appendChild(s);
-  });
-  return qrLoading;
-}
-async function renderPairBox() {
-  const box = $('#pair-box'), on = isConfigured();
-  box.classList.toggle('hidden', !on);
-  $('#start-box').classList.toggle('hidden', on);
-  const tid = templateId(), copy = $('#tpl-copy');
-  copy.classList.toggle('hidden', !tid);
-  if (tid) copy.href = `https://docs.google.com/spreadsheets/d/${tid}/copy`;
-  $('#tpl-none').classList.toggle('hidden', !!tid);
-  if (!on) return;
-  const qr = $('#pair-qr');
-  if (location.protocol === 'file:') { qr.innerHTML = '<p class="hint">Open the app from its web address to get a QR code.</p>'; return; }
-  try {
-    await loadQR();
-    const q = window.qrcode(0, 'M'); q.addData(connectLink()); q.make();
-    qr.innerHTML = q.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
-  } catch (e) { qr.innerHTML = '<p class="hint">QR code needs a connection. Use Copy link instead.</p>'; }
-}
-async function copyText(text, okMsg) {
-  try { await navigator.clipboard.writeText(text); toast(okMsg); }
-  catch (e) {
-    const ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
-    ($('dialog[open]') || document.body).appendChild(ta); ta.select();
-    let ok = false; try { ok = document.execCommand('copy'); } catch (x) {}
-    ta.remove(); toast(ok ? okMsg : 'Copy failed. Try a desktop browser.', !ok);
-  }
-}
-async function copyTemplateScript() {
-  await copyText($('#backendScript').textContent.trim(), 'Template script copied. Paste it into your template sheet’s Apps Script.');
-}
-function makeShareLink() {
-  const id = sheetIdFrom($('#tpl-link').value.trim());
-  if (!id) return toast('Paste your template sheet’s link (it contains /d/…/).', true);
-  lsRawSet(TEMPLATE_KEY, id);
-  const link = `${appBaseUrl()}#template=${id}`;
-  $('#tpl-out').classList.remove('hidden');
-  $('#tpl-out-link').textContent = link;
-  copyText(link, 'Setup link copied. Send it to anyone you want to invite.');
-  renderPairBox();
-}
 function bindGarden() {
   document.addEventListener('click', e => {
     if (e.target.closest('[data-verse-next]')) { verseShift++; renderVerse(); }
   });
-  $('#pair-copy').addEventListener('click', () => copyText(connectLink(), 'Connect link copied. Open it on your other device.'));
-  $('#pair-share').addEventListener('click', async () => {
-    if (navigator.share) { try { await navigator.share({ title: 'Connect Eccl 3:1', url: connectLink() }); } catch (e) {} }
-    else copyText(connectLink(), 'Connect link copied.');
-  });
-  $('#tpl-script').addEventListener('click', copyTemplateScript);
-  $('#tpl-make').addEventListener('click', makeShareLink);
-  $('#tpl-out-copy').addEventListener('click', () => copyText($('#tpl-out-link').textContent, 'Setup link copied.'));
 }
 
 /* ============================ Start ============================ */
@@ -5112,8 +4873,6 @@ function init() {
   setView(lsRaw(VIEW_KEY) || 'log', false);
   updateBadges();
   startAutoSync();
-  handleConnectHash();
-  window.addEventListener('hashchange', handleConnectHash);
 }
 init();
 </script>
