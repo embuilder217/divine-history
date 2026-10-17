@@ -759,6 +759,12 @@ code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-r
 .walk-check { display: inline-flex; flex: none; cursor: pointer; }
 .tag-list-head { display: flex; justify-content: space-between; gap: 10px; font-size: 12.5px; color: var(--muted); }
 .tag-list-head b { color: var(--text); font-weight: 600; }
+/* Each conscience step shows its verse */
+.scale button { align-items: flex-start; padding: 9px 12px; }
+.scale button i { margin-top: 2px; }
+.scale .lv b { display: block; font-weight: 600; color: var(--text); font-size: 13.5px; }
+.scale .lv em { display: block; margin-top: 2px; font-family: var(--serif); font-style: italic; font-weight: 400; font-size: 13.5px; line-height: 1.4; color: var(--muted); }
+.scale .lv cite { font-family: var(--sans); font-style: normal; font-size: 11.5px; color: var(--faint); white-space: nowrap; }
 
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 </style>
@@ -961,7 +967,7 @@ code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-r
   <!-- ============ HEART · JOURNAL ============ -->
   <section class="view hidden" id="view-heart">
     <div class="page-head">
-      <div><p class="eyebrow" id="hj-rel">Today</p><h1 class="page-title" id="hj-title">Heart journal</h1><p class="page-sub">The dealings of your conscience, from dirty feet to enjoyment &amp; satisfaction</p></div>
+      <div><p class="eyebrow" id="hj-rel">Today</p><h1 class="page-title" id="hj-title">Heart journal</h1><p class="page-sub">The dealings of your conscience, from dirty feet to enjoyment</p></div>
       <div class="pager">
         <button class="btn-icon bordered" data-dnav="heart:-1" aria-label="Previous day"><svg class="ic"><use href="#i-left"/></svg></button>
         <button class="btn btn-sm" data-dnav="heart:0">Today</button>
@@ -1120,6 +1126,14 @@ code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-r
       <button class="btn-icon" data-close aria-label="Close"><svg class="ic"><use href="#i-x"/></svg></button>
     </div>
 
+    <section class="set-sec">
+      <h3>Sample data</h3>
+      <div class="switch-row">
+        <div class="sw-text"><b>Show sample data</b><span>Fills Spirit with about 16 weeks of random example activities, and Heart and Body with six weeks of example readings, journal days, meals, workouts and a 10K plan, so you can see how everything looks. It’s a preview only: it is never saved to your Google Sheet or added to your calendars, and your real data stays untouched.</span></div>
+        <label class="switch"><input type="checkbox" id="set-sample" aria-label="Show sample data"><i></i></label>
+      </div>
+    </section>
+
     <section class="set-sec" id="sec-sync">
       <h3>Google Sheet sync</h3>
       <div class="sync-box" id="set-sync-box" data-state="ok">
@@ -1222,13 +1236,6 @@ code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-r
       </details>
     </section>
 
-    <section class="set-sec">
-      <h3>Sample data</h3>
-      <div class="switch-row">
-        <div class="sw-text"><b>Show sample data</b><span>Fills Spirit with about 16 weeks of random example activities, and Heart and Body with six weeks of example readings, journal days, meals, workouts and a 10K plan, so you can see how everything looks. It’s a preview only: it is never saved to your Google Sheet or added to your calendars, and your real data stays untouched.</span></div>
-        <label class="switch"><input type="checkbox" id="set-sample" aria-label="Show sample data"><i></i></label>
-      </div>
-    </section>
 
     <section class="set-sec">
       <h3>Backup &amp; export</h3>
@@ -3703,13 +3710,14 @@ const REALMS = {
 };
 const ALL_VIEWS = Object.values(REALMS).flatMap(r => r.views.map(v => v[0]));
 const realmOf = v => Object.keys(REALMS).find(k => REALMS[k].views.some(x => x[0] === v)) || 'spirit';
+// Each step of the conscience scale carries its own verse (Holy Bible Recovery Version).
 const LEVELS = [null,
-  { n: 1, name: 'Dirty Feet', sub: '', hex: '#8a6142' },
-  { n: 2, name: 'Troubled', sub: '', hex: '#c97d3a' },
-  { n: 3, name: 'Neutral', sub: '', hex: '#9b968a' },
-  { n: 4, name: 'Peace', sub: '', hex: '#2b9c8c' },
-  { n: 5, name: 'Enjoyment & Satisfaction', sub: '', hex: '#d4a017' }];
-const LEVEL_SHORT = { 1: 'Dirty Feet', 2: 'Troubled', 3: 'Neutral', 4: 'Peace', 5: ['Enjoyment &', 'Satisfaction'] };
+  { n: 1, name: 'Dirty Feet', sub: '', hex: '#8a6142', ref: 'John 13:10', verse: 'He who is bathed has no need except to wash his feet, but is wholly clean;' },
+  { n: 2, name: 'Troubled', sub: '', hex: '#c97d3a', ref: 'John 14:27', verse: 'Do not let your heart be troubled, neither let it be afraid.' },
+  { n: 3, name: 'Neutral', sub: '', hex: '#9b968a', ref: 'Acts 24:16', verse: '…to always have a conscience without offense toward God and men.' },
+  { n: 4, name: 'Peace', sub: '', hex: '#2b9c8c', ref: 'Romans 8:6', verse: '…the mind set on the spirit is life and peace.' },
+  { n: 5, name: 'Enjoyment', sub: '', hex: '#d4a017', ref: '1 Peter 1:8', verse: '…you exult with joy that is unspeakable and full of glory,' }];
+const LEVEL_SHORT = { 1: 'Dirty Feet', 2: 'Troubled', 3: 'Neutral', 4: 'Peace', 5: 'Enjoyment' };
 const FEELS = [null, 'Easy', 'Just right', 'Hard', 'Too hard'];
 const ENERGY = ['Drained', 'Low', 'OK', 'Good', 'Great'];
 const SORE = ['None', 'Mild', 'Some', 'Sore', 'Pain'];
@@ -3879,7 +3887,7 @@ function renderHeart() {
 }
 function renderScale() {
   $('#hc-scale').innerHTML = LEVELS.slice(1).reverse().map(l =>
-    `<button type="button" data-level="${l.n}" style="--c:${l.hex}" class="${ui.level === l.n ? 'on' : ''}" aria-pressed="${ui.level === l.n}" title="${l.name}${l.sub ? ` (${l.sub})` : ''}"><i></i><span>${esc(l.name)}</span></button>`).join('');
+    `<button type="button" data-level="${l.n}" style="--c:${l.hex}" class="${ui.level === l.n ? 'on' : ''}" aria-pressed="${ui.level === l.n}" title="${l.name}${l.sub ? ` (${l.sub})` : ''}"><i></i><span class="lv"><b>${esc(l.name)}</b><em>“${esc(l.verse)}” <cite>${esc(l.ref)}</cite></em></span></button>`).join('');
 }
 function renderReadings() {
   const list = readingsFor(ui.hDate);
