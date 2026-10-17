@@ -3694,7 +3694,7 @@ function bindEvents() {
    meal, food, workout, check, health, config) that syncs to the
    "Records" sheet once the backend script is v7 or newer.
    ===================================================================== */
-const REC_KEY = 'ts_recs_v1', REALM_VIEW_KEY = 'ts_realm_views_v1', HT_TAG_KEY = 'ts_ht_tag_v1';
+const REC_KEY = 'ts_recs_v1', REALM_VIEW_KEY = 'ts_realm_views_v1', HT_TAG_KEY = 'ts_ht_tag_v2';
 const REC_MIN_VERSION = 7;
 const REALMS = {
   spirit: { label: 'Spirit', views: [['log', 'Daily log', 'calendar'], ['weekly', 'Weekly', 'week'], ['monthly', 'Monthly', 'pie'], ['annual', 'Annual', 'trend']] },
@@ -3935,7 +3935,7 @@ function renderHeartTrends() {
   $('#ht-sub').textContent = fmtRange(parseDate(first), parseDate(last));
   const rs = recList('conscience').filter(r => r.date >= first && r.date <= last);
   const js = recList('journal').filter(j => j.date >= first && j.date <= last && hasText(j));
-  const sel = $('#ht-tag'), want = lsRaw(HT_TAG_KEY) || findTag('PTL') || 'ALL';
+  const sel = $('#ht-tag'), want = lsRaw(HT_TAG_KEY) || 'ALL';   // default: all Walking with the Lord tags
   sel.innerHTML = '<option value="ALL">All Walking with the Lord time</option>' + categories.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
   sel.value = categories.includes(want) ? want : 'ALL';
   const tag = sel.value, tagLabel = tag === 'ALL' ? 'Walking with the Lord' : tag.replace(/\s*\([^)]*\)\s*$/, '');
