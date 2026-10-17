@@ -498,12 +498,12 @@ code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-r
 }
 
 /* =================== v3: Spirit · Heart · Body =================== */
-:root[data-realm="heart"] { --accent: #be185d; --accent-hover: #9d174d; --accent-text: #ffffff; --accent-soft: #fbe6ef; --accent-softer: #fdf3f7; --ring: rgba(190, 24, 93, .22); }
+:root[data-realm="heart"] { --accent: #6b0f1a; --accent-hover: #520b14; --accent-text: #ffffff; --accent-soft: #f2e0e2; --accent-softer: #f9eff0; --ring: rgba(107, 15, 26, .24); }
 :root[data-realm="body"]  { --accent: #c2410c; --accent-hover: #9a3412; --accent-text: #ffffff; --accent-soft: #fde9dc; --accent-softer: #fef5ee; --ring: rgba(194, 65, 12, .22); }
-:root[data-theme="dark"][data-realm="heart"] { --accent: #f472b6; --accent-hover: #f9a8d4; --accent-text: #3b0a1f; --accent-soft: rgba(244, 114, 182, .16); --accent-softer: rgba(244, 114, 182, .06); --ring: rgba(244, 114, 182, .3); }
+:root[data-theme="dark"][data-realm="heart"] { --accent: #cf5b6b; --accent-hover: #de8591; --accent-text: #2a0509; --accent-soft: rgba(207, 91, 107, .17); --accent-softer: rgba(207, 91, 107, .07); --ring: rgba(207, 91, 107, .32); }
 :root[data-theme="dark"][data-realm="body"]  { --accent: #fb923c; --accent-hover: #fdba74; --accent-text: #3a1404; --accent-soft: rgba(251, 146, 60, .16); --accent-softer: rgba(251, 146, 60, .06); --ring: rgba(251, 146, 60, .3); }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"])[data-realm="heart"] { --accent: #f472b6; --accent-hover: #f9a8d4; --accent-text: #3b0a1f; --accent-soft: rgba(244, 114, 182, .16); --accent-softer: rgba(244, 114, 182, .06); --ring: rgba(244, 114, 182, .3); }
+  :root:not([data-theme="light"])[data-realm="heart"] { --accent: #cf5b6b; --accent-hover: #de8591; --accent-text: #2a0509; --accent-soft: rgba(207, 91, 107, .17); --accent-softer: rgba(207, 91, 107, .07); --ring: rgba(207, 91, 107, .32); }
   :root:not([data-theme="light"])[data-realm="body"]  { --accent: #fb923c; --accent-hover: #fdba74; --accent-text: #3a1404; --accent-soft: rgba(251, 146, 60, .16); --accent-softer: rgba(251, 146, 60, .06); --ring: rgba(251, 146, 60, .3); }
 }
 .brand-mark { transition: background .2s; }
@@ -759,6 +759,23 @@ code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-r
 .walk-check { display: inline-flex; flex: none; cursor: pointer; }
 .tag-list-head { display: flex; justify-content: space-between; gap: 10px; font-size: 12.5px; color: var(--muted); }
 .tag-list-head b { color: var(--text); font-weight: 600; }
+/* Location links & agendas */
+.loc { display: inline-flex; align-items: center; gap: 5px; font-size: 12.5px; color: var(--muted); max-width: 100%; min-width: 0; }
+.loc span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+a.loc { color: var(--accent); font-weight: 600; text-decoration: none; }
+a.loc:hover { text-decoration: underline; }
+.loc .ic { width: 14px; height: 14px; flex: none; }
+.agenda { margin-top: 8px; font-size: 13px; color: var(--muted); }
+.agenda summary { cursor: pointer; font-weight: 600; color: var(--text); font-size: 12.5px; list-style: none; display: inline-flex; align-items: center; gap: 5px; }
+.agenda summary::-webkit-details-marker { display: none; }
+.agenda summary::before { content: "▸"; color: var(--faint); font-size: 11px; }
+.agenda[open] summary::before { content: "▾"; }
+.agenda p { margin: 4px 0 0; white-space: pre-line; line-height: 1.5; }
+.occ-extra { display: flex; flex-direction: column; gap: 8px; margin-top: -4px; }
+.occ-extra .agenda-box { white-space: pre-line; font-size: 13.5px; color: var(--text); background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; }
+.occ-extra .agenda-box b { display: block; font-size: 12px; color: var(--muted); margin-bottom: 2px; }
+#ask-input { margin-top: -2px; }
+
 /* Each conscience step shows its verse */
 .scale button { align-items: flex-start; padding: 9px 12px; }
 .scale button i { margin-top: 2px; }
@@ -806,6 +823,8 @@ code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-r
     <symbol id="i-dumbbell" viewBox="0 0 24 24"><path d="M6.5 6.5 17.5 17.5M21 21l-1-1M3 3l1 1M18 22l4-4M2 6l4-4M3 10l7-7M14 21l7-7"/></symbol>
     <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M12 3l1.9 5.6L19.5 10.5 13.9 12.4 12 18l-1.9-5.6L4.5 10.5l5.6-1.9Z"/></symbol>
     <symbol id="i-sprout" viewBox="0 0 24 24"><path d="M12 21v-9"/><path d="M12 12.5c0-4 2.8-6.6 7-6.6 0 4.1-2.8 6.6-7 6.6Z"/><path d="M12 14.5C12 11 9.6 8.6 5.6 8.6c0 3.6 2.5 5.9 6.4 5.9Z"/><path d="M6.5 21h11"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></symbol>
+    <symbol id="i-video" viewBox="0 0 24 24"><path d="m16 13 5.2 3.1a.5.5 0 0 0 .8-.4V8.3a.5.5 0 0 0-.8-.4L16 11"/><rect x="2" y="6" width="14" height="12" rx="2"/></symbol>
   </defs>
 </svg>
 
@@ -865,6 +884,8 @@ code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-r
         <div class="calc hidden" id="f-calc"></div>
         <label class="field"><span>Tag</span><select id="f-tag"></select></label>
         <label class="field hidden" id="f-newtag-wrap"><span>New tag name</span><input type="text" id="f-newtag" placeholder="Name your new tag" autocomplete="off"></label>
+        <label class="field"><span>Location or link <em>· optional</em></span><input type="text" id="f-loc" placeholder="e.g., Meeting hall, or a Zoom link" autocomplete="off" spellcheck="false"></label>
+        <label class="field"><span>Agenda <em>· optional</em></span><textarea id="f-agenda" rows="2" placeholder="Topics, readings, people to pray for…"></textarea></label>
         <label class="field"><span>Notes <em>· optional</em></span><textarea id="f-desc" rows="3" placeholder="Summary of work, tasks, or miles…"></textarea></label>
         <div class="form-actions">
           <button type="submit" class="btn btn-primary" id="f-save"><svg class="ic sm"><use href="#i-check"/></svg><span>Save entry</span></button>
@@ -1263,6 +1284,7 @@ code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-r
     <h3 id="ask-title"></h3>
     <p id="ask-msg" style="white-space:pre-line;overflow-wrap:anywhere"></p>
     <select id="ask-select" class="hidden" aria-label="Choose"></select>
+    <input type="text" id="ask-input" class="hidden" autocomplete="off" aria-label="Name">
     <div class="btn-row end">
       <button class="btn" id="ask-cancel">Cancel</button>
       <button class="btn btn-primary" id="ask-ok">OK</button>
@@ -1282,6 +1304,7 @@ code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-r
           <label class="field"><span>Start</span><input type="time" id="p-start"></label>
           <label class="field"><span>End</span><input type="time" id="p-end"></label>
         </div>
+        <label class="field"><span>Location or link <em>· optional</em></span><input type="text" id="p-loc" placeholder="e.g., Meeting hall, or a Zoom link" autocomplete="off" spellcheck="false"></label>
         <label class="check-row"><input type="checkbox" id="p-repeat"><span>Repeats every week</span></label>
         <div id="p-repeat-box" class="hidden" style="display:flex;flex-direction:column;gap:12px">
           <div class="day-chips" id="p-days"></div>
@@ -1289,6 +1312,7 @@ code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-r
         </div>
       </div>
       <label class="field"><span>Tag</span><select id="p-tag"></select></label>
+      <label class="field" id="p-agenda-wrap"><span>Agenda <em>· optional</em></span><textarea id="p-agenda" rows="3" placeholder="Topics, readings, people to pray for…"></textarea></label>
       <label class="field" id="p-notes-wrap"><span>Notes <em>· optional</em></span><textarea id="p-notes" rows="2" placeholder="Anything to remember"></textarea></label>
       <div class="btn-row">
         <button class="btn btn-primary" type="submit" id="p-save">Save plan</button>
@@ -1302,6 +1326,7 @@ code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-r
   <div class="ask-inner">
     <h3 id="occ-title"></h3>
     <p id="occ-meta"></p>
+    <div class="occ-extra" id="occ-extra"></div>
     <div class="occ-actions" id="occ-actions"></div>
   </div>
 </dialog>
@@ -1394,10 +1419,10 @@ code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-r
 //    The Web app URL stays the same.
 
 var SECRET = 'CHANGE_ME_TO_A_LONG_RANDOM_STRING';
-var VERSION = 7;
-var HEADERS = ['ID', 'Date', 'Subject', 'TotalMinutes', 'Tag', 'Description', 'CreatedAt', 'UpdatedAt', 'Deleted', 'StartTime', 'EndTime'];
+var VERSION = 8;
+var HEADERS = ['ID', 'Date', 'Subject', 'TotalMinutes', 'Tag', 'Description', 'CreatedAt', 'UpdatedAt', 'Deleted', 'StartTime', 'EndTime', 'Location', 'Agenda'];
 var PLAN_HEADERS = ['ID', 'Title', 'Tag', 'Notes', 'Date', 'StartTime', 'EndTime', 'Days', 'Until', 'Skips',
-                    'CreatedAt', 'UpdatedAt', 'Deleted', 'Source', 'CalEventId', 'CalSig'];
+                    'CreatedAt', 'UpdatedAt', 'Deleted', 'Source', 'CalEventId', 'CalSig', 'Location', 'Agenda'];
 var CAL_NAME = 'Timesheet Plans';      // what's still ahead
 var LOG_CAL_NAME = 'Timesheet Log';    // everything you logged, at the actual times
 var LOG_BATCH = 15;                    // log events written per app sync (keeps syncs quick)
@@ -1494,7 +1519,7 @@ function autoLog_(plans, rows, cats, tz) {
       var tag = p.tag || 'Untagged';
       if (cats.indexOf(tag) < 0) { cats.push(tag); catsChanged = true; }
       rows.push(makeRow_({ id: id, date: d, subject: p.title, totalMinutes: Math.round((en - st) / 60000), tag: tag,
-                           description: p.notes || '', startTime: p.startTime, endTime: p.endTime }, stamp, stamp));
+                           description: p.notes || '', startTime: p.startTime, endTime: p.endTime, location: p.location || '', agenda: p.agenda || '' }, stamp, stamp));
       exists[id] = true;
       logged++;
     });
@@ -1594,6 +1619,10 @@ function applyOps_(rows, cats, plans, ops) {
         c = String(c);
         if (c && cats.indexOf(c) < 0) { cats.push(c); catsChanged = true; }
       });
+    } else if (op.type === 'renameCategory' && op.from && op.to) {
+      var ri = cats.indexOf(String(op.from));
+      if (ri >= 0 && cats.indexOf(String(op.to)) < 0) { cats[ri] = String(op.to); catsChanged = true; }
+      else if (cats.indexOf(String(op.to)) < 0) { cats.push(String(op.to)); catsChanged = true; }
     } else if (op.type === 'removeCategory' && op.category) {
       var k = cats.indexOf(String(op.category));
       if (k >= 0) { cats.splice(k, 1); catsChanged = true; }
@@ -1623,13 +1652,15 @@ function applyOps_(rows, cats, plans, ops) {
 
 function makeRow_(en, createdAt, stamp) {
   return [String(en.id), String(en.date || ''), String(en.subject || ''), Number(en.totalMinutes) || 0,
-          String(en.tag || ''), String(en.description || ''), createdAt, stamp, '', String(en.startTime || ''), String(en.endTime || '')];
+          String(en.tag || ''), String(en.description || ''), createdAt, stamp, '', String(en.startTime || ''), String(en.endTime || ''),
+          String(en.location || ''), String(en.agenda || '')];
 }
 
 function toEntry_(r) {
   return {
     id: r[0], date: r[1], subject: r[2], totalMinutes: r[3], tag: r[4], description: r[5],
-    createdAt: r[6], updatedAt: r[7] || r[6] || EPOCH, deleted: /^(yes|true)$/i.test(r[8]), startTime: r[9] || '', endTime: r[10] || ''
+    createdAt: r[6], updatedAt: r[7] || r[6] || EPOCH, deleted: /^(yes|true)$/i.test(r[8]), startTime: r[9] || '', endTime: r[10] || '',
+    location: r[11] || '', agenda: r[12] || ''
   };
 }
 
@@ -1644,7 +1675,8 @@ function planFromOp_(p, prev) {
     createdAt: prev ? prev.createdAt : String(p.createdAt || p.updatedAt || ''),
     updatedAt: String(p.updatedAt || ''), deleted: '',
     source: prev ? prev.source : (p.source === 'calendar' ? 'calendar' : 'app'),
-    calEventId: prev ? prev.calEventId : '', calSig: prev ? prev.calSig : ''
+    calEventId: prev ? prev.calEventId : '', calSig: prev ? prev.calSig : '',
+    location: String(p.location || ''), agenda: String(p.agenda || '')
   };
 }
 
@@ -1654,7 +1686,7 @@ function toPlan_(p) {
     id: p.id, title: p.title, tag: p.tag, notes: p.notes, date: p.date, startTime: p.startTime, endTime: p.endTime,
     days: nums(p.days), until: p.until, skips: p.skips ? String(p.skips).split(',').filter(String) : [],
     createdAt: p.createdAt, updatedAt: p.updatedAt || p.createdAt || EPOCH, deleted: p.deleted === 'yes',
-    source: p.source || 'app', calLinked: !!p.calEventId
+    source: p.source || 'app', calLinked: !!p.calEventId, location: p.location || '', agenda: p.agenda || ''
   };
 }
 
@@ -1665,6 +1697,10 @@ function plansSheet_(ss) {
     ps.getRange(1, 1, ps.getMaxRows(), PLAN_HEADERS.length).setNumberFormat('@');
     ps.getRange(1, 1, 1, PLAN_HEADERS.length).setValues([PLAN_HEADERS]);
     ps.setFrozenRows(1);
+  }
+  if (ps.getRange(1, PLAN_HEADERS.length).getValue() !== 'Agenda') {   // older sheets: add Location & Agenda
+    ps.getRange(1, PLAN_HEADERS.length - 1, ps.getMaxRows(), 2).setNumberFormat('@');
+    ps.getRange(1, 1, 1, PLAN_HEADERS.length).setValues([PLAN_HEADERS]);
   }
   return ps;
 }
@@ -1680,7 +1716,7 @@ function readPlans_(ps) {
       return {
         id: v(0), title: v(1), tag: v(2), notes: v(3), date: v(4, 'yyyy-MM-dd'), startTime: v(5, 'HH:mm'), endTime: v(6, 'HH:mm'),
         days: v(7), until: v(8, 'yyyy-MM-dd'), skips: v(9), createdAt: stamp_(r[10]), updatedAt: stamp_(r[11]),
-        deleted: v(12), source: v(13), calEventId: v(14), calSig: v(15)
+        deleted: v(12), source: v(13), calEventId: v(14), calSig: v(15), location: v(16), agenda: v(17)
       };
     });
 }
@@ -1692,7 +1728,7 @@ function writePlans_(ps, plans) {
   if (ps.getMaxRows() < plans.length + 1) ps.insertRowsAfter(ps.getMaxRows(), plans.length + 1 - ps.getMaxRows());
   ps.getRange(2, 1, plans.length, PLAN_HEADERS.length).setNumberFormat('@').setValues(plans.map(function (p) {
     return [p.id, p.title, p.tag, p.notes, p.date, p.startTime, p.endTime, p.days, p.until, p.skips,
-            p.createdAt, p.updatedAt, p.deleted, p.source, p.calEventId, p.calSig];
+            p.createdAt, p.updatedAt, p.deleted, p.source, p.calEventId, p.calSig, p.location || '', p.agenda || ''];
   }));
 }
 
@@ -1770,7 +1806,7 @@ function syncCalendar_(plans, cats, force, rows) {
 }
 
 function sig_(p, doneDates) {
-  return [p.title, p.tag, p.notes, p.date, p.startTime, p.endTime, p.days, p.until, p.skips, p.deleted, (doneDates || []).slice().sort().join(','), tz_()].join('|');
+  return [p.title, p.tag, p.notes, p.date, p.startTime, p.endTime, p.days, p.until, p.skips, p.deleted, (doneDates || []).slice().sort().join(','), tz_(), p.location || '', p.agenda || ''].join('|');
 }
 
 var WEEKDAYS_ = null;
@@ -1820,7 +1856,8 @@ function pushPlan_(cal, p, tz, doneDates) {
   if (p.until && first > p.until) return;
   var start = at_(first, p.startTime, tz), end = at_(first, p.endTime, tz);
   if (end <= start) end = new Date(end.getTime() + 86400000);
-  var opts = { description: (p.notes ? p.notes + '\n\n' : '') + (p.tag ? 'Tag: ' + p.tag + '\n' : '') + 'Planned in the Timesheet app. Edit or delete it there.' };
+  var opts = { description: (p.agenda ? 'Agenda:\n' + p.agenda + '\n\n' : '') + (p.notes ? p.notes + '\n\n' : '') + (p.tag ? 'Tag: ' + p.tag + '\n' : '') + 'Planned in the Timesheet app. Edit or delete it there.' };
+  if (p.location) opts.location = p.location;
   var ev;
   if (days.length) {
     var W = weekdays_();
@@ -1871,7 +1908,7 @@ function pullCalendar_(cal, plans, cats, tz, done) {
     var q = idx[id];
     if (q === undefined) {
       plans.push({
-        id: id, title: title, tag: guessTag_(title, cats), notes: String(ev.getDescription() || '').replace(/<[^>]+>/g, ' ').trim(),
+        id: id, title: title, tag: guessTag_(title, cats), notes: String(ev.getDescription() || '').replace(/<[^>]+>/g, ' ').trim(), location: String(ev.getLocation() || ''), agenda: '',
         date: d, startTime: s, endTime: e, days: '', until: '', skips: '', createdAt: stamp, updatedAt: stamp,
         deleted: '', source: 'calendar', calEventId: ev.getId(), calSig: ev.isRecurringEvent() ? 'rec' : ''
       });
@@ -1880,8 +1917,9 @@ function pullCalendar_(cal, plans, cats, tz, done) {
     } else {
       var c = plans[q];
       if (resolvedOnce_(c, done[c.id])) return;
-      if (c.deleted === 'yes' || c.title !== title || c.startTime !== s || c.endTime !== e) {
-        c.deleted = ''; c.title = title; c.startTime = s; c.endTime = e; c.updatedAt = stamp;
+      var evLoc = String(ev.getLocation() || '');
+      if (c.deleted === 'yes' || c.title !== title || c.startTime !== s || c.endTime !== e || (c.location || '') !== evLoc) {
+        c.deleted = ''; c.title = title; c.startTime = s; c.endTime = e; c.location = evLoc; c.updatedAt = stamp;
         changed = true;
       }
     }
@@ -1988,7 +2026,7 @@ function planNote_(e, planIndex) {
 }
 function time12_(t) { var h = Number(t.slice(0, 2)), m = t.slice(3, 5); return ((h + 11) % 12 + 1) + ':' + m + (h >= 12 ? ' PM' : ' AM'); }
 function logSig_(e, planIndex) {
-  var base = [e.date, e.startTime, e.endTime, e.subject, e.tag, e.description, e.totalMinutes, tz_()].join('|');
+  var base = [e.date, e.startTime, e.endTime, e.subject, e.tag, e.description, e.totalMinutes, tz_()].join('|') + (e.location || e.agenda ? '|' + (e.location || '') + '|' + (e.agenda || '') : '');
   return planIdOf_(e) ? base + '|' + planNote_(e, planIndex) : base;   // unchanged for ordinary entries
 }
 function fmtDur_(min) { min = Math.round(Number(min) || 0); var h = Math.floor(min / 60), m = min % 60; return !h ? m + 'm' : !m ? h + 'h' : h + 'h ' + m + 'm'; }
@@ -1998,16 +2036,18 @@ function putLogEvent_(cal, e, evId, tz, planIndex) {
   if (end <= start) end = new Date(end.getTime() + 86400000);
   var note = planNote_(e, planIndex);
   var title = (note ? '✓ ' : '') + (e.subject || e.tag || 'Logged activity');
-  var desc = (e.tag ? e.tag + '\n\n' : '') + (e.description ? e.description + '\n\n' : '') + (note ? note + '\n' : '') + 'Logged in your timesheet · ' + fmtDur_(e.totalMinutes);
+  var desc = (e.tag ? e.tag + '\n\n' : '') + (e.agenda ? 'Agenda:\n' + e.agenda + '\n\n' : '') + (e.description ? e.description + '\n\n' : '') + (note ? note + '\n' : '') + 'Logged in your timesheet · ' + fmtDur_(e.totalMinutes);
+  var loc = String(e.location || '');
   var ev = null;
   if (evId) { try { ev = cal.getEventById(evId); } catch (x) { ev = null; } }
   if (ev) {
     if (ev.getTitle() !== title) ev.setTitle(title);
     if (ev.getStartTime().getTime() !== start.getTime() || ev.getEndTime().getTime() !== end.getTime()) ev.setTime(start, end);
     if (ev.getDescription() !== desc) ev.setDescription(desc);
+    if (String(ev.getLocation() || '') !== loc) ev.setLocation(loc);
     return ev.getId();
   }
-  return cal.createEvent(title, start, end, { description: desc }).getId();
+  return cal.createEvent(title, start, end, loc ? { description: desc, location: loc } : { description: desc }).getId();
 }
 
 function syncLogCalendar_(ss, rows, budget, plans) {
@@ -2064,10 +2104,10 @@ function syncLogCalendar_(ss, rows, budget, plans) {
 // Date objects or treating notes that start with "=" as formulas. Existing rows are kept.
 function entriesSheet_(ss) {
   var sh = ss.getSheetByName('Entries') || ss.insertSheet('Entries');
-  if (sh.getRange(1, HEADERS.length).getValue() !== 'EndTime') {
+  if (sh.getRange(1, HEADERS.length).getValue() !== 'Agenda') {
     var rows = readRows_(sh); // read first so legacy Date cells become text
     sh.getRange('A:C').setNumberFormat('@');
-    sh.getRange('E:K').setNumberFormat('@');
+    sh.getRange('E:M').setNumberFormat('@');
     sh.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]);
     sh.setFrozenRows(1);
     writeRows_(sh, rows);
@@ -2083,7 +2123,8 @@ function readRows_(sh) {
     .filter(function (r) { return r[0] !== ''; })
     .map(function (r) {
       return [String(r[0]), r[1] instanceof Date ? Utilities.formatDate(r[1], tz, 'yyyy-MM-dd') : String(r[1]),
-              String(r[2]), Number(r[3]) || 0, String(r[4]), String(r[5]), stamp_(r[6]), stamp_(r[7]), String(r[8] || ''), time_(r[9], tz), time_(r[10], tz)];
+              String(r[2]), Number(r[3]) || 0, String(r[4]), String(r[5]), stamp_(r[6]), stamp_(r[7]), String(r[8] || ''), time_(r[9], tz), time_(r[10], tz),
+              String(r[11] || ''), String(r[12] || '')];
     });
 }
 
@@ -2265,8 +2306,8 @@ function buildSampleEntries() {
   const kinds = [
     { code: 'MR', p: .85, days: [1, 2, 3, 4, 5, 6], start: [390, 480], dur: [20, 45], subj: () => `MR with ${one(people)}`, note: () => `Week ${1 + Math.floor(rnd() * 8)} · Day ${1 + Math.floor(rnd() * 6)}` },
     { code: 'PTL', p: .4, days: [0, 1, 2, 3, 4, 5, 6], start: [360, 420], dur: [15, 45], subj: () => one(['Personal time with the Lord', 'Morning prayer', 'Quiet time']), note: () => '' },
-    { code: 'LD', p: .95, days: [0], start: [570, 630], dur: [90, 150], subj: () => one(["Lord's Day meeting", "Lord's table meeting", "Lord's Day & prophesying"]), note: () => one(['Prophesied on the week’s MR', 'Enjoyed the Lord’s table', '']) },
-    { code: 'PM', p: .85, days: [2], start: [1140, 1170], dur: [60, 105], subj: () => one(['Prayer meeting', 'Church prayer meeting']), note: () => '' },
+    { code: 'LD', loc: () => 'Meeting hall', p: .95, days: [0], start: [570, 630], dur: [90, 150], subj: () => one(["Lord's Day meeting", "Lord's table meeting", "Lord's Day & prophesying"]), note: () => one(['Prophesied on the week’s MR', 'Enjoyed the Lord’s table', '']) },
+    { code: 'PM', p: .85, days: [2], start: [1140, 1170], dur: [60, 105], subj: () => one(['Prayer meeting', 'Church prayer meeting']), note: () => '', loc: () => 'https://zoom.us/j/1234567890', agenda: () => 'Pray for the campus, the new ones and the gospel outreach' },
     { code: 'VG', p: .8, days: [5, 0], start: [720, 1140], dur: [90, 180], subj: () => one(['Small group meeting', 'Home meeting', 'Small group lunch']), note: () => '' },
     { code: 'CM', p: .5, days: [1, 2, 3, 4], start: [540, 660], dur: [30, 90], subj: () => `CM with ${one(people)}${chance(.4) ? ' & ' + one(people) : ''}`, note: () => one(['Coordinated the week', 'Campus planning', 'Conference hosting', '']) },
     { code: 'CW', p: .55, days: [1, 2, 3, 4], start: [690, 810], dur: [60, 150], subj: () => one(['Campus table', 'Bible reading on campus', 'Campus outreach']), note: () => chance(.5) ? `Read ${one(books)} with students` : '' },
@@ -2290,7 +2331,7 @@ function buildSampleEntries() {
       if (back === 0 && s + mins > nowMin) return;                // nothing in the future today
       busy.push([s, s + mins]);
       out.push({ id: `sample_${isoDate(d)}_${hm(s).replace(':', '')}_${out.length}`, date: isoDate(d), subject: k.subj(), description: k.note(),
-                 totalMinutes: mins, tag: pick(k.code, i), startTime: hm(s), endTime: hm(s + mins), createdAt: '2026-01-01T00:00:00.000Z' });
+                 totalMinutes: mins, tag: pick(k.code, i), startTime: hm(s), endTime: hm(s + mins), location: k.loc ? k.loc() : '', agenda: k.agenda ? k.agenda() : '', createdAt: '2026-01-01T00:00:00.000Z' });
     });
   }
   return out;
@@ -2355,8 +2396,10 @@ function fmtRange(a, b) {
 function relWeek(off) { return off === 0 ? 'This week' : off === -1 ? 'Last week' : off === 1 ? 'Next week' : off < 0 ? `${-off} weeks ago` : `In ${off} weeks`; }
 function diffMinutes(s, e) { let d = toMin(e) - toMin(s); if (d < 0) d += 1440; return d; }
 
+const TAG_COLOR_KEY = 'ts_tag_colors_v1';   // keeps a tag's color after it's renamed
 function tagHex(tag) {
   if (TAG_HEX[tag]) return TAG_HEX[tag];
+  const kept = lsGet(TAG_COLOR_KEY, {}); if (kept && kept[tag]) return kept[tag];
   let h = 0; for (const c of String(tag)) h = (h * 31 + c.charCodeAt(0)) >>> 0;
   return PALETTE[h % PALETTE.length];
 }
@@ -2410,7 +2453,7 @@ function localPlanDelete(id) {
   queueOp({ type: 'planDelete', id, updatedAt: t });
 }
 const isPlanOp = o => String(o && o.type).startsWith('plan');
-const opMinVersion = o => o && String(o.type).startsWith('rec') ? REC_MIN_VERSION : o && o.type === 'setting' ? 4 : isPlanOp(o) ? 2 : 0;
+const opMinVersion = o => o && o.type === 'renameCategory' ? 8 : o && String(o.type).startsWith('rec') ? REC_MIN_VERSION : o && o.type === 'setting' ? 4 : isPlanOp(o) ? 2 : 0;
 const sendableOps = () => opQueue.filter(o => backendVersion >= opMinVersion(o));
 
 // Newest updatedAt wins; nothing is ever overwritten wholesale.
@@ -2442,6 +2485,7 @@ function mergeFromCloud(data) {
       opQueue.forEach(o => {
         if (o.type === 'categories') o.categories.forEach(c => { if (!cats.includes(c)) cats.push(c); });
         if (o.type === 'removeCategory') cats = cats.filter(c => c !== o.category);
+        if (o.type === 'renameCategory') cats = cats.map(c => c === o.from ? o.to : c);
       });
       if (JSON.stringify(cats) !== JSON.stringify(categories)) { categories = cats; changed = true; }
     }
@@ -2660,8 +2704,8 @@ function entryRow(e) {
     <div class="entry-time">${time}</div>
     <div class="entry-main">
       <div class="entry-title">${esc(e.subject)}</div>
-      <div class="entry-meta">${chip(e.tag)}${isSample(e.id) ? '<span class="sample-tag">Sample</span>' : ''}</div>
-      ${e.description ? `<p class="entry-desc">${esc(e.description)}</p>` : ''}
+      <div class="entry-meta">${chip(e.tag)}${locHtml(e.location)}${isSample(e.id) ? '<span class="sample-tag">Sample</span>' : ''}</div>
+      ${e.description ? `<p class="entry-desc">${esc(e.description)}</p>` : ''}${agendaHtml(e.agenda)}
     </div>
     <div class="entry-side">
       <span class="dur">${fmtDur(e.totalMinutes)}</span>
@@ -2672,6 +2716,24 @@ function entryRow(e) {
     </div>
   </article>`;
 }
+
+/* ---------- Location & agenda ---------- */
+function locUrl(loc) {
+  const t = String(loc || '').trim();
+  if (/^https?:\/\/\S+$/i.test(t)) return t;
+  if (/^(www\.|[\w-]+\.)?(zoom\.us|meet\.google\.com|teams\.microsoft\.com|teams\.live\.com|webex\.com|[\w-]+\.zoom\.us)\/\S*$/i.test(t)) return 'https://' + t;
+  return '';
+}
+function locHtml(loc) {
+  if (!loc) return '';
+  const url = locUrl(loc);
+  if (url) {
+    let host = ''; try { host = new URL(url).hostname.replace(/^www\./, ''); } catch (e) {}
+    return `<a class="loc" href="${esc(url)}" target="_blank" rel="noopener" title="${esc(url)}">${icon('video')}<span>Join${host ? ' · ' + esc(host) : ''}</span></a>`;
+  }
+  return `<span class="loc" title="${esc(loc)}">${icon('pin')}<span>${esc(loc)}</span></span>`;
+}
+const agendaHtml = a => a ? `<details class="agenda"><summary>Agenda</summary><p>${esc(a)}</p></details>` : '';
 
 /* ---------- Entry form ---------- */
 function setMode(m) {
@@ -2712,6 +2774,7 @@ function handleSave(ev) {
   const date = $('#f-date').value;
   const subject = $('#f-subject').value.trim();
   const description = $('#f-desc').value.trim();
+  const location = $('#f-loc').value.trim(), agenda = $('#f-agenda').value.trim();
   if (!date) return toast('Please choose a date.', true);
   if (!subject) { $('#f-subject').focus(); return toast('Please add a subject.', true); }
 
@@ -2736,12 +2799,12 @@ function handleSave(ev) {
 
   const id = ui.editingId;
   if (id && store[id]) {
-    localUpsert({ ...store[id], date, subject, totalMinutes, tag, description, startTime, endTime });
+    localUpsert({ ...store[id], date, subject, totalMinutes, tag, description, startTime, endTime, location, agenda });
     toast('Entry updated.');
   } else {
     localUpsert({
       id: ui.planEntryId || ('entry_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6)),
-      date, subject, totalMinutes, tag, description, startTime, endTime,
+      date, subject, totalMinutes, tag, description, startTime, endTime, location, agenda,
       createdAt: new Date().toISOString()
     });
     toast('Activity logged.');
@@ -2767,6 +2830,8 @@ function editEntry(id) {
   $('#f-date').value = en.date;
   $('#f-subject').value = en.subject || '';
   $('#f-desc').value = en.description || '';
+  $('#f-loc').value = en.location || '';
+  $('#f-agenda').value = en.agenda || '';
   if (en.tag && !categories.includes(en.tag)) { categories.push(en.tag); renderTagOptions(); }
   $('#f-tag').value = en.tag;
   toggleNewTagField();
@@ -3045,7 +3110,7 @@ function renderConfirm() {
     ${shown.map(o => {
       const p = o.plan;
       return `<div class="cf-row"><div style="min-width:0"><div class="cf-title">${esc(p.title)}</div>
-        <div class="cf-meta"><span>${dayLabel(o.date)} · ${fmtTime(p.startTime)} – ${fmtTime(p.endTime)}</span>${p.tag ? chip(p.tag) : '<span class="chip" style="background:var(--surface-2)"><span>Needs a tag</span></span>'}</div></div>
+        <div class="cf-meta"><span>${dayLabel(o.date)} · ${fmtTime(p.startTime)} – ${fmtTime(p.endTime)}</span>${locHtml(p.location)}${p.tag ? chip(p.tag) : '<span class="chip" style="background:var(--surface-2)"><span>Needs a tag</span></span>'}</div></div>
         <div class="cf-actions">
           <button class="btn btn-sm btn-primary" data-cf="confirm" data-key="${esc(o.entryId)}" title="Log it as planned">${icon('check', 'sm')}<span>Confirm</span></button>
           <button class="btn-icon" data-cf="adjust" data-key="${esc(o.entryId)}" title="Adjust, then log" aria-label="Adjust, then log">${icon('pencil', 'sm')}</button>
@@ -3060,7 +3125,7 @@ function confirmOcc(o, quiet = false) {
   if (!p.tag) { if (!quiet) adjustOcc(o); return false; }
   if (!categories.includes(p.tag)) { categories.push(p.tag); queueOp({ type: 'categories', categories: [p.tag] }); }
   localUpsert({ id: o.entryId, date: o.date, subject: p.title, totalMinutes: o.mins, tag: p.tag, description: p.notes || '',
-                startTime: p.startTime, endTime: p.endTime, createdAt: new Date().toISOString() });
+                startTime: p.startTime, endTime: p.endTime, location: p.location || '', agenda: p.agenda || '', createdAt: new Date().toISOString() });
   if (!quiet) { persistLocal(); renderAll(); toast(`Logged “${p.title}”.`); syncNow(); }
   return true;
 }
@@ -3080,6 +3145,8 @@ function adjustOcc(o) {
   $('#f-date').value = o.date;
   $('#f-subject').value = p.title;
   $('#f-desc').value = p.notes || '';
+  $('#f-loc').value = p.location || '';
+  $('#f-agenda').value = p.agenda || '';
   if (p.tag && categories.includes(p.tag)) $('#f-tag').value = p.tag;
   toggleNewTagField();
   $('#f-start').value = p.startTime;
@@ -3106,9 +3173,12 @@ function openOcc(key) {
   const fromCal = p.source === 'calendar';
   $('#occ-title').textContent = p.title;
   $('#occ-meta').textContent = `${dayLabel(o.date)} · ${fmtTime(p.startTime)} – ${fmtTime(p.endTime)}${p.days && p.days.length ? ' · repeats ' + daysText(p.days) : ''}${p.tag ? ' · ' + p.tag : ''}${fromCal ? ' · from Google Calendar' : ''}`;
+  $('#occ-extra').innerHTML = (p.location && !locUrl(p.location) ? locHtml(p.location) : '') +
+    (p.agenda ? `<div class="agenda-box"><b>Agenda</b>${esc(p.agenda)}</div>` : '');
   const btns = [];
+  if (locUrl(p.location)) btns.push(['btn btn-primary', `${icon('video', 'sm')}Join meeting`, () => window.open(locUrl(p.location), '_blank', 'noopener')]);
   if (o.status === 'due') {
-    btns.push(['btn btn-primary', `${icon('check', 'sm')}Yes, it happened: log it`, () => confirmOcc(o)]);
+    btns.push([locUrl(p.location) ? 'btn' : 'btn btn-primary', `${icon('check', 'sm')}Yes, it happened: log it`, () => confirmOcc(o)]);
     btns.push(['btn', `${icon('pencil', 'sm')}Adjust, then log`, () => adjustOcc(o)]);
     btns.push(['btn', `${icon('x', 'sm')}It didn’t happen`, () => skipOcc(o)]);
   } else if (p.days && p.days.length) {
@@ -3142,6 +3212,8 @@ function openPlanForm(id, prefill = {}) {
   $('#p-start').value = p ? p.startTime : (prefill.start || '');
   $('#p-end').value = p ? p.endTime : (prefill.end || '');
   $('#p-notes').value = p ? (p.notes || '') : '';
+  $('#p-loc').value = p ? (p.location || '') : '';
+  $('#p-agenda').value = p ? (p.agenda || '') : '';
   ui.planDays = p ? (p.days || []).slice() : [];
   $('#p-repeat').checked = ui.planDays.length > 0;
   $('#p-until').value = p ? (p.until || '') : '';
@@ -3156,6 +3228,7 @@ function openPlanForm(id, prefill = {}) {
   $('#p-cal-note').classList.toggle('hidden', !fromCal);
   $('#p-editable').classList.toggle('input-disabled', fromCal);
   $('#p-notes-wrap').classList.toggle('hidden', fromCal);
+  $('#p-agenda-wrap').classList.toggle('hidden', fromCal);
   $('#p-delete').classList.toggle('hidden', !p || fromCal);
   const d = $('#plan-dlg');
   if (!d.open) d.showModal();
@@ -3179,7 +3252,7 @@ function savePlan(ev) {
   if (until && until < date) return toast('The end date is before the start date.', true);
   localPlanUpsert({
     id: existing ? existing.id : 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
-    title, tag, notes: $('#p-notes').value.trim(), date, startTime, endTime,
+    title, tag, notes: $('#p-notes').value.trim(), location: $('#p-loc').value.trim(), agenda: $('#p-agenda').value.trim(), date, startTime, endTime,
     days: repeat ? ui.planDays.slice().sort() : [], until, skips: existing ? (existing.skips || []) : [],
     createdAt: existing ? existing.createdAt : new Date().toISOString(), source: 'app'
   });
@@ -3208,7 +3281,7 @@ function renderPlansList() {
   const repeating = live.filter(p => p.days && p.days.length && (!p.until || p.until >= t) && p.source !== 'calendar').sort((a, b) => a.startTime.localeCompare(b.startTime));
   const upcoming = live.filter(p => (!p.days || !p.days.length) && p.date >= t).sort((a, b) => (a.date + a.startTime).localeCompare(b.date + b.startTime));
   const row = (p, sub) => `<div class="plan-row"><i style="background:${p.tag ? tagHex(p.tag) : 'var(--faint)'}"></i>
-    <div class="pr-main"><div class="pr-title">${esc(p.title)}</div><div class="pr-sub">${sub}</div></div>
+    <div class="pr-main"><div class="pr-title">${esc(p.title)}</div><div class="pr-sub">${sub}</div>${p.location ? `<div>${locHtml(p.location)}</div>` : ''}</div>
     <button class="btn-icon" data-editplan="${esc(p.id)}" aria-label="Edit ${esc(p.title)}">${icon('pencil', 'sm')}</button></div>`;
   const grp = (title, items) => items.length ? `<div class="plan-group">${title}</div><div class="tag-list">${items.join('')}</div>` : '';
   const html = grp('Repeating', repeating.map(p => row(p, `${daysText(p.days)} · ${fmtTime(p.startTime)} – ${fmtTime(p.endTime)}${p.until ? ' · until ' + parseDate(p.until).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : ''}`)))
@@ -3332,6 +3405,7 @@ function renderTagManager() {
   $('#tag-list').innerHTML = categories.map(cat => {
     const n = realEntries().filter(e => e.tag === cat).length;
     return `<div class="tag-row"><label class="walk-check" title="Counts as Walking with the Lord"><input type="checkbox" data-walktag="${esc(cat)}"${isWalk(cat) ? ' checked' : ''} aria-label="${esc(cat)} counts as Walking with the Lord"></label><i style="background:${tagHex(cat)}"></i><span class="name">${esc(cat)}</span><span class="count">${plural(n, 'entry', 'entries')}</span>
+      <button class="btn-icon" data-edittag="${esc(cat)}" title="Rename tag" aria-label="Rename tag ${esc(cat)}">${icon('pencil', 'sm')}</button>
       <button class="btn-icon danger" data-deltag="${esc(cat)}" title="Delete tag" aria-label="Delete tag ${esc(cat)}">${icon('trash', 'sm')}</button></div>`;
   }).join('') || '<div class="tag-row"><span class="name" style="color:var(--faint)">No tags yet</span></div>';
 }
@@ -3366,6 +3440,29 @@ async function deleteTag(tag) {
   persistLocal();
   renderAll(); renderTagManager();
   toast(`Tag “${tag}” deleted.`);
+  syncNow();
+}
+// Rename a tag everywhere: entries, plans, the tag list, "Walking with the Lord" ticks and its color.
+async function renameTag(oldName) {
+  const name = await ask({ title: 'Rename tag', message: 'Every entry and plan with this tag is updated on all your synced devices.', input: oldName, confirmText: 'Rename' });
+  if (name == null) return;
+  const nn = name.trim();
+  if (!nn || nn === oldName) return;
+  if (categories.includes(nn)) return toast('A tag with that name already exists.', true);
+  const walk = walkTags(), hex = tagHex(oldName);
+  categories = categories.map(c => c === oldName ? nn : c);
+  if (backendVersion >= 8) queueOp({ type: 'renameCategory', from: oldName, to: nn });
+  else { queueOp({ type: 'categories', categories: [nn] }); queueOp({ type: 'removeCategory', category: oldName }); }
+  realEntries().filter(e => e.tag === oldName).forEach(e => localUpsert({ ...store[e.id], tag: nn }));
+  planList().filter(p => p.tag === oldName).forEach(p => localPlanUpsert({ ...p, tag: nn }));
+  const colors = lsGet(TAG_COLOR_KEY, {}) || {}; colors[nn] = hex; delete colors[oldName]; lsSet(TAG_COLOR_KEY, colors);
+  if (walk.includes(oldName)) saveCfg({ walkTags: walk.map(t => t === oldName ? nn : t) });
+  if (lsRaw(LAST_TAG_KEY) === oldName) lsRawSet(LAST_TAG_KEY, nn);
+  if (lsRaw(HT_TAG_KEY) === oldName) lsRawSet(HT_TAG_KEY, nn);
+  if ($('#log-filter').value === oldName) $('#log-filter').value = 'ALL';
+  persistLocal();
+  renderAll(); renderTagManager();
+  toast(`Renamed to “${nn}”.`);
   syncNow();
 }
 function setWeekStart(v) {
@@ -3449,9 +3546,9 @@ function exportCSV() {
   if (!real.length) return toast('No entries to export yet.', true);
   const q = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
   const rows = real.slice().sort((a, b) => String(a.date).localeCompare(String(b.date)) || String(a.startTime || '').localeCompare(String(b.startTime || '')));
-  let csv = 'ID,Date,Subject,Hours,Minutes,TotalHours,Category,Description,StartTime,EndTime\n';
+  let csv = 'ID,Date,Subject,Hours,Minutes,TotalHours,Category,Description,StartTime,EndTime,Location,Agenda\n';
   rows.forEach(e => {
-    csv += [q(e.id), e.date, q(e.subject), Math.floor(e.totalMinutes / 60), e.totalMinutes % 60, (e.totalMinutes / 60).toFixed(2), q(e.tag), q(e.description), e.startTime || '', e.endTime || ''].join(',') + '\n';
+    csv += [q(e.id), e.date, q(e.subject), Math.floor(e.totalMinutes / 60), e.totalMinutes % 60, (e.totalMinutes / 60).toFixed(2), q(e.tag), q(e.description), e.startTime || '', e.endTime || '', q(e.location), q(e.agenda)].join(',') + '\n';
   });
   downloadBlob(csv, `Timesheet_Export_${todayISO()}.csv`, 'text/csv');
   toast('CSV exported.');
@@ -3476,7 +3573,7 @@ function importJSON(ev) {
           id: item.id || ('entry_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6)),
           date: item.date, subject: item.subject, totalMinutes: Number(item.totalMinutes) || 0,
           tag: item.tag || categories[0], description: item.description || '',
-          startTime: item.startTime || '', endTime: item.endTime || '',
+          startTime: item.startTime || '', endTime: item.endTime || '', location: item.location || '', agenda: item.agenda || '',
           createdAt: item.createdAt || new Date().toISOString()
         });
         count++;
@@ -3522,22 +3619,24 @@ async function clearAll() {
 }
 
 /* ============================ Dialog & toast ============================ */
-function ask({ title, message = '', confirmText = 'OK', danger = false, options = null }) {
+function ask({ title, message = '', confirmText = 'OK', danger = false, options = null, input = null }) {
   return new Promise(resolve => {
     const d = $('#ask'), sel = $('#ask-select'), okBtn = $('#ask-ok');
     $('#ask-title').textContent = title;
     $('#ask-msg').textContent = message;
     sel.classList.toggle('hidden', !options);
+    const inp = $('#ask-input'); inp.classList.toggle('hidden', input == null); inp.value = input ?? '';
+    inp.onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); okBtn.click(); } };
     if (options) sel.innerHTML = options.map(o => `<option value="${esc(o)}">${esc(o)}</option>`).join('');
     okBtn.textContent = confirmText;
     okBtn.className = 'btn ' + (danger ? 'btn-danger' : 'btn-primary');
     const done = v => { d.close(); okBtn.onclick = null; $('#ask-cancel').onclick = null; d.oncancel = null; resolve(v); };
-    okBtn.onclick = () => done(options ? sel.value : true);
+    okBtn.onclick = () => done(options ? sel.value : input != null ? $('#ask-input').value : true);
     $('#ask-cancel').onclick = () => done(null);
     $('#ask-cancel').classList.toggle('hidden', confirmText === 'Done');
     d.oncancel = e => { e.preventDefault(); done(null); };
     d.showModal();
-    (options ? sel : $('#ask-cancel')).focus();
+    if (input != null) { inp.focus(); inp.select(); } else (options ? sel : $('#ask-cancel')).focus();
   });
 }
 let toastTimer;
@@ -3662,7 +3761,7 @@ function bindEvents() {
     toast(on ? 'Auto-log is on. Plans are logged for you when they end.' : 'Auto-log is off. Confirm plans yourself.');
     syncNow();
   });
-  $('#tag-list').addEventListener('click', e => { const b = e.target.closest('[data-deltag]'); if (b) deleteTag(b.dataset.deltag); });
+  $('#tag-list').addEventListener('click', e => { const b = e.target.closest('[data-deltag]'); if (b) deleteTag(b.dataset.deltag); const r = e.target.closest('[data-edittag]'); if (r) renameTag(r.dataset.edittag); });
   $('#tag-list').addEventListener('change', e => {
     const box = e.target.closest('[data-walktag]'); if (!box) return;
     const list = $$('#tag-list [data-walktag]').filter(x => x.checked).map(x => x.dataset.walktag);
